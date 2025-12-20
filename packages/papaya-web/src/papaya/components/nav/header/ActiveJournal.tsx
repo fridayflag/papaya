@@ -4,10 +4,12 @@ import { useJournals } from '@/hooks/queries/useJournals'
 import { Journal } from '@/schema/documents/Journal'
 import { useJournalSelectorStatus, useSetJournalSelectorStatus } from '@/store/app/useJournalSelectorState'
 import { UnfoldMore } from '@mui/icons-material'
-import { Button, Typography, Tooltip } from '@mui/material'
+import { Button, ButtonProps, Tooltip, Typography } from '@mui/material'
 import { useContext } from 'react'
 
-export default function ActiveJournal() {
+type ActiveJournalProps = ButtonProps
+
+export default function ActiveJournal(props: ActiveJournalProps) {
   const journalContext = useContext(JournalContext)
   const { activeJournalId } = journalContext
 
@@ -26,11 +28,11 @@ export default function ActiveJournal() {
   return (
     <Tooltip title="Manage Journals">
       {journalSelectorStatus === 'CLOSED' && !activeJournal ? (
-        <Button variant="contained" onClick={() => setJournalSelectorStatus('SELECTING')}>
+        <Button variant="contained" onClick={() => setJournalSelectorStatus('SELECTING')} {...props}>
           Select Journal
         </Button>
       ) : (
-        <Button endIcon={<UnfoldMore />} onClick={() => setJournalSelectorStatus('SELECTING')}>
+        <Button endIcon={<UnfoldMore />} onClick={() => setJournalSelectorStatus('SELECTING')} {...props}>
           <Typography variant="h6">{journalName}</Typography>
         </Button>
       )}

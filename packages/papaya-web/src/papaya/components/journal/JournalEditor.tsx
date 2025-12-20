@@ -1,10 +1,9 @@
 import { NotificationsContext } from '@/contexts/NotificationsContext'
 import { deleteJournalEntry } from '@/database/actions'
 import { getDatabaseClient } from '@/database/client'
-import { Box, Collapse, Divider, Grid, Paper, Stack } from '@mui/material'
+import { Box, Divider, Paper, Stack } from '@mui/material'
 import { MouseEvent, useContext, useEffect, useMemo, useState } from 'react'
 import JournalEntryCard from './JournalEntryCard'
-import JournalEntryList from './JournalEntryList'
 import JournalHeader from './ribbon/JournalHeader'
 // import SpendChart from '../chart/SpendChart'
 // import CategorySpreadChart from '../chart/CategorySpreadChart'
@@ -12,7 +11,7 @@ import { useFilteredJournalEntries } from '@/hooks/queries/useFilteredJournalEnt
 import { JournalEntry } from '@/schema/documents/JournalEntry'
 import { useBeginEditingJournalEntry } from '@/store/app/useJournalEntryEditModalState'
 import { useSearch } from '@tanstack/react-router'
-import StemEditor from './StemEditor'
+import JournalEntryList from './JournalEntryList'
 
 export interface JournalEntrySelection {
   entry: JournalEntry | null
@@ -145,50 +144,35 @@ export default function JournalEditor() {
             gap: 0,
             height: '100%',
             width: '100%',
-          }}>
-          <Collapse in={false}>
-            <Stack direction="row" gap={2} mb={2}>
-              {/* <SpendChart />
-							<CategorySpreadChart /> */}
-            </Stack>
-          </Collapse>
-
-          <Grid container spacing={4}>
-            <Grid size={6}>
-              <Stack
-                component={Paper}
-                sx={(theme) => ({
-                  flex: 1,
-                  borderTopLeftRadius: theme.spacing(2),
-                  borderTopRightRadius: theme.spacing(2),
-                  borderBottomLeftRadius: { sm: 0, md: theme.spacing(2) },
-                  borderBottomRightRadius: { sm: 0, md: theme.spacing(2) },
-                  display: 'flex',
-                  flexDirection: 'column',
-                  minHeight: 0, // Allow flex item to shrink
-                })}>
-                <JournalHeader />
-                <Divider />
-                <Box
-                  sx={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    minHeight: 0, // Allow flex item to shrink
-                  }}>
-                  <JournalEntryList
-                    journalRecordGroups={tab === 'journal' ? journalGroups : {}}
-                    onClickListItem={handleClickListItem}
-                    onDoubleClickListItem={handleDoubleClickListItem}
-                  />
-                  <Stack component="footer"></Stack>
-                </Box>
-              </Stack>
-            </Grid>
-            <Grid size={6}>
-              <StemEditor />
-            </Grid>
-          </Grid>
-
+          }}
+        >
+          <Stack
+            component={Paper}
+            sx={(theme) => ({
+              flex: 1,
+              borderTopLeftRadius: theme.spacing(2),
+              borderTopRightRadius: theme.spacing(2),
+              borderBottomLeftRadius: { sm: 0, md: theme.spacing(2) },
+              borderBottomRightRadius: { sm: 0, md: theme.spacing(2) },
+              display: 'flex',
+              flexDirection: 'column',
+              minHeight: 0, // Allow flex item to shrink
+            })}>
+            <JournalHeader />
+            <Divider />
+            <Box
+              sx={{
+                flex: 1,
+                overflowY: 'auto',
+                minHeight: 0, // Allow flex item to shrink
+              }}>
+              <JournalEntryList
+                journalRecordGroups={tab === 'journal' ? journalGroups : {}}
+                onClickListItem={handleClickListItem}
+                onDoubleClickListItem={handleDoubleClickListItem}
+              />
+            </Box>
+          </Stack>
         </Stack>
       </Stack>
     </>

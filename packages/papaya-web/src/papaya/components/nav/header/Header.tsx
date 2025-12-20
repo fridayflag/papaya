@@ -1,6 +1,6 @@
 import { useAppMenuStateStore } from '@/store/useAppMenuStateStore'
 import { Menu, MenuOpen, Settings } from '@mui/icons-material'
-import { IconButton, Stack, useMediaQuery, useTheme } from '@mui/material'
+import { IconButton, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import ActiveJournal from './ActiveJournal'
 import AppLogo from './AppLogo'
 import SearchWidget from './search/SearchWidget'
@@ -47,8 +47,10 @@ export default function Header(props: HeaderProps) {
           {isExpanded ? <MenuOpen /> : <Menu />}
         </IconButton>
         {showLogo && <AppLogo />}
-        <Stack direction="row" alignItems="center" gap={1} ml={showLogo ? 2 : undefined}>
-          <ActiveJournal />
+        <Stack direction="row" alignItems="center" gap={2} ml={showLogo ? 2 : undefined}>
+          <Typography variant="h6" sx={(theme) => ({ color: theme.palette.text.secondary })}>Journal</Typography>
+          <Typography component="span" sx={(theme) => ({ color: theme.palette.text.secondary })}>/</Typography>
+          <ActiveJournal sx={{ ml: -1 }} />
           <SyncHeaderWidget />
         </Stack>
       </Stack>
