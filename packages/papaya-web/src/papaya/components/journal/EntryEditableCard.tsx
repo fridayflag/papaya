@@ -1,31 +1,38 @@
 import { EntryIdentifier } from "@/schema/new/document/EntrySchema";
-import { Category } from "@mui/icons-material";
 import { Stack, TextField } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import PapyaCard from "../stems/PapayaCard";
 import { EntryForm } from "./StemEditor";
+import StemActions from "./stems/StemActions";
+import StemRenderers from "./stems/StemRenderers";
 
 interface EntryEditableCardProps {
   entryId: EntryIdentifier
 }
 
-const ENTRY_STEMS = [
-  {
-    label: 'Topic',
-    icon: <Category />,
-  }
-]
-
 export default function EntryEditableCard(props: EntryEditableCardProps) {
-
   const form = useFormContext<EntryForm>();
-
-  const hasTopicStem = true; // TODO
+  const entry = form.watch('entry');
+  const stems = entry.stems;
 
   return (
     <PapyaCard
       variantTitle='Entry'
-    // actions={<BaseActions />}
+      actions={
+        <StemActions
+          entryId={props.entryId}
+          form={form}
+          existingStems={stems}
+        />
+      }
+      descendants={
+        <StemRenderers
+          entryId={props.entryId}
+          form={form}
+          stems={stems}
+          mode="nested"
+        />
+      }
     >
       <Stack direction={'row'} gap={1}>
         <TextField
@@ -43,19 +50,15 @@ export default function EntryEditableCard(props: EntryEditableCardProps) {
           sx={{ flex: 2 }}
           label='Memo'
         />
-
       </Stack>
-      {hasTopicStem && (
-        <TextField
-          {...form.register('TODO')}
-          size='small'
-          placeholder="#groceries"
-          fullWidth
-          sx={{ flex: 1 }}
-          label='Topic'
-        />
-      )}
-      {/* {renderEntryStems(stems, entry, form)} */}
+
+      {/* Render inline stems within the card */}
+      <StemRenderers
+        entryId={props.entryId}
+        form={form}
+        stems={stems}
+        mode="inline"
+      />
     </PapyaCard>
   );
 }

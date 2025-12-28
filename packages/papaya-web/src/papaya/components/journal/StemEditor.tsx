@@ -21,20 +21,6 @@ import EntryEditableCard from './EntryEditableCard';
 
 const EntryFormSchema = EntrySchema.extend({
   entry: EntrySchema,
-  stems: z.record(PapayaGenericResourceIdentifierSchema, z.union([
-    AttachmentStemSchema,
-    FlagStemSchema,
-    ForkStemSchema,
-    GratuityStemSchema,
-    MentionStemSchema,
-    NoteStemSchema,
-    ObligationStemSchema,
-    RecurrenceStemSchema,
-    RelationStemSchema,
-    TaskListStemSchema,
-    TopicStemSchema,
-    TransferDestinationStemSchema,
-  ])),
 });
 export type EntryForm = z.infer<typeof EntryFormSchema>;
 
@@ -56,14 +42,10 @@ export default function StemEditor() {
           },
         },
       },
-      stems: {
-        'papaya:stem:attachment': {
-        },
-      },
+      stems: {},
     }
   })
 
-  const stems = form.watch('stems');
   const entry = form.watch('entry');
 
   return (
