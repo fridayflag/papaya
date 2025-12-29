@@ -1,5 +1,5 @@
 import { getOrCreatePapayaMeta } from '@/database/queries'
-import { PapayaMeta } from '@/schema/documents/PapayaMeta'
+import { PapayaMeta } from '@/schema/new/legacy/PapayaMeta'
 import { useQuery } from '@tanstack/react-query'
 
 export const usePapayaMeta = () =>

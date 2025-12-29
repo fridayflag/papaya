@@ -1,4 +1,4 @@
-import KeyboardShortcut from '@/components/text/KeyboardShortcut'
+import KeyboardShortcut from '@/components/display/KeyboardShortcut'
 import { KeyboardActionName } from '@/constants/keyboard'
 import { Search } from '@mui/icons-material'
 import { Button, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'

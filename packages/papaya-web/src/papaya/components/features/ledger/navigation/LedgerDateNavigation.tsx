@@ -1,3 +1,4 @@
+import KeyboardShortcut from '@/components/display/KeyboardShortcut'
 import { KeyboardActionName } from '@/constants/keyboard'
 import useDateView from '@/hooks/facets/useDateView'
 import { useFilteredJournalEntries } from '@/hooks/queries/useFilteredJournalEntries'
@@ -23,7 +24,6 @@ import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import KeyboardShortcut from '../../display/KeyboardShortcut'
 
 const SELECTABLE_DATE_VIEWS = [DateViewVariant.WEEKLY, DateViewVariant.MONTHLY, DateViewVariant.ANNUAL]
 

@@ -1,5 +1,5 @@
 import z from 'zod'
-import { Figure } from '../models/Figure'
+import { Figure } from '../new/legacy/Figure'
 import { Currency } from './currency'
 
 export const FigureEnumeration = z.partialRecord(Currency, Figure)

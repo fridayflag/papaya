@@ -5,7 +5,7 @@ import { EntryArtifact } from '../documents/EntryArtifact'
 import { EntryTag } from '../documents/EntryTag'
 import { Journal } from '../documents/Journal'
 import { JournalEntry } from '../documents/JournalEntry'
-import { PapayaMeta } from '../documents/PapayaMeta'
+import { PapayaMeta } from '../new/legacy/PapayaMeta'
 
 export const PapayaDocument = z.discriminatedUnion('kind', [
   Account,

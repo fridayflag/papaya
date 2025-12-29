@@ -22,6 +22,7 @@ import { Route as WelcomeLayoutWelcomeJournalRouteImport } from './routes/_welco
 import { Route as WelcomeLayoutWelcomeGettingStartedRouteImport } from './routes/_welcomeLayout/welcome.getting-started'
 import { Route as WelcomeLayoutWelcomeCategoriesRouteImport } from './routes/_welcomeLayout/welcome.categories'
 import { Route as MainLayoutSettingsSectionRouteImport } from './routes/_mainLayout/settings.$section'
+import { Route as MainLayoutLedgerViewSplatRouteImport } from './routes/_mainLayout/ledger.$view.$'
 import { Route as MainLayoutJournalViewSplatRouteImport } from './routes/_mainLayout/journal.$view.$'
 
 const WelcomeLayoutRoute = WelcomeLayoutRouteImport.update({
@@ -93,6 +94,12 @@ const MainLayoutSettingsSectionRoute =
     path: '/settings/$section',
     getParentRoute: () => MainLayoutRoute,
   } as any)
+const MainLayoutLedgerViewSplatRoute =
+  MainLayoutLedgerViewSplatRouteImport.update({
+    id: '/ledger/$view/$',
+    path: '/ledger/$view/$',
+    getParentRoute: () => MainLayoutRoute,
+  } as any)
 const MainLayoutJournalViewSplatRoute =
   MainLayoutJournalViewSplatRouteImport.update({
     id: '/journal/$view/$',
@@ -113,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof MainLayoutSettingsIndexRoute
   '/welcome': typeof WelcomeLayoutWelcomeIndexRoute
   '/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
+  '/ledger/$view/$': typeof MainLayoutLedgerViewSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -127,6 +135,7 @@ export interface FileRoutesByTo {
   '/settings': typeof MainLayoutSettingsIndexRoute
   '/welcome': typeof WelcomeLayoutWelcomeIndexRoute
   '/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
+  '/ledger/$view/$': typeof MainLayoutLedgerViewSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/_mainLayout/settings/': typeof MainLayoutSettingsIndexRoute
   '/_welcomeLayout/welcome/': typeof WelcomeLayoutWelcomeIndexRoute
   '/_mainLayout/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
+  '/_mainLayout/ledger/$view/$': typeof MainLayoutLedgerViewSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/welcome'
     | '/journal/$view/$'
+    | '/ledger/$view/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/welcome'
     | '/journal/$view/$'
+    | '/ledger/$view/$'
   id:
     | '__root__'
     | '/'
@@ -190,6 +202,7 @@ export interface FileRouteTypes {
     | '/_mainLayout/settings/'
     | '/_welcomeLayout/welcome/'
     | '/_mainLayout/journal/$view/$'
+    | '/_mainLayout/ledger/$view/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainLayoutSettingsSectionRouteImport
       parentRoute: typeof MainLayoutRoute
     }
+    '/_mainLayout/ledger/$view/$': {
+      id: '/_mainLayout/ledger/$view/$'
+      path: '/ledger/$view/$'
+      fullPath: '/ledger/$view/$'
+      preLoaderRoute: typeof MainLayoutLedgerViewSplatRouteImport
+      parentRoute: typeof MainLayoutRoute
+    }
     '/_mainLayout/journal/$view/$': {
       id: '/_mainLayout/journal/$view/$'
       path: '/journal/$view/$'
@@ -308,6 +328,7 @@ interface MainLayoutRouteChildren {
   MainLayoutJournalIndexRoute: typeof MainLayoutJournalIndexRoute
   MainLayoutSettingsIndexRoute: typeof MainLayoutSettingsIndexRoute
   MainLayoutJournalViewSplatRoute: typeof MainLayoutJournalViewSplatRoute
+  MainLayoutLedgerViewSplatRoute: typeof MainLayoutLedgerViewSplatRoute
 }
 
 const MainLayoutRouteChildren: MainLayoutRouteChildren = {
@@ -317,6 +338,7 @@ const MainLayoutRouteChildren: MainLayoutRouteChildren = {
   MainLayoutJournalIndexRoute: MainLayoutJournalIndexRoute,
   MainLayoutSettingsIndexRoute: MainLayoutSettingsIndexRoute,
   MainLayoutJournalViewSplatRoute: MainLayoutJournalViewSplatRoute,
+  MainLayoutLedgerViewSplatRoute: MainLayoutLedgerViewSplatRoute,
 }
 
 const MainLayoutRouteWithChildren = MainLayoutRoute._addFileChildren(

@@ -1,7 +1,7 @@
 import z from 'zod'
-import { UserSettings } from '../models/UserSettings'
-import { Document } from '../support/orm/Document'
-import { Mixin } from '../support/orm/Mixin'
+import { UserSettings } from '../../models/UserSettings'
+import { Document } from '../../support/orm/Document'
+import { Mixin } from '../../support/orm/Mixin'
 
 export const [CreatePapayaMeta, PapayaMeta] = Document.fromSchemas([
   {

@@ -1,3 +1,7 @@
+import { type TopicSlug } from "@/schema/new/document/TopicSchema"
+import { type AdornedResource } from "@/schema/new/object/AdornedResourceSchema"
+import { type ComputedAmount } from "@/schema/new/object/ComputedAmountSchema"
+import { type DecoratedSlug } from "@/schema/new/object/DecoratedSlug"
 import {
   alpha,
   Checkbox,
@@ -11,44 +15,26 @@ import {
   TableBodyProps,
   TableCellProps,
   TableRowProps,
-  Typography,
-  useMediaQuery,
-  useTheme
+  Typography
 } from '@mui/material'
-import { useEffect, useMemo } from 'react'
+import clsx from "clsx"
+import dayjs from "dayjs"
 
-import AvatarIcon from '@/components/icon/AvatarIcon'
-import { PLACEHOLDER_UNNAMED_JOURNAL_ENTRY_MEMO } from '@/constants/journal'
-import useDateView from '@/hooks/facets/useDateView'
-import { useAccounts } from '@/hooks/queries/useAccounts'
-import { useCategories } from '@/hooks/queries/useCategories'
-import { useGetPriceStyle } from '@/hooks/useGetPriceStyle'
-import { Account } from '@/schema/documents/Account'
-import { Category } from '@/schema/documents/Category'
-import { JournalEntry } from '@/schema/documents/JournalEntry'
-import { StatusVariant } from '@/schema/models/EntryStatus'
-import { EntryTask } from '@/schema/models/EntryTask'
-import { Figure } from '@/schema/new/legacy/Figure'
-import { DateViewVariant } from '@/schema/support/search/facet'
-import { useOpenEntryEditModalForCreate } from '@/store/app/useJournalEntryEditModalState'
-import {
-  useJournalEntrySelectionState,
-  useSetJournalEntrySelectionState,
-  useToggleJournalEntrySelectionState,
-} from '@/store/app/useJournalEntrySelectionState'
-import { sortDatesChronologically } from '@/utils/date'
-import {
-  enumerateJournalEntryStatuses,
-  journalEntryHasTags,
-  journalEntryHasTasks
-} from '@/utils/journal'
-import { getFigureString } from '@/utils/string'
-import { Flag, LocalOffer, Pending, Update } from '@mui/icons-material'
-import clsx from 'clsx'
-import dayjs from 'dayjs'
-import AvatarChip from '../icon/AvatarChip'
-import CircularProgressWithLabel from '../icon/CircularProgressWithLabel'
-import QuickJournalEditor from './QuickJournalEditor'
+type DisplayableBadge =
+  | 'FLAGGED'
+
+export interface DisplayableLedgerEntry {
+  date: dayjs.Dayjs
+  netAmount: ComputedAmount
+  memo: string
+  topics: TopicSlug[]
+  accounts: {
+    source?: AdornedResource | DecoratedSlug
+    destination?: AdornedResource | DecoratedSlug
+  }
+  badges: DisplayableBadge[]
+}
+
 
 interface JournalTableRowProps extends TableRowProps {
   dateRow?: boolean
@@ -162,47 +148,13 @@ const TableBody = (props: JournalTableBodyProps) => {
 }
 
 
-interface JournalEntryListProps {
-  /**
-   * Entries grouped by date, where the key is the date and the value is the
-   * array of entries occurring on this date.
-   */
-  journalRecordGroups: Record<string, JournalEntry[]>
-  onClickListItem: (event: any, entry: JournalEntry) => void
-  onDoubleClickListItem: (event: any, entry: JournalEntry) => void
+
+interface LedgerGridProps {
+  entries: DisplayableLedgerEntry[]
 }
 
-export default function JournalEntryList(props: JournalEntryListProps) {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
-  const getCategoriesQuery = useCategories()
-  const getAccountsQuery = useAccounts()
-
-  const openEntryEditModalForCreate = useOpenEntryEditModalForCreate()
-
-  const journalEntrySelectionState = useJournalEntrySelectionState()
-  const toggleJournalEntrySelectionState = useToggleJournalEntrySelectionState()
-  const setJournalEntrySelectionState = useSetJournalEntrySelectionState()
-
-  useEffect(() => {
-    setJournalEntrySelectionState({})
-  }, [props.journalRecordGroups])
-
-  const { dateView } = useDateView()
-  const getPriceStyle = useGetPriceStyle()
-
-  const currentDayString = useMemo(() => dayjs().format('YYYY-MM-DD'), [])
-
-  const displayedJournalDates: Set<string> = new Set(Object.keys(props.journalRecordGroups))
-
-  if (dateView.view === DateViewVariant.MONTHLY) {
-    const startOfMonth: dayjs.Dayjs = dayjs(`${dateView.year}-${dateView.month}-01`)
-    if (startOfMonth.isSame(currentDayString, 'month')) {
-      displayedJournalDates.add(currentDayString)
-    } else {
-      displayedJournalDates.add(startOfMonth.format('YYYY-MM-DD'))
-    }
-  }
+export default function LedgerGrid(props: LedgerGridProps) {
+  const entries: DisplayableLedgerEntry[] = props.entries
 
   return (
     <Table size="small" sx={{ overflowY: 'scroll' }}>

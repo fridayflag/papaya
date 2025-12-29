@@ -1,7 +1,7 @@
-import z from 'zod'
+import { Avatar } from '@/schema/new/legacy/Avatar'
 import { Document } from '@/schema/support/orm/Document'
-import { Avatar } from '@/schema/models/Avatar'
 import { Mixin } from '@/schema/support/orm/Mixin'
+import z from 'zod'
 
 export const [CreateCategory, Category] = Document.fromSchemas([
   {

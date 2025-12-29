@@ -1,5 +1,5 @@
-import { PapayaMeta } from '@/schema/documents/PapayaMeta'
 import { UserSettings } from '@/schema/models/UserSettings'
+import { PapayaMeta } from '@/schema/new/legacy/PapayaMeta'
 import { generateGenericPapayaUniqueId } from './id'
 
 export const makeDefaultUserSettings = (): UserSettings => {

@@ -1,4 +1,4 @@
-import { Figure } from '@/schema/models/Figure'
+import { Figure } from '@/schema/new/legacy/Figure'
 import { Currency } from '@/schema/support/currency'
 
 export interface FormatCurrencyAmountOptions {

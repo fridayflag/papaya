@@ -1,5 +1,5 @@
-import { PapayaMeta } from '@/schema/documents/PapayaMeta'
 import { UserSettings } from '@/schema/models/UserSettings'
+import { PapayaMeta } from '@/schema/new/legacy/PapayaMeta'
 import { createContext } from 'react'
 
 export interface PapayaContext {

@@ -1,11 +1,11 @@
 import { Document } from '@/schema/support/orm/Document'
 import z from 'zod'
-import { Mixin } from '../support/orm/Mixin'
-import { EntryArtifact } from './EntryArtifact'
-import { Figure } from '../models/Figure'
 import { StatusVariant } from '../models/EntryStatus'
 import { EntryTask } from '../models/EntryTask'
+import { Figure } from '../new/legacy/Figure'
 import { FigureEnumeration } from '../support/figure'
+import { Mixin } from '../support/orm/Mixin'
+import { EntryArtifact } from './EntryArtifact'
 
 // const BaseJournalEntry =
 

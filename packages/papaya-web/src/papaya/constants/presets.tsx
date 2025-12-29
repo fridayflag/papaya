@@ -1,5 +1,5 @@
 import { CreateCategory } from "@/schema/documents/Category";
-import { Avatar } from "@/schema/models/Avatar";
+import { Avatar } from "@/schema/new/legacy/Avatar";
 import { Apartment, CarRental, Home, Pets } from "@mui/icons-material";
 import { ReactNode } from "react";
 

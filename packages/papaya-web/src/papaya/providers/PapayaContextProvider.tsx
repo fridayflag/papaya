@@ -1,8 +1,8 @@
 import { PapayaContext } from '@/contexts/PapayaContext'
 import { updateSettings } from '@/database/actions'
 import { usePapayaMeta } from '@/hooks/queries/usePapayaMeta'
-import { PapayaMeta } from '@/schema/documents/PapayaMeta'
 import { UserSettings } from '@/schema/models/UserSettings'
+import { PapayaMeta } from '@/schema/new/legacy/PapayaMeta'
 import { PropsWithChildren, useState } from 'react'
 
 export default function PapayaContextProvider(props: PropsWithChildren) {

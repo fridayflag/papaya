@@ -1,9 +1,9 @@
+import { Account, CreateAccount } from '@/schema/documents/Account'
+import { Avatar } from '@/schema/new/legacy/Avatar'
 import { Box, FormHelperText, Stack, TextField } from '@mui/material'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import AvatarPicker from '../pickers/AvatarPicker'
-import { Avatar } from '@/schema/models/Avatar'
-import { Account, CreateAccount } from '@/schema/documents/Account'
 
 export default function AccountForm() {
   const { register, setValue, watch } = useFormContext<CreateAccount | Account>()
@@ -31,7 +31,7 @@ export default function AccountForm() {
           fullWidth
           multiline
           rows={3}
-          // helperText=''
+        // helperText=''
         />
         <FormHelperText>
           The description may be used by a language model to categorize your transactions, so be descriptive.
