@@ -2,11 +2,9 @@ import { type TopicSlug } from "@/schema/new/document/TopicSchema"
 import { type AdornedResource } from "@/schema/new/object/AdornedResourceSchema"
 import { type ComputedAmount } from "@/schema/new/object/ComputedAmountSchema"
 import { type DecoratedSlug } from "@/schema/new/object/DecoratedSlug"
+import { sortDatesChronologically } from '@/utils/date'
 import {
-  alpha,
-  Checkbox,
   Chip,
-  Grow,
   TableBody as MuiTableBody,
   TableCell as MuiTableCell,
   TableRow as MuiTableRow,
@@ -17,8 +15,9 @@ import {
   TableRowProps,
   Typography
 } from '@mui/material'
-import clsx from "clsx"
 import dayjs from "dayjs"
+import { useMemo } from 'react'
+import LedgerEntryDate from '../display/LedgerEntryDate'
 
 type DisplayableBadge =
   | 'FLAGGED'
@@ -38,43 +37,21 @@ export interface DisplayableLedgerEntry {
 
 interface JournalTableRowProps extends TableRowProps {
   dateRow?: boolean
-  buttonRow?: boolean
 }
 
-const TableRow = ({ sx, dateRow, selected, buttonRow, ...rest }: JournalTableRowProps) => {
-  const hoverStyles = {
-    '.checkbox': { visibility: 'visible' },
-    '.icon': { visibility: 'hidden' },
-  }
-
+const TableRow = ({ sx, dateRow, ...rest }: JournalTableRowProps) => {
   return (
     <MuiTableRow
-      selected={selected}
-      hover={!dateRow && !buttonRow}
+      hover={!dateRow}
       sx={{
-        '.checkbox': {
-          visibility: 'hidden',
-        },
-        '.icon': {
-          visibility: 'visible',
-          pointerEvents: 'none',
-        },
         '& td': {
-          ...(dateRow || buttonRow
-            ? {
-              cursor: 'default',
-            }
-            : {}),
           ...(dateRow
             ? {
               width: '0%',
+              cursor: 'default',
             }
             : {}),
         },
-        ...(selected ? hoverStyles : {}),
-        '&:hover': hoverStyles,
-        userSelect: 'none',
-        cursor: 'pointer',
         ...sx,
       }}
       {...rest}
@@ -83,43 +60,20 @@ const TableRow = ({ sx, dateRow, selected, buttonRow, ...rest }: JournalTableRow
 }
 
 interface JournalTableCellProps extends Omit<TableCellProps, 'colSpan'> {
-  selectCheckbox?: boolean
   colSpan?: string | number
 }
 
 const TableCell = (props: JournalTableCellProps) => {
-  const { sx, className, colSpan, selectCheckbox, ...rest } = props
+  const { sx, colSpan, ...rest } = props
 
   return (
     <MuiTableCell
       {...rest}
       colSpan={colSpan as number}
-      className={clsx(className, {
-        '--selectCheckbox': selectCheckbox,
-      })}
       sx={{
         border: 0,
         alignItems: 'center',
         px: 1,
-        '&.--selectCheckbox': {
-          borderTopLeftRadius: '64px',
-          borderBottomLeftRadius: '64px',
-          overflow: 'hidden',
-          position: 'relative',
-
-          '&::after': {
-            position: 'absolute',
-            inset: 0,
-            borderBottomWidth: '1px',
-            borderBottomStyle: 'solid',
-            borderImage: `linear-gradient(
-							to right,
-							rgba(0,0,0,0),
-							red
-						) 1 100%
-						`,
-          },
-        },
         ...sx,
       }}
     />
@@ -153,175 +107,87 @@ interface LedgerGridProps {
   entries: DisplayableLedgerEntry[]
 }
 
+const formatAmount = (amount: ComputedAmount): string => {
+  const symbol = amount.currency === 'CAD' ? 'C$' : '$'
+  const value = Math.abs(amount.value)
+  const formatted = value.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  const sign = amount.value >= 0 ? '+' : '-'
+  return `${sign}${symbol}${formatted}`
+}
+
 export default function LedgerGrid(props: LedgerGridProps) {
-  const entries: DisplayableLedgerEntry[] = props.entries
+  const entriesByDate = useMemo(() => {
+    const grouped: Record<string, DisplayableLedgerEntry[]> = {}
+
+    for (const entry of props.entries) {
+      const dateKey = entry.date.format('YYYY-MM-DD')
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = []
+      }
+      grouped[dateKey].push(entry)
+    }
+
+    // Sort entries within each date group (if needed)
+    for (const dateKey in grouped) {
+      grouped[dateKey].sort((a, b) => {
+        // Sort by date first, then by memo
+        const dateCompare = a.date.valueOf() - b.date.valueOf()
+        if (dateCompare !== 0) return dateCompare
+        return a.memo.localeCompare(b.memo)
+      })
+    }
+
+    return grouped
+  }, [props.entries])
+
+  const sortedDates = useMemo(() => {
+    return sortDatesChronologically(...Object.keys(entriesByDate))
+  }, [entriesByDate])
 
   return (
     <Table size="small" sx={{ overflowY: 'scroll' }}>
-      {sortDatesChronologically(...displayedJournalDates).map((date: string) => {
-        const entries = props.journalRecordGroups[date] ?? []
+      {sortedDates.map((date: string) => {
+        const entries = entriesByDate[date] ?? []
         const day = dayjs(date)
         const isToday = day.isSame(dayjs(), 'day')
-        const showQuckEditor = isToday || !entries.length
 
         return (
           <TableBody key={date}>
             <TableRow
               dateRow
               sx={{
-                verticalAlign: entries.length + (showQuckEditor ? 1 : 0) > 1 ? 'top' : undefined,
+                verticalAlign: entries.length > 1 ? 'top' : undefined,
               }}>
-              <TableCell rowSpan={entries.length + (showQuckEditor ? 2 : 1)}>
-                <JournalEntryDate
+              <TableCell rowSpan={entries.length + 1}>
+                <LedgerEntryDate
                   day={day}
                   isToday={isToday}
-                  onClick={() => {
-                    openEntryEditModalForCreate({
-                      date: day.format('YYYY-MM-DD'),
-                    })
-                  }}
                 />
               </TableCell>
             </TableRow>
 
-            {entries.map((entry: JournalEntry) => {
-              const { sourceAccountId } = entry
-              let destinationAccountId: string | undefined = undefined
-              if (entry.transfer) {
-                destinationAccountId = entry.transfer.destAccountId
-              }
-              const sourceAccount: Account | undefined = sourceAccountId
-                ? getAccountsQuery.data[sourceAccountId]
-                : undefined
-
-              const destinationAccount: Account | undefined = destinationAccountId
-                ? getAccountsQuery.data[destinationAccountId]
-                : undefined
-
-              const { categoryId } = entry
-              const category: Category | undefined = categoryId ? getCategoriesQuery.data[categoryId] : undefined
-
-              const netFigure: Figure | undefined = entry.$derived?.net?.['CAD']
-
-              const hasTags = journalEntryHasTags(entry)
-              const childHasTags = (entry as JournalEntry).children?.some((child) =>
-                journalEntryHasTasks(child as JournalEntry),
-              )
-
-              // Reserved Tags
-              const { parent: parentReservedTags, children: childReservedTags } = enumerateJournalEntryStatuses(entry)
-
-              const isFlagged = parentReservedTags.has(StatusVariant.enum.FLAGGED)
-              const isApproximate = parentReservedTags.has(StatusVariant.enum.APPROXIMATE)
-              const isPending = parentReservedTags.has(StatusVariant.enum.PENDING)
-
-              const childIsFlagged = childReservedTags.has(StatusVariant.enum.FLAGGED)
-              const childIsApproximate = childReservedTags.has(StatusVariant.enum.APPROXIMATE)
-              const childIsPending = childReservedTags.has(StatusVariant.enum.PENDING)
-
-              const hasTasks = journalEntryHasTasks(entry)
-              const tasks: EntryTask[] = entry.tasks ?? []
-              const numCompletedTasks: number = hasTasks
-                ? tasks.filter((task: EntryTask) => task.completedAt).length
-                : 0
-              const taskProgressString =
-                Math.max(numCompletedTasks, tasks.length) > 9 ? '9+' : `${numCompletedTasks}/${tasks.length}`
-              const taskProgressPercentage = Math.round(100 * (numCompletedTasks / Math.max(tasks.length, 1)))
-
-              const rowIsSelected: boolean = journalEntrySelectionState[entry._id] ?? false
+            {entries.map((entry, index) => {
               return (
-                <TableRow
-                  key={entry._id}
-                  onClick={(event) => props.onClickListItem(event, entry)}
-                  onDoubleClick={(event) => props.onDoubleClickListItem(event, entry)}
-                  selected={rowIsSelected}
-                  sx={{ opacity: undefined, overflow: 'visible' }}>
-                  <TableCell
-                    selectCheckbox
-                    sx={{
-                      width: '0%',
-                      position: 'relative',
-                    }}>
-                    <Checkbox
-                      className="checkbox"
-                      sx={{ m: -1 }}
-                      checked={rowIsSelected}
-                      onChange={() => toggleJournalEntrySelectionState(entry._id)}
-                      onClick={(event) => event.stopPropagation()}
-                    />
-                    <AvatarIcon
-                      className="icon"
-                      avatar={category?.avatar}
-                      sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                    />
+                <TableRow key={`${date}-${index}-${entry.memo}`}>
+                  <TableCell sx={{ width: '30%' }}>
+                    <Typography>{entry.memo}</Typography>
                   </TableCell>
-                  <TableCell sx={{ width: '20%' }}>
-                    <Typography sx={{ ml: -0.5 }}>{entry.memo || PLACEHOLDER_UNNAMED_JOURNAL_ENTRY_MEMO}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ width: '20%' }}>
-                    {sourceAccount && <AvatarChip icon avatar={sourceAccount.avatar} label={sourceAccount.label} />}
-                    {sourceAccount && destinationAccount && <Typography component="span">&rarr;</Typography>}
-                    {destinationAccount && (
-                      <AvatarChip icon avatar={destinationAccount.avatar} label={destinationAccount.label} />
-                    )}
-                    {hasTasks && taskProgressPercentage < 100 && (
-                      <Stack alignItems="center" sx={{ my: -2 }}>
-                        <CircularProgressWithLabel value={taskProgressPercentage}>
-                          {taskProgressString}
-                        </CircularProgressWithLabel>
-                      </Stack>
-                    )}
-                  </TableCell>
-                  <TableCell sx={{ width: '0%' }}>
-                    <Stack direction="row">
-                      <Grow in={isFlagged || childIsFlagged}>
-                        <Flag sx={{ display: 'block' }} />
-                      </Grow>
-                      <Grow in={hasTags || childHasTags}>
-                        <LocalOffer sx={{ display: 'block' }} />
-                      </Grow>
-                      <Grow in={isApproximate || childIsApproximate}>
-                        <Update sx={{ display: 'block' }} />
-                      </Grow>
-                      <Grow in={isPending || childIsPending}>
-                        <Pending sx={{ display: 'block' }} />
-                      </Grow>
-                    </Stack>
-                  </TableCell>
-                  <TableCell align="right" sx={{ width: '10%' }}>
-                    <Typography sx={{ ...getPriceStyle(netFigure?.amount ?? 0, isApproximate) }}>
-                      {getFigureString(netFigure, { isApproximate })}
-                    </Typography>
+                  <TableCell align="right" sx={{ width: '15%' }}>
+                    <Typography>{formatAmount(entry.netAmount)}</Typography>
                   </TableCell>
                   <TableCell>
-                    {category ? (
-                      <AvatarChip avatar={category.avatar} label={category.label} />
-                    ) : (
-                      <Chip
-                        sx={(theme) => ({
-                          backgroundColor: alpha(theme.palette.grey[400], 0.125),
-                        })}
-                        size="small"
-                        label="Uncategorized"
-                      />
-                    )}
+                    <Stack direction="row" spacing={0.5} flexWrap="wrap" gap={0.5}>
+                      {entry.topics.map((topic) => (
+                        <Chip key={topic} label={topic} size="small" />
+                      ))}
+                    </Stack>
                   </TableCell>
                 </TableRow>
               )
             })}
-
-            {showQuckEditor && (
-              <TableRow buttonRow>
-                <TableCell colSpan="100%">
-                  <QuickJournalEditor onAdd={isSmall ? () => { } : undefined} />
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         )
       })}

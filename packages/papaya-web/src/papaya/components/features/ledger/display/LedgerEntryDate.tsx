@@ -8,7 +8,7 @@ interface LedgerEntryDateProps {
 }
 
 
-const LedgerEntryDate = (props: LedgerEntryDateProps) => {
+export default function LedgerEntryDate(props: LedgerEntryDateProps) {
   const { day, isToday, onClick } = props
   // const theme = useTheme();
   // const isSmall = useMediaQuery(theme.breakpoints.down('sm'));

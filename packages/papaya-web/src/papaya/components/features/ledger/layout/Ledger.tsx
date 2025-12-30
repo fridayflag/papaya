@@ -40,7 +40,37 @@ const SAMPLE_DATA: DisplayableLedgerEntry[] = [
       value: 300,
       currency: 'CAD',
     },
+    memo: 'Sample memo 4',
+    topics: ['#sample-topic-3'],
+    accounts: {
+      source: {
+        label: 'Sample source 3',
+      },
+    },
+    badges: [],
+  },
+  {
+    date: dayjs('2025-01-03'),
+    netAmount: {
+      value: 300,
+      currency: 'CAD',
+    },
     memo: 'Sample memo 3',
+    topics: ['#sample-topic-3'],
+    accounts: {
+      source: {
+        label: 'Sample source 3',
+      },
+    },
+    badges: [],
+  },
+  {
+    date: dayjs('2025-01-01'),
+    netAmount: {
+      value: -300,
+      currency: 'CAD',
+    },
+    memo: 'Sample memo 5',
     topics: ['#sample-topic-3'],
     accounts: {
       source: {
@@ -51,11 +81,7 @@ const SAMPLE_DATA: DisplayableLedgerEntry[] = [
   },
 ]
 
-interface LedgerProps {
-
-}
-
-export default function Ledger(props: LedgerProps) {
+export default function Ledger() {
   const entries: DisplayableLedgerEntry[] = SAMPLE_DATA
 
   return (
