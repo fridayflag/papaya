@@ -1,6 +1,6 @@
 import z from "zod";
+import { RelationTypeSchema } from "../../relation";
 import { PapayaGenericResourceIdentifierSchema } from "../other/PapayaGenericResourceIdentifierSchema";
-import { RelationTypeSchema } from "../other/RelationSchema";
 import { makeStemSchema } from "../schema-utils";
 
 
