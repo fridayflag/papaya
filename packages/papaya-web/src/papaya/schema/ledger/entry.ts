@@ -2,8 +2,8 @@ import { z } from "zod";
 export const EntrySchema = makeDocumentSchema('papaya:entry', {
   memo: z.string(),
   date: z.iso.date(),
-  time: z.iso.time(),
-  journalId: JournalPrnSchema,
+  time: z.iso.time().nullish(),
+
   sourceAccount: z.templateLiteral(['&', z.string()]).nullable(),
   amount: EditableAmountSchema,
   '@derived': z.object({

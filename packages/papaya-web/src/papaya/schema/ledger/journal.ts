@@ -1,5 +1,15 @@
 import z from "zod";
-import { makeDocumentSchema } from "../schema-utils";
+
+export const TopicSlugSchema = z.templateLiteral(['#', z.string()]);
+
+export type TopicSlug = z.infer<typeof TopicSlugSchema>;
+
+export const AccountSlugSchema = z.templateLiteral(['&', z.string()]);
+
+export type AccountSlug = z.infer<typeof AccountSlugSchema>;
+
+export const PersonSlugSchema = z.templateLiteral(['@', z.string()]);
+export type PersonSlug = z.infer<typeof PersonSlugSchema>;
 
 export const JournalSchema = makeDocumentSchema('papaya:journal', {
   name: z.string(),
@@ -10,19 +20,16 @@ export const JournalSchema = makeDocumentSchema('papaya:journal', {
 export type Journal = z.infer<typeof JournalSchema>;
 
 
+export const AccountSchema = makeDocumentSchema('papaya:account', {
+  name: z.string(),
+  slug: AccountSlugSchema,
+});
+export type Account = z.infer<typeof AccountSchema>;
+
+
 export const PersonSchema = makeDocumentSchema('papaya:person', {
   name: z.string(),
-  handle: z.templateLiteral(['@', z.string()]),
+  slug: PersonSlugSchema,
 });
 export type Person = z.infer<typeof PersonSchema>;
 
-
-export const TopicSlugSchema = z.templateLiteral(['#', z.string()]);
-
-export type TopicSlug = z.infer<typeof TopicSlugSchema>;
-
-export const TopicSchema = makeDocumentSchema('papaya:topic', {
-  name: z.string(),
-  slug: TopicSlugSchema,
-});
-export type Topic = z.infer<typeof TopicSchema>;
