@@ -7,47 +7,68 @@ import {
   JournalNamespaceSchema,
   NoteStemNamespaceSchema,
   ObligationStemNamespaceSchema,
+  PapayaResourceNamespace,
   PersonNamespaceSchema,
-  PictogramNamespaceSchema,
   RecurrenceStemNamespaceSchema,
   RelationNamespaceSchema,
   SubEntryNamespaceSchema,
   TaskListStemNamespaceSchema,
-  TaskNamespaceSchema,
-  type PapayaResourceNamespace,
+  TaskNamespaceSchema
 } from "./namespace";
 
+export const JournalUrnSchema = z.templateLiteral([JournalNamespaceSchema, ':', z.uuid()]);
+export type JournalUrn = z.infer<typeof JournalUrnSchema>;
 
-export const JournalUrn = z.templateLiteral([JournalNamespaceSchema, ':', z.uuid()]);
-export const EntryUrn = z.templateLiteral([EntryNamespaceSchema, ':', z.uuid()]);
-export const PictogramUrn = z.templateLiteral([PictogramNamespaceSchema, ':', z.uuid()]);
-export const PersonUrn = z.templateLiteral([PersonNamespaceSchema, ':', z.uuid()]);
-export const TaskUrn = z.templateLiteral([TaskNamespaceSchema, ':', z.uuid()]);
-export const SubEntryUrn = z.templateLiteral([SubEntryNamespaceSchema, ':', z.uuid()]);
-export const RelationUrn = z.templateLiteral([RelationNamespaceSchema, ':', z.uuid()]);
-export const AttachmentStemUrn = z.templateLiteral([AttachmentStemNamespaceSchema, ':', z.uuid()]);
-export const FlagStemUrn = z.templateLiteral([FlagStemNamespaceSchema, ':', z.uuid()]);
-export const GratuityStemUrn = z.templateLiteral([GratuityStemNamespaceSchema, ':', z.uuid()]);
-export const NoteStemUrn = z.templateLiteral([NoteStemNamespaceSchema, ':', z.uuid()]);
-export const ObligationStemUrn = z.templateLiteral([ObligationStemNamespaceSchema, ':', z.uuid()]);
-export const RecurrenceStemUrn = z.templateLiteral([RecurrenceStemNamespaceSchema, ':', z.uuid()]);
-export const TaskListStemUrn = z.templateLiteral([TaskListStemNamespaceSchema, ':', z.uuid()]);
+export const EntryUrnSchema = z.templateLiteral([EntryNamespaceSchema, ':', z.uuid()]);
+export type EntryUrn = z.infer<typeof EntryUrnSchema>;
 
-export const PapayaUrn = z.union(Object.values({
-  'papaya:journal': JournalUrn,
-  'papaya:journal:pictogram': PictogramUrn,
-  'papaya:journal:entry': EntryUrn,
-  'papaya:journal:entry:subentry': SubEntryUrn,
-  'papaya:journal:person': PersonUrn,
-  'papaya:journal:task': TaskUrn,
-  'papaya:journal:stem:relation': RelationUrn,
-  'papaya:journal:stem:attachment': AttachmentStemUrn,
-  'papaya:journal:stem:flag': FlagStemUrn,
-  'papaya:journal:stem:gratuity': GratuityStemUrn,
-  'papaya:journal:stem:note': NoteStemUrn,
-  'papaya:journal:stem:obligation': ObligationStemUrn,
-  'papaya:journal:stem:recurrence': RecurrenceStemUrn,
-  'papaya:journal:stem:tasklist': TaskListStemUrn,
+export const PersonUrnSchema = z.templateLiteral([PersonNamespaceSchema, ':', z.uuid()]);
+export type PersonUrn = z.infer<typeof PersonUrnSchema>;
+
+export const TaskUrnSchema = z.templateLiteral([TaskNamespaceSchema, ':', z.uuid()]);
+export type TaskUrn = z.infer<typeof TaskUrnSchema>;
+
+export const SubEntryUrnSchema = z.templateLiteral([SubEntryNamespaceSchema, ':', z.uuid()]);
+export type SubEntryUrn = z.infer<typeof SubEntryUrnSchema>;
+
+export const RelationUrnSchema = z.templateLiteral([RelationNamespaceSchema, ':', z.uuid()]);
+export type RelationUrn = z.infer<typeof RelationUrnSchema>;
+
+export const AttachmentStemUrnSchema = z.templateLiteral([AttachmentStemNamespaceSchema, ':', z.uuid()]);
+export type AttachmentStemUrn = z.infer<typeof AttachmentStemUrnSchema>;
+
+export const FlagStemUrnSchema = z.templateLiteral([FlagStemNamespaceSchema, ':', z.uuid()]);
+export type FlagStemUrn = z.infer<typeof FlagStemUrnSchema>;
+
+export const GratuityStemUrnSchema = z.templateLiteral([GratuityStemNamespaceSchema, ':', z.uuid()]);
+export type GratuityStemUrn = z.infer<typeof GratuityStemUrnSchema>;
+
+export const NoteStemUrnSchema = z.templateLiteral([NoteStemNamespaceSchema, ':', z.uuid()]);
+export type NoteStemUrn = z.infer<typeof NoteStemUrnSchema>;
+
+export const ObligationStemUrnSchema = z.templateLiteral([ObligationStemNamespaceSchema, ':', z.uuid()]);
+export type ObligationStemUrn = z.infer<typeof ObligationStemUrnSchema>;
+
+export const RecurrenceStemUrnSchema = z.templateLiteral([RecurrenceStemNamespaceSchema, ':', z.uuid()]);
+export type RecurrenceStemUrn = z.infer<typeof RecurrenceStemUrnSchema>;
+
+export const TaskListStemUrnSchema = z.templateLiteral([TaskListStemNamespaceSchema, ':', z.uuid()]);
+export type TaskListStemUrn = z.infer<typeof TaskListStemUrnSchema>;
+
+export const PapayaUrnSchema = z.union(Object.values({
+  'papaya:resource:task': TaskUrnSchema,
+  'papaya:resource:subentry': SubEntryUrnSchema,
+  'papaya:resource:stem:relation': RelationUrnSchema,
+  'papaya:resource:stem:attachment': AttachmentStemUrnSchema,
+  'papaya:resource:stem:flag': FlagStemUrnSchema,
+  'papaya:resource:stem:gratuity': GratuityStemUrnSchema,
+  'papaya:resource:stem:note': NoteStemUrnSchema,
+  'papaya:resource:stem:obligation': ObligationStemUrnSchema,
+  'papaya:resource:stem:recurrence': RecurrenceStemUrnSchema,
+  'papaya:resource:stem:tasklist': TaskListStemUrnSchema,
+  'papaya:document:journal': JournalUrnSchema,
+  'papaya:document:person': PersonUrnSchema,
+  'papaya:document:entry': EntryUrnSchema,
 } as const satisfies Record<PapayaResourceNamespace, z.ZodTemplateLiteral<`${PapayaResourceNamespace}:${string}`>>));
 
-export type PapayaUrn = z.infer<typeof PapayaUrn>;
+export type PapayaUrn = z.infer<typeof PapayaUrnSchema>;

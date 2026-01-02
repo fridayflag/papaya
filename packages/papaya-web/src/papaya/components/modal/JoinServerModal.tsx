@@ -1,7 +1,7 @@
 import { NotificationsContext } from "@/contexts/NotificationsContext";
-import { PapayaContext } from "@/contexts/PapayaContext";
+import { PapayaContext } from "@/contexts/PapayaConfigContext";
 import { useDebounce } from "@/hooks/useDebounce";
-import { ServerSyncStrategy } from "@/schema/database/syncing";
+import { ServerSyncStrategy } from "@/schema/application/syncing";
 import { PapayaServer } from "@/schema/models/PapayaServer";
 import { usernameToDbName } from "@/utils/database";
 import { parseServerUrl } from "@/utils/server";

@@ -1,4 +1,4 @@
-import { Pictogram, PictogramVariant } from '@/schema/journal/resource/display'
+import { Pictogram } from '@/schema/journal/entity/pictogram'
 import { Icon, SxProps, Theme } from '@mui/material'
 import { ImagePictogram } from '../input/picker/ImagePictogramPicker'
 import { DEFAULT_PICTOGRAM } from '../input/picker/PictogramPicker'

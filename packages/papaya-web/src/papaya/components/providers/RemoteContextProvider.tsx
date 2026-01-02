@@ -1,7 +1,7 @@
 import { AuthStatusEnum, OnlineStatusEnum, RemoteContext, SyncErrorEnum, SyncStatusEnum } from '@/contexts/RemoteContext'
 import { getDatabaseClient } from '@/database/client'
 import { usePapayaMeta } from '@/hooks/queries/usePapayaMeta'
-import { ServerSyncStrategy } from '@/schema/database/syncing'
+import { ServerSyncStrategy } from '@/schema/application/syncing'
 import { UserSettings } from '@/schema/models/UserSettings'
 import { getSyncStrategy } from '@/utils/server'
 import { getSyncInidication, SyncIndication } from '@/utils/syncing'

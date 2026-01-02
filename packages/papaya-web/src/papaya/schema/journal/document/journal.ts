@@ -1,17 +1,17 @@
-import { createDocumentSchema } from "@/schema/support/template";
+import { createPapayaDocumentSchema } from "@/schema/support/template";
 import z from "zod";
-import { PictogramSchema } from "../resource/display";
-import { PersonSlugSchema } from "../resource/string";
+import { PictogramSchema } from "../entity/pictogram";
+import { PersonSlugSchema } from "../string";
 
-export const JournalSchema = createDocumentSchema('papaya:journal', {
+export const JournalSchema = createPapayaDocumentSchema('papaya:document:journal', {
   name: z.string(),
   notes: z.string(),
-  lastOpenedAt: z.iso.datetime(),
+  lastOpenedAt: z.iso.datetime().nullable(),
   createdAt: z.iso.datetime(),
 });
 export type Journal = z.infer<typeof JournalSchema>;
 
-export const PersonSchema = createDocumentSchema('papaya:journal:person', {
+export const PersonSchema = createPapayaDocumentSchema('papaya:document:person', {
   name: z.string(),
   icon: PictogramSchema.nullish(),
   slug: PersonSlugSchema,

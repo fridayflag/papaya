@@ -1,13 +1,11 @@
-export const PAPAYA_RESOURCE_NAMESPACES = {
+export const PAPAYA_ENTITY_NAMESPACE = {
   papaya: {
-    journal: {
+    entity: {
+      usersettings: {},
       pictogram: {},
-      person: {},
-      task: {},
-      entry: {
-        subentry: {},
-        '$': {},
-      },
+      figure: {},
+    },
+    resource: {
       stem: {
         relation: {},
         attachment: {},
@@ -18,7 +16,13 @@ export const PAPAYA_RESOURCE_NAMESPACES = {
         recurrence: {},
         tasklist: {},
       },
-      '$': {},
-    }
+      task: {},
+      subentry: {},
+    },
+    document: {
+      journal: {},
+      person: {},
+      entry: {},
+    },
   }
 } as const;

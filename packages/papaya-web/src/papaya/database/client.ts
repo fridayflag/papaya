@@ -9,6 +9,18 @@ let db: PouchDB.Database | null = null
 
 export const initializeDatabaseClient = () => {
   db = new PouchDB(POUCH_DB_NAME)
+
+  db.createIndex({
+    index: {
+      fields: [
+        'urn',
+        'date',
+        'children',
+        'journalId',
+      ],
+    },
+  })
+
   return db
 }
 

@@ -1,8 +1,9 @@
+import { JournalUrn } from '@/schema/support/urn'
 import { createContext } from 'react'
 
 export interface JournalContext {
-  activeJournalId: string | null
-  setActiveJournalId: (journalId: string | null) => void
+  activeJournalId: JournalUrn | null
+  setActiveJournalId: (journalId: JournalUrn | null) => void
 }
 
 export const JournalContext = createContext<JournalContext>({} as JournalContext)

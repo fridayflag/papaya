@@ -1,4 +1,4 @@
-import { Pictogram, PictogramVariant } from '@/schema/journal/resource/display'
+import { Pictogram } from '@/schema/journal/entity/pictogram'
 import { createImagePictogram, getPaletteColors } from '@/utils/image'
 import { AddPhotoAlternate, RemoveCircle } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'

@@ -1,10 +1,10 @@
 import { StemNamespace } from "@/schema/support/namespace";
 import { createPapayaResourceSchema } from "@/schema/support/template";
-import { PapayaUrn } from "@/schema/support/urn";
+import { PapayaUrnSchema } from "@/schema/support/urn";
 import z from "zod";
 import { RelationTypeSchema } from "../../relation";
-import { FigureSchema } from "./money";
-import { PersonSlugSchema } from "./string";
+import { FigureSchema } from "../entity/figure";
+import { PersonSlugSchema } from "../string";
 import { TaskSchema } from "./workflows";
 
 export const AttachmentStemSchema = createPapayaResourceSchema(
@@ -74,7 +74,7 @@ export type RecurrenceStem = z.infer<typeof RecurrenceStemSchema>;
 export const RelationStemSchema = createPapayaResourceSchema(
   'papaya:journal:stem:relation' satisfies `papaya:journal:stem:${string}`,
   {
-    relatesTo: PapayaUrn,
+    relatesTo: PapayaUrnSchema,
     relation: RelationTypeSchema,
   }
 );

@@ -1,4 +1,4 @@
-import { Pictogram, PictogramVariant } from '@/schema/journal/resource/display'
+import { Pictogram } from '@/schema/journal/entity/pictogram'
 import { Box, colors, Fade, Icon, Popover, Select, Tab, Tabs } from '@mui/material'
 import { useState } from 'react'
 import IconPicker from './IconPicker'
