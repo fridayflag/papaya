@@ -1,5 +1,5 @@
 import { AuthStatusEnum, OnlineStatusEnum, SyncStatusEnum } from "@/contexts/RemoteContext"
-import { SyncStrategy } from "@/schema/support/syncing"
+import { SyncStrategy } from "@/schema/database/syncing"
 import { Link } from "@mui/material"
 import { ReactNode } from "react"
 

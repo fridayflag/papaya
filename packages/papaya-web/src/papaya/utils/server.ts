@@ -1,5 +1,5 @@
+import { SyncStrategy } from "@/schema/database/syncing"
 import { UserSettings } from "@/schema/models/UserSettings"
-import { SyncStrategy } from "@/schema/support/syncing"
 
 export const isValidUrl = (url: string): boolean => {
   try {

@@ -1,8 +1,8 @@
 import { NotificationsContext } from "@/contexts/NotificationsContext";
 import { PapayaContext } from "@/contexts/PapayaContext";
 import { useDebounce } from "@/hooks/useDebounce";
+import { ServerSyncStrategy } from "@/schema/database/syncing";
 import { PapayaServer } from "@/schema/models/PapayaServer";
-import { ServerSyncStrategy } from "@/schema/support/syncing";
 import { usernameToDbName } from "@/utils/database";
 import { parseServerUrl } from "@/utils/server";
 import { LeakAdd } from "@mui/icons-material";
