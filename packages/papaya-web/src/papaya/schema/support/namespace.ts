@@ -46,16 +46,17 @@ type Namespaced<
 
 type _PapayaResourceNamespace = Namespaced<typeof PAPAYA_RESOURCE_NAMESPACES>;
 
+type _StemNamespace = Namespaced<typeof PAPAYA_RESOURCE_NAMESPACES['papaya']['journal']['stem'], 'papaya:journal:stem'>;
+
 export const JournalNamespaceSchema = z.literal('papaya:journal');
 export const EntryNamespaceSchema = z.literal('papaya:journal:entry');
 export const SubEntryNamespaceSchema = z.literal('papaya:journal:entry:subentry');
 export const PictogramNamespaceSchema = z.literal('papaya:journal:pictogram');
-export const RelationNamespaceSchema = z.literal('papaya:journal:relation');
 export const PersonNamespaceSchema = z.literal('papaya:journal:person');
-export const TopicSetStemNamespaceSchema = z.literal('papaya:journal:stem:topiclist');
+export const TaskNamespaceSchema = z.literal('papaya:journal:task');
+export const RelationNamespaceSchema = z.literal('papaya:journal:stem:relation');
 export const AttachmentStemNamespaceSchema = z.literal('papaya:journal:stem:attachment');
 export const FlagStemNamespaceSchema = z.literal('papaya:journal:stem:flag');
-export const ForkStemNamespaceSchema = z.literal('papaya:journal:stem:fork');
 export const GratuityStemNamespaceSchema = z.literal('papaya:journal:stem:gratuity');
 export const NoteStemNamespaceSchema = z.literal('papaya:journal:stem:note');
 export const ObligationStemNamespaceSchema = z.literal('papaya:journal:stem:obligation');
@@ -67,17 +68,31 @@ export const PapayaResourceNamespaceSchema = z.union(Object.values({
   'papaya:journal:pictogram': PictogramNamespaceSchema,
   'papaya:journal:entry': EntryNamespaceSchema,
   'papaya:journal:entry:subentry': SubEntryNamespaceSchema,
-  'papaya:journal:relation': RelationNamespaceSchema,
   'papaya:journal:person': PersonNamespaceSchema,
-  'papaya:journal:stem:topiclist': TopicSetStemNamespaceSchema,
+  'papaya:journal:task': TaskNamespaceSchema,
+  'papaya:journal:stem:relation': RelationNamespaceSchema,
   'papaya:journal:stem:attachment': AttachmentStemNamespaceSchema,
   'papaya:journal:stem:flag': FlagStemNamespaceSchema,
-  'papaya:journal:stem:fork': ForkStemNamespaceSchema,
   'papaya:journal:stem:gratuity': GratuityStemNamespaceSchema,
   'papaya:journal:stem:note': NoteStemNamespaceSchema,
   'papaya:journal:stem:obligation': ObligationStemNamespaceSchema,
   'papaya:journal:stem:recurrence': RecurrenceStemNamespaceSchema,
   'papaya:journal:stem:tasklist': TaskListStemNamespaceSchema,
 } as const satisfies Record<_PapayaResourceNamespace, z.ZodLiteral<_PapayaResourceNamespace>>));
-
 export type PapayaResourceNamespace = z.infer<typeof PapayaResourceNamespaceSchema>;
+
+export const StemNamespaceSchema = z.union(
+  Object.values(
+    {
+      'papaya:journal:stem:relation': RelationNamespaceSchema,
+      'papaya:journal:stem:attachment': AttachmentStemNamespaceSchema,
+      'papaya:journal:stem:flag': FlagStemNamespaceSchema,
+      'papaya:journal:stem:gratuity': GratuityStemNamespaceSchema,
+      'papaya:journal:stem:note': NoteStemNamespaceSchema,
+      'papaya:journal:stem:obligation': ObligationStemNamespaceSchema,
+      'papaya:journal:stem:recurrence': RecurrenceStemNamespaceSchema,
+      'papaya:journal:stem:tasklist': TaskListStemNamespaceSchema,
+    } as const satisfies Record<_StemNamespace, z.ZodLiteral<_StemNamespace>>
+  )
+) satisfies z.ZodUnion<z.ZodLiteral<_PapayaResourceNamespace>[]>
+export type StemNamespace = z.infer<typeof StemNamespaceSchema>;

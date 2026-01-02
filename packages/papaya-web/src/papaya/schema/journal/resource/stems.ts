@@ -1,14 +1,22 @@
+import { StemNamespace } from "@/schema/support/namespace";
+import { createPapayaResourceSchema } from "@/schema/support/template";
+import { PapayaUrn } from "@/schema/support/urn";
 import z from "zod";
-import { makeStemSchema } from "../schema-utils";
+import { RelationTypeSchema } from "../../relation";
+import { FigureSchema } from "./money";
+import { PersonSlugSchema } from "./string";
+import { TaskSchema } from "./workflows";
 
-export const AttachmentStemSchema = makeStemSchema('papaya:stem:attachment', {
-  originalFileName: z.string(),
-  contentType: z.string(),
-  size: z.number(),
-  description: z.string(),
-});
+export const AttachmentStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:attachment' satisfies `papaya:journal:stem:${string}`,
+  {
+    originalFileName: z.string(),
+    contentType: z.string(),
+    size: z.number(),
+    description: z.string(),
+  }
+);
 export type AttachmentStem = z.infer<typeof AttachmentStemSchema>;
-
 
 const FlagTypeSchema = z.enum([
   'IMPORTANT',
@@ -16,94 +24,78 @@ const FlagTypeSchema = z.enum([
   'REVIEWED',
 ]);
 
-export const FlagStemSchema = makeStemSchema('papaya:stem:flag', {
-  flags: z.record(FlagTypeSchema, z.boolean()),
-});
+export const FlagStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:flag' satisfies `papaya:journal:stem:${string}`,
+  {
+    flags: z.record(FlagTypeSchema, z.boolean()),
+  }
+);
 export type FlagStem = z.infer<typeof FlagStemSchema>;
 
-
-// Define EntrySchema type separately to avoid circular dependency
-type EntrySchemaType = z.ZodType<any>;
-
-export const ForkStemSchema = makeStemSchema('papaya:stem:fork', {
-  subentries: z.any(),
-});
-export type ForkStem = z.infer<typeof ForkStemSchema>;
-
-import { EditableAmountSchema } from "../object/EditableAmountSchema";
-
-
-export const GratuityStemSchema = makeStemSchema('papaya:stem:gratuity', {
-  '@ephemeral': z.object({
-    value: z.string(),
-  }).partial().optional(),
-  '@derived': z.object({
-    amount: EditableAmountSchema,
+export const GratuityStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:gratuity' satisfies `papaya:journal:stem:${string}`,
+  {
+    amount: FigureSchema,
     asPercentage: z.number(),
-  }),
-});
+  }
+)
 export type GratuityStem = z.infer<typeof GratuityStemSchema>;
 
-export const NoteStemSchema = makeStemSchema('papaya:stem:note', {
-  content: z.string(),
-});
+export const NoteStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:note' satisfies `papaya:journal:stem:${string}`,
+  {
+    content: z.string(),
+  }
+);
 export type NoteStem = z.infer<typeof NoteStemSchema>;
 
 
 
-export const ObligationStemSchema = makeStemSchema('papaya:stem:obligation', {
-  variant: z.enum(['DEBT', 'PAYABLE']),
-  party: PersonSlugSchema,
-});
+export const ObligationStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:obligation' satisfies `papaya:journal:stem:${string}`,
+  {
+    variant: z.enum(['DEBT', 'PAYABLE']),
+    party: PersonSlugSchema,
+  }
+);
 export type ObligationStem = z.infer<typeof ObligationStemSchema>;
 
 
 
-export const RecurrenceStemSchema = makeStemSchema('papaya:stem:recurrence', {
-  iCalRruleString: z.string(),
-});
+export const RecurrenceStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:recurrence' satisfies `papaya:journal:stem:${string}`,
+  {
+    iCalRruleString: z.string(),
+  }
+);
 export type RecurrenceStem = z.infer<typeof RecurrenceStemSchema>;
 
-import { RelationTypeSchema } from "../../relation";
 
-export const RelationStemSchema = makeStemSchema('papaya:stem:relation', {
-  relatesTo: PapayaUrn,
-  relation: RelationTypeSchema,
-});
-
+export const RelationStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:relation' satisfies `papaya:journal:stem:${string}`,
+  {
+    relatesTo: PapayaUrn,
+    relation: RelationTypeSchema,
+  }
+);
 export type RelationStem = z.infer<typeof RelationStemSchema>;
 
-import { PapayaUrn } from "@/schema/support/urn";
-import { PersonSlugSchema } from "../document/journal";
-import { makeResourceSchema } from "../schema-utils";
-
-export const TaskSchema = makeResourceSchema('papaya:task', {
-  memo: z.string(),
-  completedAt: z.iso.date().nullable(),
-});
-
-export const TaskListStemSchema = makeStemSchema('papaya:stem:tasklist', {
-  tasks: z.array(TaskSchema),
-});
+export const TaskListStemSchema = createPapayaResourceSchema(
+  'papaya:journal:stem:tasklist' satisfies `papaya:journal:stem:${string}`,
+  {
+    tasks: z.array(TaskSchema),
+  }
+);
 export type TaskListStem = z.infer<typeof TaskListStemSchema>;
 
-
-export const TopicStemSchema = makeStemSchema('papaya:stem:topic', {
-  slug: z.templateLiteral(['#', z.string()]),
-});
-export type TopicStem = z.infer<typeof TopicStemSchema>;
-
-
-export const PapayaStemSchema = z.union([
-  AttachmentStemSchema,
-  FlagStemSchema,
-  ForkStemSchema,
-  GratuityStemSchema,
-  NoteStemSchema,
-  ObligationStemSchema,
-  RecurrenceStemSchema,
-  RelationStemSchema,
-  TaskListStemSchema,
-  TopicStemSchema,
-]);
-export type PapayaStem = z.infer<typeof PapayaStemSchema>;
+export const StemSchema = z.union(Object.values({
+  'papaya:journal:stem:attachment': AttachmentStemSchema,
+  'papaya:journal:stem:flag': FlagStemSchema,
+  'papaya:journal:stem:gratuity': GratuityStemSchema,
+  'papaya:journal:stem:note': NoteStemSchema,
+  'papaya:journal:stem:obligation': ObligationStemSchema,
+  'papaya:journal:stem:recurrence': RecurrenceStemSchema,
+  'papaya:journal:stem:relation': RelationStemSchema,
+  'papaya:journal:stem:tasklist': TaskListStemSchema,
+} as const satisfies Record<StemNamespace, z.ZodSchema<any>>));
+export type Stem = z.infer<typeof StemSchema>;

@@ -3,16 +3,15 @@ export const PAPAYA_RESOURCE_NAMESPACES = {
     journal: {
       pictogram: {},
       person: {},
+      task: {},
       entry: {
         subentry: {},
         '$': {},
       },
-      relation: {},
       stem: {
-        topiclist: {},
+        relation: {},
         attachment: {},
         flag: {},
-        fork: {},
         gratuity: {},
         note: {},
         obligation: {},

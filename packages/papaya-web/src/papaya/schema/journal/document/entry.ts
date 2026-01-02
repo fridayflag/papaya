@@ -1,8 +1,8 @@
 import { PapayaDocumentSchemaTemplate, PapayaResourceSchemaTemplate, VersionTagSchema } from "@/schema/support/template";
 import { EntryUrn, SubEntryUrn } from "@/schema/support/urn";
 import { z } from "zod";
-import { PapayaStemSchema } from "../resource/stems";
-import { AccountSlugSchema } from "../resource/string";
+import { StemSchema } from "../resource/stems";
+import { AccountSlugSchema, TopicSlugSchema } from "../resource/string";
 
 const SubEntrySchema = z.object({
   ...({
@@ -14,7 +14,8 @@ const SubEntrySchema = z.object({
   time: z.iso.time().nullish(),
   sourceAccount: AccountSlugSchema.nullish(),
   destinationAccount: AccountSlugSchema.nullish(),
-  stems: z.record(z.string(), PapayaStemSchema).optional(),
+  topics: z.array(TopicSlugSchema).nullish(),
+  stems: z.record(z.string(), StemSchema).optional(),
   get children() {
     return z.array(SubEntrySchema);
   }
