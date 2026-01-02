@@ -1,4 +1,4 @@
-import AvatarIcon from '@/components/icon/AvatarIcon'
+import PictogramIcon from '@/components/display/PictogramIcon'
 import { PLACEHOLDER_UNNAMED_JOURNAL_NAME } from '@/constants/journal'
 import { NotificationsContext } from '@/contexts/NotificationsContext'
 import { deleteJournal, exportJournal, resetJournal } from '@/database/actions'
@@ -84,7 +84,7 @@ function JournalDetailsAndActivity(props: JournalDetailsAndActivityProps) {
       {props.journal && (
         <Stack direction="row" gap={2} alignItems={'center'}>
           <Box sx={{ '& > * ': { fontSize: '36px !important' } }}>
-            <AvatarIcon avatar={props.journal.avatar} />
+            <PictogramIcon avatar={props.journal.avatar} />
           </Box>
           <Typography variant="h5" sx={{ fontStyle: !props.journal?.journalName ? 'italic' : undefined }}>
             {props.journal.journalName || PLACEHOLDER_UNNAMED_JOURNAL_NAME}

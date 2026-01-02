@@ -1,41 +1,40 @@
-import { Avatar, AvatarVariant } from '@/schema/new/legacy/Avatar'
+import { Pictogram, PictogramVariant } from '@/schema/journal/resource/display'
 import { Box, colors, Fade, Icon, Popover, Select, Tab, Tabs } from '@mui/material'
 import { useState } from 'react'
 import IconPicker from './IconPicker'
-import ImageAvatarPicker, { ImageAvatar } from './ImageAvatarPicker'
+import ImagePictogramPicker, { ImagePictogram } from './ImagePictogramPicker'
 
-interface AvatarPickerProps {
-  value: Avatar | null
-  onChange: (avatar: Avatar) => void
+interface PictogramPickerProps {
+  value: Pictogram | null
+  onChange: (pictogram: Pictogram) => void
 }
 
-export const DEFAULT_AVATAR: Avatar = {
-  kind: 'papaya:avatar',
+export const DEFAULT_PICTOGRAM = {
   content: 'layers',
-  variant: AvatarVariant.enum.PICTORIAL,
+  variant: PictogramVariant.enum.PICTORIAL,
   primaryColor: colors.grey[500],
-}
+} as const satisfies Pictogram;
 
-const renderAvatarItem = (avatar: Avatar) => {
-  switch (avatar.variant) {
-    case AvatarVariant.enum.PICTORIAL:
-      return <Icon sx={{ color: avatar.primaryColor }}>{avatar.content}</Icon>
-    case AvatarVariant.enum.IMAGE:
-      return <ImageAvatar avatar={avatar} sx={{ my: -0.5, width: '32px', height: '32px' }} />
+const renderPictogramItem = (pictogram: Pictogram) => {
+  switch (pictogram.variant) {
+    case PictogramVariant.enum.PICTORIAL:
+      return <Icon sx={{ color: pictogram.primaryColor }}>{pictogram.content}</Icon>
+    case PictogramVariant.enum.IMAGE:
+      return <ImagePictogram pictogram={pictogram} sx={{ my: -0.5, width: '32px', height: '32px' }} />
     default:
       return null
   }
 }
 
-export default function AvatarPicker(props: AvatarPickerProps) {
+export default function PictogramPicker(props: PictogramPickerProps) {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
   const [currentTab, setCurrentTab] = useState<number>(0)
 
-  const displayIcon: Avatar = props.value ?? DEFAULT_AVATAR
+  const displayIcon: Pictogram = props.value ?? { ...DEFAULT_PICTOGRAM }
   const open = Boolean(anchorEl)
 
-  const handleChange = (avatar: Avatar | null) => {
-    props.onChange(avatar ?? DEFAULT_AVATAR)
+  const handleChange = (pictogram: Pictogram | null) => {
+    props.onChange(pictogram ?? { ...DEFAULT_PICTOGRAM })
   }
 
   return (
@@ -48,7 +47,7 @@ export default function AvatarPicker(props: AvatarPickerProps) {
         readOnly
         value={displayIcon}
         renderValue={(value) => {
-          return <Box sx={{ '& > *': { my: -0.5 } }}>{renderAvatarItem(value)}</Box>
+          return <Box sx={{ '& > *': { my: -0.5 } }}>{renderPictogramItem(value)}</Box>
         }}
       />
       <Popover
@@ -73,9 +72,9 @@ export default function AvatarPicker(props: AvatarPickerProps) {
           </Tabs>
         </Box>
         {currentTab === 0 && (
-          <IconPicker value={displayIcon.variant === 'IMAGE' ? DEFAULT_AVATAR : displayIcon} onChange={handleChange} />
+          <IconPicker value={displayIcon.variant === 'IMAGE' ? { ...DEFAULT_PICTOGRAM } : displayIcon} onChange={handleChange} />
         )}
-        {currentTab === 1 && <ImageAvatarPicker value={displayIcon} onChange={handleChange} />}
+        {currentTab === 1 && <ImagePictogramPicker value={displayIcon} onChange={handleChange} />}
       </Popover>
     </>
   )

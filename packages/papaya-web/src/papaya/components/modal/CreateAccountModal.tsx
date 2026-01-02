@@ -1,14 +1,14 @@
-import { Add } from '@mui/icons-material'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, useTheme } from '@mui/material'
-import AccountForm from '../form/AccountForm'
-import { FormProvider, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useContext } from 'react'
+import { JournalContext } from '@/contexts/JournalContext'
 import { NotificationsContext } from '@/contexts/NotificationsContext'
 import { createAccount } from '@/database/actions'
-import { JournalContext } from '@/contexts/JournalContext'
 import { CreateAccount } from '@/schema/documents/Account'
-import { DEFAULT_AVATAR } from '../pickers/AvatarPicker'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Add } from '@mui/icons-material'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useMediaQuery, useTheme } from '@mui/material'
+import { useContext } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import AccountForm from '../form/AccountForm'
+import { DEFAULT_AVATAR } from '../input/picker/PictogramPicker'
 
 interface CreateAccountModalProps {
   open: boolean

@@ -1,16 +1,15 @@
-import { Avatar } from '@/schema/new/legacy/Avatar'
+import { Pictogram, PictogramVariant } from '@/schema/journal/resource/display'
 import { Vibrant } from 'node-vibrant/browser'
 
-export async function createImageAvatar(file: File): Promise<Avatar> {
+export async function createImagePictogram(file: File): Promise<Pictogram> {
   const image = await loadImage(file)
 
   // Resize image to 64x64
   const resizedBase64 = resizeImage(image, 64, 64)
 
   return {
-    kind: 'papaya:avatar',
     content: resizedBase64, // `data:image/png;base64,${resizedBase64}`,
-    variant: 'IMAGE',
+    variant: PictogramVariant.enum.IMAGE,
     primaryColor: '',
   }
 }

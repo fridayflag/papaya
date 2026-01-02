@@ -1,4 +1,4 @@
-import { DEFAULT_AVATAR } from '@/components/pickers/AvatarPicker'
+import { DEFAULT_AVATAR } from '@/components/input/picker/PictogramPicker'
 import { Category } from '@/schema/documents/Category'
 import { CreateEntryArtifact, EntryArtifact } from '@/schema/documents/EntryArtifact'
 import { CreateJournalEntry, JournalEntry } from '@/schema/documents/JournalEntry'

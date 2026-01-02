@@ -25,8 +25,8 @@
 // import Fuse, { FuseResult } from "fuse.js";
 // import { calculateNetAmount, documentIsCategory, documentIsChildJournalEntry, documentIsJournalEntry } from "@/utils/journal";
 // import { getPriceString } from "@/utils/string";
-// import AvatarChip from "@/components/icon/AvatarChip";
-// import AvatarIcon from "@/components/icon/AvatarIcon";
+// import PictogramChip from "@/components/icon/PictogramChip";
+// import PictogramIcon from "@/components/icon/PictogramIcon";
 // import { PLACEHOLDER_UNNAMED_JOURNAL_ENTRY_MEMO } from "@/constants/journal";
 // import { formatJournalEntryDate } from "@/utils/date";
 // import { JournalEntry } from "@/schema/documents/JournalEntry";
@@ -102,7 +102,7 @@
 //             )
 //             secondaryTextFirstPart = formatJournalEntryDate(result.item.date)
 //             icon = (
-//                 <AvatarIcon avatar={category?.avatar} />
+//                 <PictogramIcon avatar={category?.avatar} />
 //             )
 //             onClickHandler = () => {
 //                 journalContext.editJournalEntry(result.item as JournalEntry)
@@ -112,7 +112,7 @@
 
 //         // Category
 //         else if (documentIsCategory(result.item)) {
-//             primaryTextFirstPart = <AvatarChip avatar={result.item.avatar} label={result.item.label} icon contrast />
+//             primaryTextFirstPart = <PictogramChip avatar={result.item.avatar} label={result.item.label} icon contrast />
 //             // link = generateCategoryLink(result.item)
 //         }
 

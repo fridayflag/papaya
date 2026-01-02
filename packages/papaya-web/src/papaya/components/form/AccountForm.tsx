@@ -3,7 +3,7 @@ import { Avatar } from '@/schema/new/legacy/Avatar'
 import { Box, FormHelperText, Stack, TextField } from '@mui/material'
 import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
-import AvatarPicker from '../pickers/AvatarPicker'
+import AvatarPicker from '../input/picker/PictogramPicker'
 
 export default function AccountForm() {
   const { register, setValue, watch } = useFormContext<CreateAccount | Account>()

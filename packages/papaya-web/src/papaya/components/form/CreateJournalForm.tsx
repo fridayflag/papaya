@@ -1,7 +1,7 @@
 import { CreateJournal } from '@/schema/documents/Journal'
 import { Box, Stack, TextField } from '@mui/material'
 import { Controller, useFormContext } from 'react-hook-form'
-import AvatarPicker from '../pickers/AvatarPicker'
+import AvatarPicker from '../input/picker/PictogramPicker'
 import ImportJournalForm from './ImportJournalForm'
 
 export default function CreateJournalForm() {

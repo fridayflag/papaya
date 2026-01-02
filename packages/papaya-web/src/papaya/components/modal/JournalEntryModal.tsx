@@ -20,8 +20,8 @@ import { Delete, Flag, LocalOffer, Pending, Update } from '@mui/icons-material'
 import { DialogContent, DialogTitle, Grow, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { useCallback, useContext, useEffect } from 'react'
 import { FormProvider, useForm, useWatch } from 'react-hook-form'
+import PictogramIcon from '../display/PictogramIcon'
 import JournalEntryForm from '../form/JournalEntryForm'
-import AvatarIcon from '../icon/AvatarIcon'
 import DetailsDrawer from '../layout/DetailsDrawer'
 
 export default function JournalEntryModal() {
@@ -225,7 +225,7 @@ export default function JournalEntryModal() {
         }>
         <DialogTitle>
           <Stack direction="row" gap={1} alignItems="center">
-            <AvatarIcon avatar={category?.avatar} />
+            <PictogramIcon avatar={category?.avatar} />
             <Typography variant="inherit">{memo.trim() || PLACEHOLDER_UNNAMED_JOURNAL_ENTRY_MEMO}</Typography>
             <Stack ml={1} direction="row" gap={0.5} alignItems="center">
               {(isFlagged || childIsFlagged) && (

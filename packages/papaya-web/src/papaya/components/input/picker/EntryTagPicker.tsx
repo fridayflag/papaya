@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 
 import { useState } from 'react'
-import EntryTagAutocomplete, { EntryTagAutocompleteProps } from '../input/EntryTagAutocomplete'
+import EntryTagAutocomplete, { EntryTagAutocompleteProps } from '../select/EntryTagAutocomplete'
 
 import { useAddEntryTag } from '@/hooks/queries/useEntryTags'
 

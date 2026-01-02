@@ -6,7 +6,7 @@ import { Settings } from '@mui/icons-material'
 import { Button, ButtonBase, Chip, IconButton, Link, Stack, Typography } from '@mui/material'
 import clsx from 'clsx'
 import { useRef, useState } from 'react'
-import { EntryTagPicker } from '../pickers/EntryTagPicker'
+import { EntryTagPicker } from '../picker/EntryTagPicker'
 import { EntryTagAutocompleteProps } from './EntryTagAutocomplete'
 
 type EntryTagSelectorProps = Omit<EntryTagAutocompleteProps, 'renderInput'>

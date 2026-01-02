@@ -2,7 +2,7 @@ import { RemoteContext } from '@/contexts/RemoteContext'
 import { SyncIndicatorEnum } from '@/utils/syncing'
 import { Box, Button, CardActions, CardHeader, Divider, LinearProgress } from '@mui/material'
 import { useContext } from 'react'
-import SyncIcon from '../icon/SyncIcon'
+import SyncIcon from '../display/SyncIcon'
 
 export default function SyncWidget() {
   const remoteContext = useContext(RemoteContext)

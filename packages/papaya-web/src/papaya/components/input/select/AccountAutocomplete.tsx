@@ -1,9 +1,7 @@
 import { Autocomplete, AutocompleteProps, ListItem, ListItemIcon, ListItemText, TextField } from '@mui/material'
 
-import { useContext } from 'react'
-import { JournalContext } from '@/contexts/JournalContext'
-import AvatarIcon from '../icon/AvatarIcon'
 import { useAccounts } from '@/hooks/queries/useAccounts'
+import PictogramIcon from '../display/PictogramIcon'
 
 export type AccountAutocompleteProps = Partial<Omit<AutocompleteProps<string, false, false, false>, 'options'>>
 
@@ -28,7 +26,7 @@ export default function AccountAutocomplete(props: AccountAutocompleteProps) {
         return (
           <ListItem dense key={key} {...optionProps}>
             <ListItemIcon>
-              <AvatarIcon avatar={account?.avatar} />
+              <PictogramIcon avatar={account?.avatar} />
             </ListItemIcon>
             <ListItemText primary={account?.label} />
           </ListItem>

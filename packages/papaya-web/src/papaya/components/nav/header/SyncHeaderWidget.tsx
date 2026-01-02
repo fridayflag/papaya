@@ -1,4 +1,4 @@
-import SyncIcon from '@/components/icon/SyncIcon'
+import SyncIcon from '@/components/display/SyncIcon'
 import SyncWidget from '@/components/widget/SyncWidget'
 import { RemoteContext } from '@/contexts/RemoteContext'
 import { SyncIndicatorEnum } from '@/utils/syncing'

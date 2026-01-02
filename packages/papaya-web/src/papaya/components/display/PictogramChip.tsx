@@ -1,10 +1,10 @@
-import { Avatar } from '@/schema/new/legacy/Avatar'
+import { Pictogram } from '@/schema/journal/resource/display'
 import { alpha, Chip, Icon, useTheme } from '@mui/material'
 import { ReactElement } from 'react'
-import AvatarIcon from './AvatarIcon'
+import PictogramIcon from './PictogramIcon'
 
-interface AvatarChipProps {
-  avatar?: Avatar
+interface PictogramChipProps {
+  pictogram?: Pictogram
   label?: string
   contrast?: boolean
   icon?: boolean
@@ -12,8 +12,8 @@ interface AvatarChipProps {
   deleteIcon?: ReactElement
 }
 
-export default function AvatarChip(props: AvatarChipProps) {
-  const categoryColor = props.avatar?.primaryColor
+export default function PictogramChip(props: PictogramChipProps) {
+  const categoryColor = props.pictogram?.primaryColor
   const theme = useTheme()
 
   let background = undefined
@@ -39,9 +39,9 @@ export default function AvatarChip(props: AvatarChipProps) {
       }}
       label={props.label}
       icon={
-        props.icon && props.avatar ? (
+        props.icon && props.pictogram ? (
           <Icon>
-            <AvatarIcon avatar={props.avatar} sx={{ color: `${color} !important` }} />
+            <PictogramIcon pictogram={props.pictogram} sx={{ color: `${color} !important` }} />
           </Icon>
         ) : undefined
       }

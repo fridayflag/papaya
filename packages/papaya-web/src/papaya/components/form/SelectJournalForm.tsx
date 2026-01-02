@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useContext, useState } from 'react'
-import AvatarIcon from '../icon/AvatarIcon'
+import PictogramIcon from '../display/PictogramIcon'
 import ManageJournalModal from '../journal/ManageJournalModal'
 
 interface SelectJournalFormProps {
@@ -73,7 +73,7 @@ export default function SelectJournalForm(props: SelectJournalFormProps) {
               >
                 <ListItemAvatar>
                   <Avatar>
-                    <AvatarIcon avatar={journal.avatar} />
+                    <PictogramIcon avatar={journal.avatar} />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText

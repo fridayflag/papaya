@@ -1,27 +1,27 @@
-import { Avatar, AvatarVariant } from '@/schema/new/legacy/Avatar'
-import { createImageAvatar, getPaletteColors } from '@/utils/image'
+import { Pictogram, PictogramVariant } from '@/schema/journal/resource/display'
+import { createImagePictogram, getPaletteColors } from '@/utils/image'
 import { AddPhotoAlternate, RemoveCircle } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
-import { AvatarProps, Box, Button, FormHelperText, Avatar as MuiAvatar, Stack } from '@mui/material'
+import { Avatar, AvatarProps, Box, Button, FormHelperText, Stack } from '@mui/material'
 import { useMemo, useRef, useState } from 'react'
 import ColorPicker from './ColorPicker'
 
-interface ImageAvatarPicker {
-  value: Avatar
-  onChange: (avatar: Avatar | null) => void
+interface ImagePictogramPicker {
+  value: Pictogram
+  onChange: (pictogram: Pictogram | null) => void
 }
 
-interface ImageAvatarProps extends AvatarProps {
-  avatar: Avatar
+interface ImagePictogramProps extends AvatarProps {
+  pictogram: Pictogram
 }
 
-export const ImageAvatar = (props: ImageAvatarProps) => {
-  const { avatar, ...rest } = props
+export const ImagePictogram = (props: ImagePictogramProps) => {
+  const { pictogram, ...rest } = props
 
-  return <MuiAvatar variant="rounded" src={avatar.content} {...rest} />
+  return <Avatar variant="rounded" src={pictogram.content} {...rest} />
 }
 
-export default function ImageAvatarPicker(props: ImageAvatarPicker) {
+export default function ImagePictogramPicker(props: ImagePictogramPicker) {
   const [uploading, setUploading] = useState<boolean>(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [paletteColors, setPaletteColors] = useState<string[]>([])
@@ -33,7 +33,7 @@ export default function ImageAvatarPicker(props: ImageAvatarPicker) {
     return [
       Boolean(props.value),
       Boolean(props.value?.content),
-      props.value?.variant === AvatarVariant.enum.IMAGE,
+      props.value?.variant === PictogramVariant.enum.IMAGE,
     ].every(Boolean)
   }, [props.value])
 
@@ -52,10 +52,10 @@ export default function ImageAvatarPicker(props: ImageAvatarPicker) {
       setUploadError(null)
 
       try {
-        const imageAvatar = await createImageAvatar(file)
+        const imagePictogram = await createImagePictogram(file)
         const paletteColors = await getPaletteColors(file)
         setPaletteColors(paletteColors)
-        props.onChange({ ...imageAvatar, primaryColor: paletteColors[0] })
+        props.onChange({ ...imagePictogram, primaryColor: paletteColors[0] })
       } catch (err) {
         setUploadError((err as Error).message)
       } finally {
@@ -76,7 +76,7 @@ export default function ImageAvatarPicker(props: ImageAvatarPicker) {
       <Stack direction="row" sx={{ mb: 1 }} gap={2}>
         {hasImageIcon && (
           <>
-            <ImageAvatar avatar={props.value} />
+            <ImagePictogram pictogram={props.value} />
             <ColorPicker
               color={props.value.primaryColor}
               onChange={(color) => props.onChange({ ...props.value, primaryColor: color })}

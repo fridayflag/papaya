@@ -1,7 +1,7 @@
 import { EntryIdentifier } from "@/schema/new/document/EntrySchema";
 import { Stack, TextField } from "@mui/material";
 import { useFormContext } from "react-hook-form";
-import PapyaCard from "../stems/PapayaCard";
+import PapyaCard from "../../stems/PapayaCard";
 import { EntryForm } from "./StemEditor";
 import StemActions from "./stems/StemActions";
 import StemRenderers from "./stems/StemRenderers";

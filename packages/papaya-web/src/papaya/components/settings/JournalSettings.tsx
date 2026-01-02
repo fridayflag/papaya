@@ -1,13 +1,13 @@
-import { Alert, Avatar, Button, Stack, Typography } from '@mui/material'
-import SettingsSectionHeader from './SettingsSectionHeader'
-import { useContext } from 'react'
-import { JournalContext } from '@/contexts/JournalContext'
-import AvatarIcon from '../icon/AvatarIcon'
 import { PLACEHOLDER_UNNAMED_JOURNAL_NAME } from '@/constants/journal'
-import { Edit, SwapHoriz } from '@mui/icons-material'
-import { useQuery } from '@tanstack/react-query'
+import { JournalContext } from '@/contexts/JournalContext'
 import { getDatabaseClient } from '@/database/client'
 import { Journal } from '@/schema/documents/Journal'
+import { Edit, SwapHoriz } from '@mui/icons-material'
+import { Alert, Avatar, Button, Stack, Typography } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
+import { useContext } from 'react'
+import PictogramIcon from '../display/PictogramIcon'
+import SettingsSectionHeader from './SettingsSectionHeader'
 
 const db = getDatabaseClient()
 
@@ -37,7 +37,7 @@ export default function JournalSettings() {
         <Stack direction="row" gap={1} alignItems={'flex-start'} justifyContent={'space-between'}>
           <Stack direction="row" gap={1} alignItems={'center'}>
             <Avatar>
-              <AvatarIcon avatar={journal.avatar} />
+              <PictogramIcon avatar={journal.avatar} />
             </Avatar>
             <Stack gap={0.25}>
               <Typography variant="h6" mb={0} sx={{ lineHeight: '1' }}>

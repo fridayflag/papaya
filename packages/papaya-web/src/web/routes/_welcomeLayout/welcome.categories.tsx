@@ -1,5 +1,5 @@
-import AvatarChip from '@/components/icon/AvatarChip'
-import RadioToggleButton from '@/components/input/RadioToggleButton'
+import PictogramChip from '@/components/display/PictogramChip'
+import RadioToggleButton from '@/components/input/control/RadioToggleButton'
 import { CATEGORY_PRESET_GROUPS, CategoryPresetGroup, PRESET_CATEGORIES_SIMPLE, PRESET_CATEGORIES_SPECIFIC, PRESET_CATEGORIES_TYPICAL } from '@/constants/presets'
 import { JournalContext } from '@/contexts/JournalContext'
 import { NotificationsContext } from '@/contexts/NotificationsContext'
@@ -273,7 +273,7 @@ function CreateCategoryPage() {
                 <Stack direction='row' flexWrap='wrap' gap={1} sx={{ alignItems: 'center' }}>
                   {allCategories.slice(0, TRUNCATE_CATEGORIES ? MAX_CATEGORIES_TO_SHOW : allCategories.length).map((category) => {
                     return (
-                      <AvatarChip
+                      <PictogramChip
                         key={category._id}
                         label={category.label}
                         avatar={category.avatar}

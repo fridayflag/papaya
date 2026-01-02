@@ -6,7 +6,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/
 import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import CreateJournalForm from '../form/CreateJournalForm'
-import { DEFAULT_AVATAR } from '../pickers/AvatarPicker'
+import { DEFAULT_AVATAR } from '../input/picker/PictogramPicker'
 
 interface CreateJournalModalProps {
   open: boolean

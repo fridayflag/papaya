@@ -1,4 +1,4 @@
-import RadioToggleButton from '@/components/input/RadioToggleButton'
+import RadioToggleButton from '@/components/input/control/RadioToggleButton'
 import WelcomePage from '@/layouts/WelcomePage'
 import { ArrowForward, ExpandLess, ExpandMore } from '@mui/icons-material'
 import { Box, Button, Container, Grow, Stack, ToggleButtonGroup, Typography } from '@mui/material'

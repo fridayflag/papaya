@@ -1,5 +1,8 @@
-import { useContext, useRef, useState } from 'react'
-import CategoryAutocomplete, { CategoryAutocompleteProps } from './CategoryAutocomplete'
+import { JournalContext } from '@/contexts/JournalContext'
+import { useAddCategory, useCategories } from '@/hooks/queries/useCategories'
+import { Category } from '@/schema/documents/Category'
+import { generateRandomAvatar } from '@/utils/journal'
+import { Close, Done, Settings } from '@mui/icons-material'
 import {
   AutocompleteCloseReason,
   Button,
@@ -15,15 +18,11 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { Close, Done, Settings } from '@mui/icons-material'
-import AvatarChip from '../icon/AvatarChip'
-import { JournalContext } from '@/contexts/JournalContext'
-import AvatarIcon from '../icon/AvatarIcon'
-import { createCategory } from '@/database/actions'
 import clsx from 'clsx'
-import { generateRandomAvatar } from '@/utils/journal'
-import { Category } from '@/schema/documents/Category'
-import { useAddCategory, useCategories } from '@/hooks/queries/useCategories'
+import { useContext, useRef, useState } from 'react'
+import PictogramIcon from '../display/PictogramChipcon'
+import PictogramChip from '../icon/PictogramChip'
+import CategoryAutocomplete, { CategoryAutocompleteProps } from './CategoryAutocomplete'
 
 type CategorySelectorProps = Omit<CategoryAutocompleteProps, 'renderInput'>
 
@@ -94,7 +93,7 @@ export default function CategorySelector(props: CategorySelectorProps) {
       ) : (
         <Stack direction="row" alignItems="flex-start" gap={1} sx={{ flexWrap: 'wrap', mx: -0.5 }}>
           <ButtonBase disableRipple onClick={() => setOpen(true)} key={selectedCategory._id}>
-            <AvatarChip icon contrast avatar={selectedCategory.avatar} label={selectedCategory.label} />
+            <PictogramChip icon contrast avatar={selectedCategory.avatar} label={selectedCategory.label} />
           </ButtonBase>
         </Stack>
       )}
@@ -153,7 +152,7 @@ export default function CategorySelector(props: CategorySelectorProps) {
                       })}
                     />
                     <Stack direction="row" sx={{ flexGrow: 1, gap: 1 }}>
-                      <AvatarIcon avatar={category.avatar} />
+                      <PictogramIcon avatar={category.avatar} />
                       {category.label}
                     </Stack>
                     <Close

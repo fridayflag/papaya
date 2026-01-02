@@ -6,10 +6,10 @@ import { Add, DeleteOutline, EditNote, LocalOffer, LocalOfferOutlined } from '@m
 import { Button, Checkbox, Grid, Grow, IconButton, Link, Stack, TextField, Typography } from '@mui/material'
 import { useCallback, useContext, useRef, useState } from 'react'
 import { Controller, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
-import AmountField from '../input/AmountField'
-import CategoryAutocomplete from '../input/CategoryAutocomplete'
+import AmountField from '../input/field/AmountField'
+import { EntryTagPicker } from '../input/picker/EntryTagPicker'
+import CategoryAutocomplete from '../input/select/CategoryAutocomplete'
 import SelectionActionModal from '../modal/SelectionActionModal'
-import { EntryTagPicker } from '../pickers/EntryTagPicker'
 
 export default function ChildJournalEntryForm() {
   const [selectedRows, setSelectedRows] = useState<string[]>([])
