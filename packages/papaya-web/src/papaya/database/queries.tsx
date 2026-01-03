@@ -45,6 +45,13 @@ export const getJournals = async (): Promise<Journal[]> => {
   return journals.docs as Journal[];
 }
 
+export const getLastOpenedJournal = async (): Promise<Journal | undefined> => {
+  const journals = await getJournals();
+  return journals.sort((a, b) => {
+    return (a.lastOpenedAt ? new Date(a.lastOpenedAt).getTime() : 0) - (b.lastOpenedAt ? new Date(b.lastOpenedAt).getTime() : 0);
+  })[0];
+}
+
 export const updateSettings = async (settings: UserSettings): Promise<void> => {
   UserSettingsSchema.parse(settings);
   const config = await getOrCreatePapayaConfig();
