@@ -1,11 +1,11 @@
 import { SCHEMA_VERSION } from '@/database/SchemaMigration';
 import { v6 as uuidv6 } from 'uuid';
 import { PapayaConfig } from '../application/config';
-import { Journal } from '../journal/document/journal';
-import { PapayaEntityNamespace } from './namespace';
+import { Journal } from '../journal/resource/document';
+import { PapayaResourceNamespace } from './namespace';
 import { PapayaUrn } from './urn';
 
-export const makePapayaUrn = <N extends PapayaEntityNamespace>(namespace: N): `${N}:${string}` => {
+export const makePapayaUrn = <N extends PapayaResourceNamespace>(namespace: N): `${N}:${string}` => {
   const uuid = uuidv6();
   return `${namespace}:${uuid}` as const satisfies PapayaUrn
 }

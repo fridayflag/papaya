@@ -4,12 +4,13 @@ export const PAPAYA_ENTITY_NAMESPACE = {
       usersettings: {},
       pictogram: {},
       figure: {},
+      journalaggregate: {},
     },
     resource: {
       stem: {
         relation: {},
         attachment: {},
-        flag: {},
+        stamp: {},
         gratuity: {},
         note: {},
         obligation: {},

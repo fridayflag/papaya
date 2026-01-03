@@ -1,8 +1,10 @@
 import { JournalContext } from "@/contexts/JournalContext";
 import { PapayaConfigContext } from "@/contexts/PapayaConfigContext";
-import { getLastOpenedJournal } from "@/database/queries";
+import { getJournalAggregate, getLastOpenedJournal } from "@/database/queries";
 import SessionCache from "@/database/SessionCache";
+import { JournalAggregate } from "@/schema/journal/aggregate";
 import { JournalUrn } from "@/schema/support/urn";
+import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 
 export function JournalContextProvider(props: PropsWithChildren) {
@@ -46,10 +48,19 @@ export function JournalContextProvider(props: PropsWithChildren) {
     SessionCache.set('ACTIVE_JOURNAL_ID', journalId)
   }
 
+  const aggregation = useQuery<JournalAggregate | undefined>({
+    queryKey: ['journal', 'aggregate', activeJournalId],
+    queryFn: async () => {
+      return getJournalAggregate(activeJournalId)
+    },
+    initialData: undefined,
+  });
+
   return (
     <JournalContext.Provider
       value={{
         activeJournalId,
+        aggregation: aggregation,
         setActiveJournalId: handleSetActiveJournalId,
       }}
     >

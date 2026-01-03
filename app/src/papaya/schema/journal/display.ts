@@ -14,3 +14,14 @@ export const DecoratedSlugSchema = z.object({
   slug: z.string(),
 })
 export type DecoratedSlug = z.output<typeof DecoratedSlugSchema>
+
+export const StampVariantSchema = z.enum([
+  'FLAGGED',
+  'IMPORTANT',
+  'NEEDS_REVIEW',
+  'REVIEWED',
+  'STARRED',
+  'PINNED',
+  'ARCHIVED',
+]);
+export type StampVariant = z.infer<typeof StampVariantSchema>;

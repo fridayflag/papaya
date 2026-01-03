@@ -1,6 +1,8 @@
 import { PapayaConfig, PapayaConfigSchema, UserSettings, UserSettingsSchema } from '@/schema/application/config'
-import { Journal } from '@/schema/journal/document/journal'
+import { JournalAggregate } from '@/schema/journal/aggregate'
+import { Entry, Journal } from '@/schema/journal/resource/document'
 import { makeDefaultConfig, makeJournal } from '@/schema/support/factory'
+import { JournalUrn } from '@/schema/support/urn'
 import { getDatabaseClient } from './client'
 
 const db = getDatabaseClient()
@@ -58,4 +60,26 @@ export const updateSettings = async (settings: UserSettings): Promise<void> => {
   config.userSettings = settings;
   PapayaConfigSchema.parse(config);
   await db.put(config);
+}
+
+export const getJournalAggregate = async (journalId: JournalUrn | null): Promise<JournalAggregate | undefined> => {
+  if (!journalId) {
+    return undefined;
+  }
+  const journal = await db.get<Journal>(journalId);
+  if (!journal) {
+    return undefined;
+  }
+  const entries = await db.find({
+    selector: {
+      kind: 'papaya:document:entry',
+      journalId: journalId,
+    },
+    limit: ARBITRARY_MAX_FIND_LIMIT,
+  });
+
+  return {
+    journal: journal,
+    entries: Object.fromEntries((entries.docs as Entry[]).map((entry: Entry) => [entry.urn, entry])),
+  };
 }

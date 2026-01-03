@@ -2,7 +2,6 @@ import z from "zod";
 import {
   AttachmentStemNamespaceSchema,
   EntryNamespaceSchema,
-  FlagStemNamespaceSchema,
   GratuityStemNamespaceSchema,
   JournalNamespaceSchema,
   NoteStemNamespaceSchema,
@@ -11,6 +10,7 @@ import {
   PersonNamespaceSchema,
   RecurrenceStemNamespaceSchema,
   RelationNamespaceSchema,
+  StampStemNamespaceSchema,
   SubEntryNamespaceSchema,
   TaskListStemNamespaceSchema,
   TaskNamespaceSchema
@@ -37,8 +37,8 @@ export type RelationUrn = z.infer<typeof RelationUrnSchema>;
 export const AttachmentStemUrnSchema = z.templateLiteral([AttachmentStemNamespaceSchema, ':', z.uuid()]);
 export type AttachmentStemUrn = z.infer<typeof AttachmentStemUrnSchema>;
 
-export const FlagStemUrnSchema = z.templateLiteral([FlagStemNamespaceSchema, ':', z.uuid()]);
-export type FlagStemUrn = z.infer<typeof FlagStemUrnSchema>;
+export const StampStemUrnSchema = z.templateLiteral([StampStemNamespaceSchema, ':', z.uuid()]);
+export type StampStemUrn = z.infer<typeof StampStemUrnSchema>;
 
 export const GratuityStemUrnSchema = z.templateLiteral([GratuityStemNamespaceSchema, ':', z.uuid()]);
 export type GratuityStemUrn = z.infer<typeof GratuityStemUrnSchema>;
@@ -60,7 +60,7 @@ export const PapayaUrnSchema = z.union(Object.values({
   'papaya:resource:subentry': SubEntryUrnSchema,
   'papaya:resource:stem:relation': RelationUrnSchema,
   'papaya:resource:stem:attachment': AttachmentStemUrnSchema,
-  'papaya:resource:stem:flag': FlagStemUrnSchema,
+  'papaya:resource:stem:stamp': StampStemUrnSchema,
   'papaya:resource:stem:gratuity': GratuityStemUrnSchema,
   'papaya:resource:stem:note': NoteStemUrnSchema,
   'papaya:resource:stem:obligation': ObligationStemUrnSchema,

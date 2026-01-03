@@ -1,10 +1,26 @@
 import { CouchDbBaseDocumentShape } from "@/schema/application/database";
 import { EntryNamespace, EntryNamespaceSchema, SubEntryNamespace, SubEntryNamespaceSchema } from "@/schema/support/namespace";
-import { PapayaDocumentSchemaTemplate, PapayaResourceSchemaTemplate, VersionTagSchema } from "@/schema/support/template";
+import { createPapayaDocumentSchema, PapayaDocumentSchemaTemplate, PapayaResourceSchemaTemplate, VersionTagSchema } from "@/schema/support/template";
 import { EntryUrnSchema, JournalUrnSchema, SubEntryUrnSchema } from "@/schema/support/urn";
-import { z } from "zod";
-import { StemSchema } from "../resource/stems";
-import { AccountSlugSchema, TopicSlugSchema } from "../string";
+import z from "zod";
+import { PictogramSchema } from "../entity/pictogram";
+import { AccountSlugSchema, PersonSlugSchema, TopicSlugSchema } from "../string";
+import { StemSchema } from "./stems";
+
+export const JournalSchema = createPapayaDocumentSchema('papaya:document:journal', {
+  name: z.string(),
+  notes: z.string(),
+  lastOpenedAt: z.iso.datetime().nullable(),
+  createdAt: z.iso.datetime(),
+});
+export type Journal = z.infer<typeof JournalSchema>;
+
+export const PersonSchema = createPapayaDocumentSchema('papaya:document:person', {
+  name: z.string(),
+  icon: PictogramSchema.nullish(),
+  slug: PersonSlugSchema,
+});
+export type Person = z.infer<typeof PersonSchema>;
 
 const SubEntrySchema = z.object({
   ...({
@@ -19,10 +35,6 @@ const SubEntrySchema = z.object({
   destinationAccount: AccountSlugSchema.nullish(),
   topics: z.array(TopicSlugSchema).nullish(),
   stems: z.array(StemSchema).optional(),
-
-  // '@metadata': z.object({
-  //   isDefault: z.boolean().nullish(),
-  // }).nullish(),
 
   get children() {
     return z.array(SubEntrySchema);

@@ -3,12 +3,13 @@ import { createPapayaResourceSchema } from "@/schema/support/template";
 import { PapayaUrnSchema } from "@/schema/support/urn";
 import z from "zod";
 import { RelationTypeSchema } from "../../relation";
+import { StampVariantSchema } from "../display";
 import { FigureSchema } from "../entity/figure";
 import { PersonSlugSchema } from "../string";
 import { TaskSchema } from "./workflows";
 
 export const AttachmentStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:attachment' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:attachment' satisfies `papaya:resource:stem:${string}`,
   {
     originalFileName: z.string(),
     contentType: z.string(),
@@ -18,22 +19,16 @@ export const AttachmentStemSchema = createPapayaResourceSchema(
 );
 export type AttachmentStem = z.infer<typeof AttachmentStemSchema>;
 
-const FlagTypeSchema = z.enum([
-  'IMPORTANT',
-  'NEEDS_REVIEW',
-  'REVIEWED',
-]);
-
-export const FlagStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:flag' satisfies `papaya:journal:stem:${string}`,
+export const StampStemSchema = createPapayaResourceSchema(
+  'papaya:resource:stem:stamp' satisfies `papaya:resource:stem:${string}`,
   {
-    flags: z.record(FlagTypeSchema, z.boolean()),
+    stamps: z.record(StampVariantSchema, z.boolean()),
   }
 );
-export type FlagStem = z.infer<typeof FlagStemSchema>;
+export type StampStem = z.infer<typeof StampStemSchema>;
 
 export const GratuityStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:gratuity' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:gratuity' satisfies `papaya:resource:stem:${string}`,
   {
     amount: FigureSchema,
     asPercentage: z.number(),
@@ -42,7 +37,7 @@ export const GratuityStemSchema = createPapayaResourceSchema(
 export type GratuityStem = z.infer<typeof GratuityStemSchema>;
 
 export const NoteStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:note' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:note' satisfies `papaya:resource:stem:${string}`,
   {
     content: z.string(),
   }
@@ -52,7 +47,7 @@ export type NoteStem = z.infer<typeof NoteStemSchema>;
 
 
 export const ObligationStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:obligation' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:obligation' satisfies `papaya:resource:stem:${string}`,
   {
     variant: z.enum(['DEBT', 'PAYABLE']),
     party: PersonSlugSchema,
@@ -63,7 +58,7 @@ export type ObligationStem = z.infer<typeof ObligationStemSchema>;
 
 
 export const RecurrenceStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:recurrence' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:recurrence' satisfies `papaya:resource:stem:${string}`,
   {
     iCalRruleString: z.string(),
   }
@@ -72,7 +67,7 @@ export type RecurrenceStem = z.infer<typeof RecurrenceStemSchema>;
 
 
 export const RelationStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:relation' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:relation' satisfies `papaya:resource:stem:${string}`,
   {
     relatesTo: PapayaUrnSchema,
     relation: RelationTypeSchema,
@@ -81,7 +76,7 @@ export const RelationStemSchema = createPapayaResourceSchema(
 export type RelationStem = z.infer<typeof RelationStemSchema>;
 
 export const TaskListStemSchema = createPapayaResourceSchema(
-  'papaya:journal:stem:tasklist' satisfies `papaya:journal:stem:${string}`,
+  'papaya:resource:stem:tasklist' satisfies `papaya:resource:stem:${string}`,
   {
     tasks: z.array(TaskSchema),
   }
@@ -89,13 +84,13 @@ export const TaskListStemSchema = createPapayaResourceSchema(
 export type TaskListStem = z.infer<typeof TaskListStemSchema>;
 
 export const StemSchema = z.union(Object.values({
-  'papaya:journal:stem:attachment': AttachmentStemSchema,
-  'papaya:journal:stem:flag': FlagStemSchema,
-  'papaya:journal:stem:gratuity': GratuityStemSchema,
-  'papaya:journal:stem:note': NoteStemSchema,
-  'papaya:journal:stem:obligation': ObligationStemSchema,
-  'papaya:journal:stem:recurrence': RecurrenceStemSchema,
-  'papaya:journal:stem:relation': RelationStemSchema,
-  'papaya:journal:stem:tasklist': TaskListStemSchema,
+  'papaya:resource:stem:attachment': AttachmentStemSchema,
+  'papaya:resource:stem:stamp': StampStemSchema,
+  'papaya:resource:stem:gratuity': GratuityStemSchema,
+  'papaya:resource:stem:note': NoteStemSchema,
+  'papaya:resource:stem:obligation': ObligationStemSchema,
+  'papaya:resource:stem:recurrence': RecurrenceStemSchema,
+  'papaya:resource:stem:relation': RelationStemSchema,
+  'papaya:resource:stem:tasklist': TaskListStemSchema,
 } as const satisfies Record<StemNamespace, z.ZodSchema<any>>));
 export type Stem = z.infer<typeof StemSchema>;

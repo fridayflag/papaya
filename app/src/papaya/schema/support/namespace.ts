@@ -36,6 +36,9 @@ type _PapayaResourceNamespace =
 type _StemNamespace = Namespaced<typeof PAPAYA_ENTITY_NAMESPACE['papaya']['resource']['stem'], 'papaya:resource:stem'>;
 
 // Entity Namespaces
+export const JournalAggregateNamespaceSchema = z.literal('papaya:entity:journalaggregate');
+export type JournalAggregateNamespace = z.infer<typeof JournalAggregateNamespaceSchema>;
+
 export const PictogramNamespaceSchema = z.literal('papaya:entity:pictogram');
 export type PictogramNamespace = z.infer<typeof PictogramNamespaceSchema>;
 
@@ -58,8 +61,8 @@ export type RelationNamespace = z.infer<typeof RelationNamespaceSchema>;
 export const AttachmentStemNamespaceSchema = z.literal('papaya:resource:stem:attachment');
 export type AttachmentStemNamespace = z.infer<typeof AttachmentStemNamespaceSchema>;
 
-export const FlagStemNamespaceSchema = z.literal('papaya:resource:stem:flag');
-export type FlagStemNamespace = z.infer<typeof FlagStemNamespaceSchema>;
+export const StampStemNamespaceSchema = z.literal('papaya:resource:stem:stamp');
+export type StampStemNamespace = z.infer<typeof StampStemNamespaceSchema>;
 
 export const GratuityStemNamespaceSchema = z.literal('papaya:resource:stem:gratuity');
 export type GratuityStemNamespace = z.infer<typeof GratuityStemNamespaceSchema>;
@@ -91,7 +94,7 @@ const PapayaResourceNamespaceShape = {
   'papaya:resource:subentry': SubEntryNamespaceSchema,
   'papaya:resource:stem:relation': RelationNamespaceSchema,
   'papaya:resource:stem:attachment': AttachmentStemNamespaceSchema,
-  'papaya:resource:stem:flag': FlagStemNamespaceSchema,
+  'papaya:resource:stem:stamp': StampStemNamespaceSchema,
   'papaya:resource:stem:gratuity': GratuityStemNamespaceSchema,
   'papaya:resource:stem:note': NoteStemNamespaceSchema,
   'papaya:resource:stem:obligation': ObligationStemNamespaceSchema,
@@ -108,6 +111,7 @@ export type PapayaResourceNamespace = z.infer<typeof PapayaResourceNamespaceSche
 
 export const PapayaEntityNamespaceSchema = z.union(Object.values({
   ...PapayaResourceNamespaceShape,
+  'papaya:entity:journalaggregate': JournalAggregateNamespaceSchema,
   'papaya:entity:usersettings': UserSettingsNamespaceSchema,
   'papaya:entity:pictogram': PictogramNamespaceSchema,
   'papaya:entity:figure': FigureNamespaceSchema,
@@ -119,7 +123,7 @@ export const StemNamespaceSchema = z.union(
     {
       'papaya:resource:stem:relation': RelationNamespaceSchema,
       'papaya:resource:stem:attachment': AttachmentStemNamespaceSchema,
-      'papaya:resource:stem:flag': FlagStemNamespaceSchema,
+      'papaya:resource:stem:stamp': StampStemNamespaceSchema,
       'papaya:resource:stem:gratuity': GratuityStemNamespaceSchema,
       'papaya:resource:stem:note': NoteStemNamespaceSchema,
       'papaya:resource:stem:obligation': ObligationStemNamespaceSchema,

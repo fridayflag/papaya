@@ -1,4 +1,4 @@
-import Ledger from '@/components/features/ledger/layout/Ledger'
+import Ledger from '@/components/features/journal/layout/DisplayableJournal'
 import JournalFilterContextProvider from '@/providers/JournalFilterContextProvider'
 import { DateView, DateViewVariant } from '@/schema/support/search/facet'
 import { createFileRoute, redirect } from '@tanstack/react-router'
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_mainLayout/ledger/$view/$')({
       ]
 
       if (!view) {
-        throw redirect({ to: '/ledger' })
+        throw redirect({ to: '/journal' })
       }
       const paramValues = {
         view,
@@ -47,12 +47,12 @@ export const Route = createFileRoute('/_mainLayout/ledger/$view/$')({
       return { view, y, m, d, _splat }
     },
   },
-  validateSearch: (search: Record<string, unknown>): { tab: 'ledger' | 'transfers' } => {
-    const tab = (search.tab ?? 'ledger') as 'ledger' | 'transfers'
-    return {
-      tab,
-    }
-  },
+  // validateSearch: (search: Record<string, unknown>): { tab: 'ledger' | 'transfers' } => {
+  //   const tab = (search.tab ?? 'ledger') as 'ledger' | 'transfers'
+  //   return {
+  //     tab,
+  //   }
+  // },
 })
 
 function LedgerPage() {

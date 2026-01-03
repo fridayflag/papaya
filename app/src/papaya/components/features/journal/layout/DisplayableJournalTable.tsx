@@ -1,124 +1,33 @@
-import { type TopicSlug } from "@/schema/new/document/TopicSchema"
-import { type AdornedResource } from "@/schema/new/object/AdornedResourceSchema"
-import { type ComputedAmount } from "@/schema/new/object/ComputedAmountSchema"
-import { type DecoratedSlug } from "@/schema/new/object/DecoratedSlug"
+import { JournalView } from "@/schema/journal/aggregate"
+import { Figure } from '@/schema/journal/entity/figure'
 import { sortDatesChronologically } from '@/utils/date'
 import {
   Chip,
-  TableBody as MuiTableBody,
-  TableCell as MuiTableCell,
-  TableRow as MuiTableRow,
   Stack,
   Table,
-  TableBodyProps,
-  TableCellProps,
-  TableRowProps,
   Typography
 } from '@mui/material'
 import dayjs from "dayjs"
 import { useMemo } from 'react'
-import LedgerEntryDate from '../display/LedgerEntryDate'
+import LedgerEntryDate from '../display/JournalEntryDate'
 
-type DisplayableBadge =
-  | 'FLAGGED'
 
-export interface DisplayableLedgerEntry {
-  date: dayjs.Dayjs
-  netAmount: ComputedAmount
-  memo: string
-  topics: TopicSlug[]
-  accounts: {
-    source?: AdornedResource | DecoratedSlug
-    destination?: AdornedResource | DecoratedSlug
-  }
-  badges: DisplayableBadge[]
+interface DisplayableJournalTableProps {
+  view: JournalView;
 }
 
-
-interface JournalTableRowProps extends TableRowProps {
-  dateRow?: boolean
-}
-
-const TableRow = ({ sx, dateRow, ...rest }: JournalTableRowProps) => {
-  return (
-    <MuiTableRow
-      hover={!dateRow}
-      sx={{
-        '& td': {
-          ...(dateRow
-            ? {
-              width: '0%',
-              cursor: 'default',
-            }
-            : {}),
-        },
-        ...sx,
-      }}
-      {...rest}
-    />
-  )
-}
-
-interface JournalTableCellProps extends Omit<TableCellProps, 'colSpan'> {
-  colSpan?: string | number
-}
-
-const TableCell = (props: JournalTableCellProps) => {
-  const { sx, colSpan, ...rest } = props
-
-  return (
-    <MuiTableCell
-      {...rest}
-      colSpan={colSpan as number}
-      sx={{
-        border: 0,
-        alignItems: 'center',
-        px: 1,
-        ...sx,
-      }}
-    />
-  )
-}
-
-type JournalTableBodyProps = TableBodyProps
-
-const TableBody = (props: JournalTableBodyProps) => {
-  const { sx, ...rest } = props
-
-  return (
-    <MuiTableBody
-      {...rest}
-      sx={(theme) => ({
-        borderBottom: `1px solid ${theme.palette.divider}`,
-        '&::before, &::after': {
-          content: `""`,
-          display: 'table-row',
-          height: theme.spacing(1),
-        },
-        ...(sx as any),
-      })}
-    />
-  )
-}
-
-
-
-interface LedgerGridProps {
-  entries: DisplayableLedgerEntry[]
-}
-
-const formatAmount = (amount: ComputedAmount): string => {
-  const symbol = amount.currency === 'CAD' ? 'C$' : '$'
-  const value = Math.abs(amount.value)
+const formatFigure = (figure: Figure): string => {
+  const symbol = figure.currency === 'CAD' ? 'C$' : '$'
+  const value = Math.abs(figure.amount)
   const formatted = value.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
-  const sign = amount.value >= 0 ? '+' : '-'
+  const sign = figure.amount >= 0 ? '+' : '-'
   return `${sign}${symbol}${formatted}`
 }
 
-export default function LedgerGrid(props: LedgerGridProps) {
+export default function DisplayableJournalTable(props: DisplayableJournalTableProps) {
   const entriesByDate = useMemo(() => {
     const grouped: Record<string, DisplayableLedgerEntry[]> = {}
 
