@@ -2,3 +2,4 @@ dist
 node_modules
 .kiro
 .tanstack
+.vscode
