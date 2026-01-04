@@ -2,6 +2,8 @@ import { getJournalEntries } from "@/database/actions";
 import { DisplayableJournalEntry, DisplayableJournalEntryAggregate, JournalIndex, JournalSlice } from "@/schema/journal/aggregate";
 import { Entry } from "@/schema/journal/resource/document";
 import { JournalUrn } from "@/schema/support/urn";
+import dayjs from "dayjs";
+import { sortDatesChronologically } from "./date";
 
 const generateDisplayableJournalEntries = (entries: Entry[]): DisplayableJournalEntry[] => {
   return entries.map((entry) => {
@@ -28,31 +30,41 @@ export const generateJournalIndex = async (journalId: JournalUrn): Promise<Journ
 
 export const aggregateJournalIndexBySlice = (slice: JournalSlice, index: JournalIndex): DisplayableJournalEntryAggregate => {
 
-  let getGroup: (entry: DisplayableJournalEntry) => DisplayableJournalEntryAggregate['groups'];
+  let groups;
+  let comparator;
 
-  switch (slice.groupBy) {
+  switch (slice.sortBy) {
     case 'DATE':
-      getGroup = (entry: DisplayableJournalEntry) => {
-        return {
-          date: entry.date,
-        };
+    default:
+      comparator = (a: DisplayableJournalEntry, b: DisplayableJournalEntry) => {
+        return dayjs(a.date).diff(dayjs(b.date));
       };
       break;
   }
 
-  return {
-    groups: index.entries
-      .reduce((acc: DisplayableJournalEntryAggregate['groups'], entry: DisplayableJournalEntry) => {
-        const groupIndex = acc.findIndex((group) => group.qualifier.date === entry.date);
-        const group = {
-          entries: [],
-          qualifier: {
-            date: entry.date,
-          },
-        }
+  const sortedEntries = index.entries.sort(comparator);
 
-        acc.push(group);
-      }, {
-        groups: [],
+  switch (slice.groupBy) {
+    case 'DATE':
+    default: {
+      const dates = new Set<string>(
+        sortedEntries.map((entry) => entry.date)
+      );
+      const sortedDates = slice.sortOrder === 'ASC'
+        ? sortDatesChronologically(...dates)
+        : sortDatesChronologically(...dates).reverse();
+
+      groups = sortedDates.map((date) => {
+        return {
+          qualifier: { date },
+          entries: sortedEntries.filter((entry) => entry.date === date),
+        };
       });
+      break;
+    }
   }
+
+  return {
+    groups,
+  };
+}

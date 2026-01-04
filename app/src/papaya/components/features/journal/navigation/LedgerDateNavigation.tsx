@@ -1,10 +1,8 @@
 import KeyboardShortcut from '@/components/display/KeyboardShortcut'
 import { KeyboardActionName } from '@/constants/keyboard'
 import useDateView from '@/hooks/facets/useDateView'
-import { useFilteredJournalEntries } from '@/hooks/queries/useFilteredJournalEntries'
 import useKeyboardAction from '@/hooks/useKeyboardAction'
-import { JournalEntry } from '@/schema/documents/JournalEntry'
-import { DateViewVariant } from '@/schema/support/search/facet'
+import { DateViewVariant } from '@/schema/journal/facet'
 import { getAbsoluteDateRangeFromDateView, getEmpiracleDateRangeFromJournalEntries } from '@/utils/date'
 import { ArrowBack, ArrowDropDown, ArrowForward, CalendarToday } from '@mui/icons-material'
 import {

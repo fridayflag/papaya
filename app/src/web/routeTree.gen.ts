@@ -14,15 +14,9 @@ import { Route as MainLayoutRouteImport } from './routes/_mainLayout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MainLayoutCategoriesRouteImport } from './routes/_mainLayout/categories'
 import { Route as MainLayoutAccountsRouteImport } from './routes/_mainLayout/accounts'
-import { Route as WelcomeLayoutWelcomeIndexRouteImport } from './routes/_welcomeLayout/welcome.index'
 import { Route as MainLayoutSettingsIndexRouteImport } from './routes/_mainLayout/settings.index'
 import { Route as MainLayoutJournalIndexRouteImport } from './routes/_mainLayout/journal.index'
-import { Route as WelcomeLayoutWelcomeStartRouteImport } from './routes/_welcomeLayout/welcome.start'
-import { Route as WelcomeLayoutWelcomeJournalRouteImport } from './routes/_welcomeLayout/welcome.journal'
-import { Route as WelcomeLayoutWelcomeGettingStartedRouteImport } from './routes/_welcomeLayout/welcome.getting-started'
-import { Route as WelcomeLayoutWelcomeCategoriesRouteImport } from './routes/_welcomeLayout/welcome.categories'
 import { Route as MainLayoutSettingsSectionRouteImport } from './routes/_mainLayout/settings.$section'
-import { Route as MainLayoutLedgerViewSplatRouteImport } from './routes/_mainLayout/ledger.$view.$'
 import { Route as MainLayoutJournalViewSplatRouteImport } from './routes/_mainLayout/journal.$view.$'
 
 const WelcomeLayoutRoute = WelcomeLayoutRouteImport.update({
@@ -48,12 +42,6 @@ const MainLayoutAccountsRoute = MainLayoutAccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => MainLayoutRoute,
 } as any)
-const WelcomeLayoutWelcomeIndexRoute =
-  WelcomeLayoutWelcomeIndexRouteImport.update({
-    id: '/welcome/',
-    path: '/welcome/',
-    getParentRoute: () => WelcomeLayoutRoute,
-  } as any)
 const MainLayoutSettingsIndexRoute = MainLayoutSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
@@ -64,40 +52,10 @@ const MainLayoutJournalIndexRoute = MainLayoutJournalIndexRouteImport.update({
   path: '/journal/',
   getParentRoute: () => MainLayoutRoute,
 } as any)
-const WelcomeLayoutWelcomeStartRoute =
-  WelcomeLayoutWelcomeStartRouteImport.update({
-    id: '/welcome/start',
-    path: '/welcome/start',
-    getParentRoute: () => WelcomeLayoutRoute,
-  } as any)
-const WelcomeLayoutWelcomeJournalRoute =
-  WelcomeLayoutWelcomeJournalRouteImport.update({
-    id: '/welcome/journal',
-    path: '/welcome/journal',
-    getParentRoute: () => WelcomeLayoutRoute,
-  } as any)
-const WelcomeLayoutWelcomeGettingStartedRoute =
-  WelcomeLayoutWelcomeGettingStartedRouteImport.update({
-    id: '/welcome/getting-started',
-    path: '/welcome/getting-started',
-    getParentRoute: () => WelcomeLayoutRoute,
-  } as any)
-const WelcomeLayoutWelcomeCategoriesRoute =
-  WelcomeLayoutWelcomeCategoriesRouteImport.update({
-    id: '/welcome/categories',
-    path: '/welcome/categories',
-    getParentRoute: () => WelcomeLayoutRoute,
-  } as any)
 const MainLayoutSettingsSectionRoute =
   MainLayoutSettingsSectionRouteImport.update({
     id: '/settings/$section',
     path: '/settings/$section',
-    getParentRoute: () => MainLayoutRoute,
-  } as any)
-const MainLayoutLedgerViewSplatRoute =
-  MainLayoutLedgerViewSplatRouteImport.update({
-    id: '/ledger/$view/$',
-    path: '/ledger/$view/$',
     getParentRoute: () => MainLayoutRoute,
   } as any)
 const MainLayoutJournalViewSplatRoute =
@@ -112,48 +70,30 @@ export interface FileRoutesByFullPath {
   '/accounts': typeof MainLayoutAccountsRoute
   '/categories': typeof MainLayoutCategoriesRoute
   '/settings/$section': typeof MainLayoutSettingsSectionRoute
-  '/welcome/categories': typeof WelcomeLayoutWelcomeCategoriesRoute
-  '/welcome/getting-started': typeof WelcomeLayoutWelcomeGettingStartedRoute
-  '/welcome/journal': typeof WelcomeLayoutWelcomeJournalRoute
-  '/welcome/start': typeof WelcomeLayoutWelcomeStartRoute
   '/journal': typeof MainLayoutJournalIndexRoute
   '/settings': typeof MainLayoutSettingsIndexRoute
-  '/welcome': typeof WelcomeLayoutWelcomeIndexRoute
   '/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
-  '/ledger/$view/$': typeof MainLayoutLedgerViewSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accounts': typeof MainLayoutAccountsRoute
   '/categories': typeof MainLayoutCategoriesRoute
   '/settings/$section': typeof MainLayoutSettingsSectionRoute
-  '/welcome/categories': typeof WelcomeLayoutWelcomeCategoriesRoute
-  '/welcome/getting-started': typeof WelcomeLayoutWelcomeGettingStartedRoute
-  '/welcome/journal': typeof WelcomeLayoutWelcomeJournalRoute
-  '/welcome/start': typeof WelcomeLayoutWelcomeStartRoute
   '/journal': typeof MainLayoutJournalIndexRoute
   '/settings': typeof MainLayoutSettingsIndexRoute
-  '/welcome': typeof WelcomeLayoutWelcomeIndexRoute
   '/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
-  '/ledger/$view/$': typeof MainLayoutLedgerViewSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_mainLayout': typeof MainLayoutRouteWithChildren
-  '/_welcomeLayout': typeof WelcomeLayoutRouteWithChildren
+  '/_welcomeLayout': typeof WelcomeLayoutRoute
   '/_mainLayout/accounts': typeof MainLayoutAccountsRoute
   '/_mainLayout/categories': typeof MainLayoutCategoriesRoute
   '/_mainLayout/settings/$section': typeof MainLayoutSettingsSectionRoute
-  '/_welcomeLayout/welcome/categories': typeof WelcomeLayoutWelcomeCategoriesRoute
-  '/_welcomeLayout/welcome/getting-started': typeof WelcomeLayoutWelcomeGettingStartedRoute
-  '/_welcomeLayout/welcome/journal': typeof WelcomeLayoutWelcomeJournalRoute
-  '/_welcomeLayout/welcome/start': typeof WelcomeLayoutWelcomeStartRoute
   '/_mainLayout/journal/': typeof MainLayoutJournalIndexRoute
   '/_mainLayout/settings/': typeof MainLayoutSettingsIndexRoute
-  '/_welcomeLayout/welcome/': typeof WelcomeLayoutWelcomeIndexRoute
   '/_mainLayout/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
-  '/_mainLayout/ledger/$view/$': typeof MainLayoutLedgerViewSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -162,30 +102,18 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/categories'
     | '/settings/$section'
-    | '/welcome/categories'
-    | '/welcome/getting-started'
-    | '/welcome/journal'
-    | '/welcome/start'
     | '/journal'
     | '/settings'
-    | '/welcome'
     | '/journal/$view/$'
-    | '/ledger/$view/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/accounts'
     | '/categories'
     | '/settings/$section'
-    | '/welcome/categories'
-    | '/welcome/getting-started'
-    | '/welcome/journal'
-    | '/welcome/start'
     | '/journal'
     | '/settings'
-    | '/welcome'
     | '/journal/$view/$'
-    | '/ledger/$view/$'
   id:
     | '__root__'
     | '/'
@@ -194,21 +122,15 @@ export interface FileRouteTypes {
     | '/_mainLayout/accounts'
     | '/_mainLayout/categories'
     | '/_mainLayout/settings/$section'
-    | '/_welcomeLayout/welcome/categories'
-    | '/_welcomeLayout/welcome/getting-started'
-    | '/_welcomeLayout/welcome/journal'
-    | '/_welcomeLayout/welcome/start'
     | '/_mainLayout/journal/'
     | '/_mainLayout/settings/'
-    | '/_welcomeLayout/welcome/'
     | '/_mainLayout/journal/$view/$'
-    | '/_mainLayout/ledger/$view/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainLayoutRoute: typeof MainLayoutRouteWithChildren
-  WelcomeLayoutRoute: typeof WelcomeLayoutRouteWithChildren
+  WelcomeLayoutRoute: typeof WelcomeLayoutRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -248,13 +170,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainLayoutAccountsRouteImport
       parentRoute: typeof MainLayoutRoute
     }
-    '/_welcomeLayout/welcome/': {
-      id: '/_welcomeLayout/welcome/'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeLayoutWelcomeIndexRouteImport
-      parentRoute: typeof WelcomeLayoutRoute
-    }
     '/_mainLayout/settings/': {
       id: '/_mainLayout/settings/'
       path: '/settings'
@@ -269,46 +184,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainLayoutJournalIndexRouteImport
       parentRoute: typeof MainLayoutRoute
     }
-    '/_welcomeLayout/welcome/start': {
-      id: '/_welcomeLayout/welcome/start'
-      path: '/welcome/start'
-      fullPath: '/welcome/start'
-      preLoaderRoute: typeof WelcomeLayoutWelcomeStartRouteImport
-      parentRoute: typeof WelcomeLayoutRoute
-    }
-    '/_welcomeLayout/welcome/journal': {
-      id: '/_welcomeLayout/welcome/journal'
-      path: '/welcome/journal'
-      fullPath: '/welcome/journal'
-      preLoaderRoute: typeof WelcomeLayoutWelcomeJournalRouteImport
-      parentRoute: typeof WelcomeLayoutRoute
-    }
-    '/_welcomeLayout/welcome/getting-started': {
-      id: '/_welcomeLayout/welcome/getting-started'
-      path: '/welcome/getting-started'
-      fullPath: '/welcome/getting-started'
-      preLoaderRoute: typeof WelcomeLayoutWelcomeGettingStartedRouteImport
-      parentRoute: typeof WelcomeLayoutRoute
-    }
-    '/_welcomeLayout/welcome/categories': {
-      id: '/_welcomeLayout/welcome/categories'
-      path: '/welcome/categories'
-      fullPath: '/welcome/categories'
-      preLoaderRoute: typeof WelcomeLayoutWelcomeCategoriesRouteImport
-      parentRoute: typeof WelcomeLayoutRoute
-    }
     '/_mainLayout/settings/$section': {
       id: '/_mainLayout/settings/$section'
       path: '/settings/$section'
       fullPath: '/settings/$section'
       preLoaderRoute: typeof MainLayoutSettingsSectionRouteImport
-      parentRoute: typeof MainLayoutRoute
-    }
-    '/_mainLayout/ledger/$view/$': {
-      id: '/_mainLayout/ledger/$view/$'
-      path: '/ledger/$view/$'
-      fullPath: '/ledger/$view/$'
-      preLoaderRoute: typeof MainLayoutLedgerViewSplatRouteImport
       parentRoute: typeof MainLayoutRoute
     }
     '/_mainLayout/journal/$view/$': {
@@ -328,7 +208,6 @@ interface MainLayoutRouteChildren {
   MainLayoutJournalIndexRoute: typeof MainLayoutJournalIndexRoute
   MainLayoutSettingsIndexRoute: typeof MainLayoutSettingsIndexRoute
   MainLayoutJournalViewSplatRoute: typeof MainLayoutJournalViewSplatRoute
-  MainLayoutLedgerViewSplatRoute: typeof MainLayoutLedgerViewSplatRoute
 }
 
 const MainLayoutRouteChildren: MainLayoutRouteChildren = {
@@ -338,38 +217,16 @@ const MainLayoutRouteChildren: MainLayoutRouteChildren = {
   MainLayoutJournalIndexRoute: MainLayoutJournalIndexRoute,
   MainLayoutSettingsIndexRoute: MainLayoutSettingsIndexRoute,
   MainLayoutJournalViewSplatRoute: MainLayoutJournalViewSplatRoute,
-  MainLayoutLedgerViewSplatRoute: MainLayoutLedgerViewSplatRoute,
 }
 
 const MainLayoutRouteWithChildren = MainLayoutRoute._addFileChildren(
   MainLayoutRouteChildren,
 )
 
-interface WelcomeLayoutRouteChildren {
-  WelcomeLayoutWelcomeCategoriesRoute: typeof WelcomeLayoutWelcomeCategoriesRoute
-  WelcomeLayoutWelcomeGettingStartedRoute: typeof WelcomeLayoutWelcomeGettingStartedRoute
-  WelcomeLayoutWelcomeJournalRoute: typeof WelcomeLayoutWelcomeJournalRoute
-  WelcomeLayoutWelcomeStartRoute: typeof WelcomeLayoutWelcomeStartRoute
-  WelcomeLayoutWelcomeIndexRoute: typeof WelcomeLayoutWelcomeIndexRoute
-}
-
-const WelcomeLayoutRouteChildren: WelcomeLayoutRouteChildren = {
-  WelcomeLayoutWelcomeCategoriesRoute: WelcomeLayoutWelcomeCategoriesRoute,
-  WelcomeLayoutWelcomeGettingStartedRoute:
-    WelcomeLayoutWelcomeGettingStartedRoute,
-  WelcomeLayoutWelcomeJournalRoute: WelcomeLayoutWelcomeJournalRoute,
-  WelcomeLayoutWelcomeStartRoute: WelcomeLayoutWelcomeStartRoute,
-  WelcomeLayoutWelcomeIndexRoute: WelcomeLayoutWelcomeIndexRoute,
-}
-
-const WelcomeLayoutRouteWithChildren = WelcomeLayoutRoute._addFileChildren(
-  WelcomeLayoutRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainLayoutRoute: MainLayoutRouteWithChildren,
-  WelcomeLayoutRoute: WelcomeLayoutRouteWithChildren,
+  WelcomeLayoutRoute: WelcomeLayoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

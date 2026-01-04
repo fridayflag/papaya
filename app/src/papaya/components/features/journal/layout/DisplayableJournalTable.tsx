@@ -12,7 +12,7 @@ interface DisplayableJournalTableProps {
   slice: JournalSlice;
 }
 
-const formatFigure = (figure: Figure): string => {
+const _formatFigure = (figure: Figure): string => {
   const symbol = figure.currency === 'CAD' ? 'C$' : '$'
   const value = Math.abs(figure.amount)
   const formatted = value.toLocaleString('en-US', {
