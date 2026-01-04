@@ -1,8 +1,31 @@
-import { Box, Divider, Paper, Stack } from "@mui/material"
-import JournalToolbar from "../display/JournalToolbar"
-import DisplayableJournalTable from "./DisplayableJournalTable"
+import { JournalContext } from "@/contexts/JournalContext";
+import { JournalSlice } from "@/schema/journal/aggregate";
+import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
+import { useContext, useMemo } from "react";
+import JournalToolbar from "../display/JournalToolbar";
+import DisplayableJournalTable from "./DisplayableJournalTable";
 
-export default function DisplayableJournal() {
+interface DisplayableJournalProps {
+  slice: JournalSlice;
+}
+
+type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
+
+export default function DisplayableJournal(props: DisplayableJournalProps) {
+  const journalContext = useContext(JournalContext)
+
+  const status: DisplayableJournalStatus = useMemo(() => {
+    if (!journalContext.activeJournalId) {
+      return 'no-journal';
+    } else if (journalContext.queries.journal.isFetched && !journalContext.queries.journal.data) {
+      return 'no-journal';
+    } else if (journalContext.queries.journal.isLoading) {
+      return 'loading';
+    }
+
+    return 'idle';
+  }, [journalContext.activeJournalId, journalContext.queries.journal]);
+
   return (
     <Stack
       direction="row"
@@ -41,7 +64,9 @@ export default function DisplayableJournal() {
               overflowY: 'auto',
               minHeight: 0, // Allow flex item to shrink
             }}>
-            <DisplayableJournalTable view={view} />
+            {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
+            {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
+            {status === 'idle' && <DisplayableJournalTable slice={props.slice} />}
           </Box>
         </Stack>
       </Stack>

@@ -5,12 +5,12 @@ type SessionCacheKeys = {
 }
 
 export default class SessionCache {
-  static get<K extends keyof SessionCacheKeys>(key: K): SessionCacheKeys[K] | null {
-    return sessionStorage.getItem(key) as SessionCacheKeys[K] | null;
+  static get<K extends keyof SessionCacheKeys>(key: K): SessionCacheKeys[K] | undefined {
+    return sessionStorage.getItem(key) as SessionCacheKeys[K] | undefined;
   }
 
-  static set<K extends keyof SessionCacheKeys>(key: K, value: SessionCacheKeys[K] | null) {
-    if (value === null) {
+  static set<K extends keyof SessionCacheKeys>(key: K, value: SessionCacheKeys[K] | undefined | null) {
+    if (value === null || value === undefined) {
       sessionStorage.removeItem(key);
       return;
     }

@@ -1,4 +1,4 @@
-import { getJournalEntryWithAttachments } from '@/database/queries'
+import { getJournalEntryWithAttachments } from '@/database/actions'
 import { JournalEntry } from '@/schema/documents/JournalEntry'
 import { StatusVariant } from '@/schema/models/EntryStatus'
 import { discriminateEntryTags } from '@/utils/journal'

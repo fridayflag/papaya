@@ -1,5 +1,4 @@
 import { PapayaConfig, PapayaConfigSchema, UserSettings, UserSettingsSchema } from '@/schema/application/config'
-import { JournalAggregate } from '@/schema/journal/aggregate'
 import { Entry, Journal } from '@/schema/journal/resource/document'
 import { makeDefaultConfig, makeJournal } from '@/schema/support/factory'
 import { JournalUrn } from '@/schema/support/urn'
@@ -35,6 +34,13 @@ export const getOrCreatePapayaConfig = async (): Promise<PapayaConfig> => {
   return newConfig
 }
 
+export const getJournal = async (journalId: JournalUrn | null): Promise<Journal | undefined> => {
+  if (!journalId) {
+    return undefined;
+  }
+  return db.get<Journal>(journalId);
+}
+
 export const getJournals = async (): Promise<Journal[]> => {
   console.log('Use Math.infinite() to get all journals');
   const journals = await db.find({
@@ -62,14 +68,7 @@ export const updateSettings = async (settings: UserSettings): Promise<void> => {
   await db.put(config);
 }
 
-export const getJournalAggregate = async (journalId: JournalUrn | null): Promise<JournalAggregate | undefined> => {
-  if (!journalId) {
-    return undefined;
-  }
-  const journal = await db.get<Journal>(journalId);
-  if (!journal) {
-    return undefined;
-  }
+export const getJournalEntries = async (journalId: JournalUrn | null): Promise<Entry[]> => {
   const entries = await db.find({
     selector: {
       kind: 'papaya:document:entry',
@@ -78,8 +77,5 @@ export const getJournalAggregate = async (journalId: JournalUrn | null): Promise
     limit: ARBITRARY_MAX_FIND_LIMIT,
   });
 
-  return {
-    journal: journal,
-    entries: Object.fromEntries((entries.docs as Entry[]).map((entry: Entry) => [entry.urn, entry])),
-  };
-}
+  return entries.docs as Entry[];
+};

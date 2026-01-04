@@ -1,19 +1,15 @@
-import { JournalView } from "@/schema/journal/aggregate"
+import { JournalContext } from '@/contexts/JournalContext'
+import { useJournalView } from '@/hooks/queries'
+import { JournalSlice } from '@/schema/journal/aggregate'
 import { Figure } from '@/schema/journal/entity/figure'
-import { sortDatesChronologically } from '@/utils/date'
 import {
-  Chip,
-  Stack,
-  Table,
   Typography
 } from '@mui/material'
-import dayjs from "dayjs"
-import { useMemo } from 'react'
-import LedgerEntryDate from '../display/JournalEntryDate'
+import { useContext } from 'react'
 
 
 interface DisplayableJournalTableProps {
-  view: JournalView;
+  slice: JournalSlice;
 }
 
 const formatFigure = (figure: Figure): string => {
@@ -27,79 +23,19 @@ const formatFigure = (figure: Figure): string => {
   return `${sign}${symbol}${formatted}`
 }
 
+
 export default function DisplayableJournalTable(props: DisplayableJournalTableProps) {
-  const entriesByDate = useMemo(() => {
-    const grouped: Record<string, DisplayableLedgerEntry[]> = {}
+  const journalContext = useContext(JournalContext)
 
-    for (const entry of props.entries) {
-      const dateKey = entry.date.format('YYYY-MM-DD')
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = []
-      }
-      grouped[dateKey].push(entry)
-    }
+  const viewQuery = useJournalView(journalContext.activeJournalId, props.slice);
 
-    // Sort entries within each date group (if needed)
-    for (const dateKey in grouped) {
-      grouped[dateKey].sort((a, b) => {
-        // Sort by date first, then by memo
-        const dateCompare = a.date.valueOf() - b.date.valueOf()
-        if (dateCompare !== 0) return dateCompare
-        return a.memo.localeCompare(b.memo)
-      })
-    }
-
-    return grouped
-  }, [props.entries])
-
-  const sortedDates = useMemo(() => {
-    return sortDatesChronologically(...Object.keys(entriesByDate))
-  }, [entriesByDate])
+  if (viewQuery.isLoading) {
+    return <Typography variant="body1">Loading table...</Typography>
+  }
 
   return (
-    <Table size="small" sx={{ overflowY: 'scroll' }}>
-      {sortedDates.map((date: string) => {
-        const entries = entriesByDate[date] ?? []
-        const day = dayjs(date)
-        const isToday = day.isSame(dayjs(), 'day')
-
-        return (
-          <TableBody key={date}>
-            <TableRow
-              dateRow
-              sx={{
-                verticalAlign: entries.length > 1 ? 'top' : undefined,
-              }}>
-              <TableCell rowSpan={entries.length + 1}>
-                <LedgerEntryDate
-                  day={day}
-                  isToday={isToday}
-                />
-              </TableCell>
-            </TableRow>
-
-            {entries.map((entry, index) => {
-              return (
-                <TableRow key={`${date}-${index}-${entry.memo}`}>
-                  <TableCell sx={{ width: '30%' }}>
-                    <Typography>{entry.memo}</Typography>
-                  </TableCell>
-                  <TableCell align="right" sx={{ width: '15%' }}>
-                    <Typography>{formatAmount(entry.netAmount)}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={0.5} flexWrap="wrap" gap={0.5}>
-                      {entry.topics.map((topic) => (
-                        <Chip key={topic} label={topic} size="small" />
-                      ))}
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        )
-      })}
-    </Table>
+    <div>
+      {JSON.stringify(viewQuery.data)}
+    </div>
   )
 }

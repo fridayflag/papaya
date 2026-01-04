@@ -1,14 +1,8 @@
-import { EntryUrnSchema } from "@/schema/support/urn";
 import z from "zod";
-import { EntrySchema, JournalSchema } from "./resource/document";
+import { StampVariantSchema } from "./display";
+import { DateViewSchema } from "./facet";
+import { JournalSchema } from "./resource/document";
 import { AccountSlugSchema, TopicSlugSchema } from "./string";
-
-export const JournalAggregateSchema = z.object({
-  journal: JournalSchema,
-  entries: z.record(EntryUrnSchema, EntrySchema),
-})
-
-export type JournalAggregate = z.infer<typeof JournalAggregateSchema>;
 
 const DisplayableJournalEntryActionSchema = z.object({
   variant: z.enum(['ACCEPT', 'REJECT', 'NUDGE']),
@@ -24,35 +18,58 @@ const DisplayableJournalEntrySchema = z.object({
   destinationAccount: AccountSlugSchema.nullable(),
   primaryAction: DisplayableJournalEntryActionSchema.nullable(),
   secondaryAction: DisplayableJournalEntryActionSchema.nullable(),
-  badges: z.array(z.enum([
-    'FLAGGED',
-    'IMPORTANT',
-  ])),
+  stamps: z.array(StampVariantSchema).nullable(),
 
   get children() {
     return z.array(DisplayableJournalEntrySchema);
   }
 });
 
+export type DisplayableJournalEntry = z.infer<typeof DisplayableJournalEntrySchema>;
+
 export const JournalSliceSchema = z.object({
-  journal: JournalSchema,
-  period: z.enum(['DAY', 'WEEK', 'MONTH', 'YEAR']),
-  afterDate: z.iso.date().nullable(),
-  beforeDate: z.iso.date().nullable(),
-  filters: z.literal([]), // TODO: implement filters later
+  timeframe: DateViewSchema,
+  filters: z.literal(null), // TODO: implement filters later
+  sortBy: z.enum(['DATE', 'MEMO', 'AMOUNT']).optional().default('DATE'),
+  sortOrder: z.enum(['ASC', 'DESC']).optional().default('ASC'),
+  groupBy: z.enum(['DATE']).optional().default('DATE'),
+  layout: z.enum(['TABLE', 'LIST']).optional().default('TABLE'),
 })
 export type JournalSlice = z.infer<typeof JournalSliceSchema>;
 
-export const JournalViewSchema = z.object({
-  parameters: JournalSliceSchema,
-  layout: z.literal('TABLE'),
-  entries: z.array(DisplayableJournalEntrySchema),
-  sortBy: z.enum(['DATE', 'MEMO', 'AMOUNT']),
-  sortOrder: z.enum(['ASC', 'DESC']),
-  groupBy: z.enum(['DATE']).nullable(),
+export const DisplayableJournalEntryAggregateSchema = z.object({
+  groups: z.array(z.object({
+    entries: z.array(DisplayableJournalEntrySchema),
+    qualifier: z.union([
+      z.object({ date: z.iso.date() }),
+      z.object({
+        alphabet: z.union([
+          z.literal('0-9'),
+          z.literal('A-H'),
+          z.literal('I-N'),
+          z.literal('O-Z'),
+        ])
+      }),
+    ])
+  }))
 });
+export type DisplayableJournalEntryAggregate = z.infer<typeof DisplayableJournalEntryAggregateSchema>;
 
+/**
+ * Represents the set of searchable, displayable journal objects.
+ */
+export const JournalIndexSchema = z.object({
+  entries: z.array(DisplayableJournalEntrySchema),
+})
+
+export type JournalIndex = z.infer<typeof JournalIndexSchema>;
+
+/**
+ * Represents the sorted, filtered, grouped, and displayable journal entries.
+ */
+export const JournalViewSchema = z.object({
+  journal: JournalSchema,
+  parameters: JournalSliceSchema,
+  aggregate: DisplayableJournalEntryAggregateSchema,
+});
 export type JournalView = z.infer<typeof JournalViewSchema>;
-
-
-

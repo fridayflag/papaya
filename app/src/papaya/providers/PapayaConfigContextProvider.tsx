@@ -1,6 +1,6 @@
 
 import { PapayaConfigContext } from '@/contexts/PapayaConfigContext'
-import { getOrCreatePapayaConfig } from '@/database/queries'
+import { getOrCreatePapayaConfig } from '@/database/actions'
 import { PapayaConfig, UserSettings } from '@/schema/application/config'
 import { useQuery } from '@tanstack/react-query'
 import { PropsWithChildren } from 'react'

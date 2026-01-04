@@ -1,19 +1,19 @@
-import JournalEditor from '@/components/journal/JournalEditor'
-import { DateView, DateViewVariant } from '@/schema/support/search/facet'
+import DisplayableJournal from '@/components/features/journal/layout/DisplayableJournal'
+import { JournalSlice } from '@/schema/journal/aggregate'
+import { DateView, DateViewVariant } from '@/schema/journal/facet'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import JournalFilterContextProvider from '@/providers/JournalFilterContextProvider'
 
 export const Route = createFileRoute('/_mainLayout/journal/$view/$')({
   component: JournalPage,
   params: {
-    parse: (params) => {
+    parse: (urlParams) => {
       const view: DateViewVariant | undefined = Object.values(DateViewVariant).find((v: DateViewVariant) => {
-        return v === params.view.toLowerCase()
+        return v === urlParams.view.toLowerCase()
       })
 
-      const catchAll = params._splat ?? ''
+      const catchAll = urlParams._splat ?? ''
       const [year, month, day] = catchAll.split('/').filter(Boolean) as [
         string | undefined,
         string | undefined,
@@ -37,11 +37,11 @@ export const Route = createFileRoute('/_mainLayout/journal/$view/$')({
       }
       return paramValues
     },
-    stringify: (params) => {
-      const y = params.y ? String(Number(params.y)) : undefined
-      const m = params.m ? String(Number(params.m)) : undefined
-      const d = params.d ? String(Number(params.d)) : undefined
-      const view = params.view
+    stringify: (urlParams) => {
+      const y = urlParams.y ? String(Number(urlParams.y)) : undefined
+      const m = urlParams.m ? String(Number(urlParams.m)) : undefined
+      const d = urlParams.d ? String(Number(urlParams.d)) : undefined
+      const view = urlParams.view
       const _splat = [y, m, d].filter(Boolean).join('/')
 
       return { view, y, m, d, _splat }
@@ -56,12 +56,13 @@ export const Route = createFileRoute('/_mainLayout/journal/$view/$')({
 })
 
 function JournalPage() {
-  const params = Route.useParams()
-  const view: DateViewVariant = params.view
+  const urlParams = Route.useParams()
 
-  const now = useMemo(() => dayjs(), [])
 
   const dateView = useMemo((): DateView => {
+    const view: DateViewVariant = urlParams.view
+    const now = dayjs()
+
     if (view === DateViewVariant.CUSTOM) {
       // TODO startDate and endDate to be pulled from query params
       throw new Error('Not implemented')
@@ -71,7 +72,7 @@ function JournalPage() {
       case DateViewVariant.ANNUAL:
         return {
           view: DateViewVariant.ANNUAL,
-          year: Number(params.y ?? now),
+          year: Number(urlParams.y ?? now),
         }
 
       case DateViewVariant.FISCAL:
@@ -79,27 +80,33 @@ function JournalPage() {
       case DateViewVariant.DAILY:
         return {
           view,
-          year: Number(params.y ?? now.year()),
-          month: Number(params.m ?? now.month() + 1),
-          day: Number(params.d ?? now.date()),
+          year: Number(urlParams.y ?? now.year()),
+          month: Number(urlParams.m ?? now.month() + 1),
+          day: Number(urlParams.d ?? now.date()),
         }
 
       case DateViewVariant.MONTHLY:
       default:
         return {
           view: DateViewVariant.MONTHLY,
-          year: Number(params.y ?? now.year()),
-          month: Number(params.m ?? now.month() + 1),
+          year: Number(urlParams.y ?? now.year()),
+          month: Number(urlParams.m ?? now.month() + 1),
         }
     }
-  }, [params])
+  }, [urlParams])
+
+  const slice: JournalSlice = {
+    timeframe: dateView,
+    groupBy: 'DATE',
+    filters: null,
+    sortBy: 'DATE',
+    sortOrder: 'ASC',
+    layout: 'TABLE',
+  }
 
   return (
-    <JournalFilterContextProvider
-      routerFilters={{
-        DATE: dateView,
-      }}>
-      <JournalEditor />
-    </JournalFilterContextProvider>
+    <DisplayableJournal
+      slice={slice}
+    />
   )
 }

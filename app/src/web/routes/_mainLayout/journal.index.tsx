@@ -1,4 +1,4 @@
-import { DateViewVariant } from '@/schema/support/search/facet'
+import { DateViewVariant } from '@/schema/journal/facet'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_mainLayout/journal/')({
