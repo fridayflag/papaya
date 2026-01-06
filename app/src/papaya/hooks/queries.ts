@@ -40,5 +40,6 @@ export const useJournalView = (journalId: JournalUrn | null | null, slice: Journ
       };
     },
     initialData: null,
+    enabled: Boolean(journalId) && Boolean(indexQuery.data) && Boolean(journalQuery.data),
   });
 }

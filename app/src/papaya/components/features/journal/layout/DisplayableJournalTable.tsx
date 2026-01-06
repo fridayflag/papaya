@@ -35,7 +35,7 @@ export default function DisplayableJournalTable(props: DisplayableJournalTablePr
 
   return (
     <div>
-      {JSON.stringify(viewQuery.data)}
+      {/* {JSON.stringify(viewQuery.data)} */}
     </div>
   )
 }

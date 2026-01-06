@@ -1,9 +1,10 @@
 import { JournalContext } from "@/contexts/JournalContext";
 import { JournalSlice } from "@/schema/journal/aggregate";
-import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Divider, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useContext, useMemo } from "react";
 import JournalToolbar from "../display/JournalToolbar";
 import DisplayableJournalTable from "./DisplayableJournalTable";
+import JournalEntryEditor from "./JournalEntryEditor";
 
 interface DisplayableJournalProps {
   slice: JournalSlice;
@@ -58,16 +59,23 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
           })}>
           <JournalToolbar />
           <Divider />
-          <Box
+          <Grid
+            container
+            columns={12}
             sx={{
               flex: 1,
               overflowY: 'auto',
               minHeight: 0, // Allow flex item to shrink
             }}>
-            {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
-            {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
-            {status === 'idle' && <DisplayableJournalTable slice={props.slice} />}
-          </Box>
+            <Grid size={6}>
+              {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
+              {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
+              {status === 'idle' && <DisplayableJournalTable slice={props.slice} />}
+            </Grid>
+            <Grid size={6}>
+              <JournalEntryEditor />
+            </Grid>
+          </Grid>
         </Stack>
       </Stack>
     </Stack>
