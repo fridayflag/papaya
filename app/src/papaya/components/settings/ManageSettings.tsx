@@ -1,8 +1,8 @@
 import { Paper, Stack, Tab, Tabs, Typography } from '@mui/material'
 import { Link, useParams } from '@tanstack/react-router'
 import { ReactNode } from 'react'
-import JournalSettings from './JournalSettings'
-import SyncingSettings from './SyncingSettings'
+// import JournalSettings from './JournalSettings'
+// import SyncingSettings from './SyncingSettings'
 
 export enum SettingsTab {
   SYNCING = 'syncing',
@@ -15,7 +15,8 @@ export const DEFAULT_SETTINGS_TAB = SettingsTab.SYNCING as const
 const SETTINGS_TABS: Record<SettingsTab, { label: string; component: ReactNode }> = {
   syncing: {
     label: 'Syncing & Account',
-    component: <SyncingSettings />,
+    component: null,
+    // component: <SyncingSettings />,
   },
   appearance: {
     label: 'Appearance & Behavior',
@@ -23,7 +24,8 @@ const SETTINGS_TABS: Record<SettingsTab, { label: string; component: ReactNode }
   },
   journal: {
     label: 'Journal',
-    component: <JournalSettings />,
+    component: null,
+    // component: <JournalSettings />,
   },
 }
 

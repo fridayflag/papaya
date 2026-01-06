@@ -1,8 +1,7 @@
 import z from "zod";
-import { CurrencyIso4217Schema } from "../journal/entity/figure";
-import { createPapayaEntitySchema, PapayaVersionedResourceSchemaTemplate, VersionTagSchema } from "../support/template";
+import { CurrencyIso4217Schema } from "../journal/money";
+import { createPapayaDocumentSchema, createPapayaEntitySchema } from "../support/template";
 import { JournalUrnSchema } from "../support/urn";
-import { CouchDbBaseDocumentShape, CouchDbBaseDocumentTemplate } from "./database";
 
 export const UserSettingsSchema = createPapayaEntitySchema('papaya:entity:usersettings', {
   journal: z.object({
@@ -37,13 +36,10 @@ export const UserSettingsSchema = createPapayaEntitySchema('papaya:entity:userse
 });
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
-export const PapayaConfigSchema = z.object({
-  ...({
-    ...CouchDbBaseDocumentShape,
-    '@version': VersionTagSchema,
-  } as const satisfies PapayaVersionedResourceSchemaTemplate & CouchDbBaseDocumentTemplate),
-  _id: z.literal('papaya:config'),
+export const PapayaConfigSchema = createPapayaDocumentSchema('papaya:document:config', {
   userSettings: UserSettingsSchema,
+}).omit({
+  journalId: true,
 });
 
 export type PapayaConfig = z.infer<typeof PapayaConfigSchema>;

@@ -33,8 +33,9 @@ export function JournalContextProvider(props: PropsWithChildren) {
     // No active journal for this session
     decideActiveJournalId()
       .then((journalId) => {
+        console.log('decided journal ID:', journalId)
         if (journalId) {
-          setActiveJournalId(journalId)
+          handleSetActiveJournalId(journalId)
         }
       })
       .finally(() => {
@@ -43,16 +44,16 @@ export function JournalContextProvider(props: PropsWithChildren) {
   }, [initialized, activeJournalId, papayaConfig]);
 
   const handleSetActiveJournalId = (journalId: JournalUrn | null) => {
-    setActiveJournalId(journalId ?? undefined)
+    setActiveJournalId(journalId)
     SessionCache.set('ACTIVE_JOURNAL_ID', journalId)
   }
 
   return (
     <JournalContext.Provider
       value={{
-        activeJournalId,
+        activeJournalId: activeJournalId ?? null,
         queries: {
-          journal: useJournal(activeJournalId),
+          journal: useJournal(activeJournalId ?? null),
         },
         setActiveJournalId: handleSetActiveJournalId,
       }}

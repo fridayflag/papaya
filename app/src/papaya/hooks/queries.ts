@@ -5,31 +5,31 @@ import { JournalUrn } from "@/schema/support/urn";
 import { aggregateJournalIndexBySlice, generateJournalIndex } from "@/utils/aggregate";
 import { useQuery } from "@tanstack/react-query";
 
-export const useJournal = (journalId: JournalUrn | undefined | null) => useQuery<Journal | undefined>({
+export const useJournal = (journalId: JournalUrn | null) => useQuery<Journal | null>({
   queryKey: ['journal', journalId],
   queryFn: async () => {
-    return journalId ? await getJournal(journalId) : undefined;
+    return getJournal(journalId);
   },
-  initialData: undefined,
+  initialData: null,
 });
 
-export const useJournalIndex = (journalId: JournalUrn | undefined | null) => useQuery<JournalIndex | undefined>({
+export const useJournalIndex = (journalId: JournalUrn | null | null) => useQuery<JournalIndex | null>({
   queryKey: ['journal', journalId, 'index'],
   queryFn: async () => {
-    return journalId ? await generateJournalIndex(journalId) : undefined;
+    return journalId ? await generateJournalIndex(journalId) : null;
   },
-  initialData: undefined,
+  initialData: null,
 });
 
-export const useJournalView = (journalId: JournalUrn | undefined | null, slice: JournalSlice) => {
+export const useJournalView = (journalId: JournalUrn | null | null, slice: JournalSlice) => {
   const indexQuery = useJournalIndex(journalId);
   const journalQuery = useJournal(journalId);
 
-  return useQuery<JournalView | undefined>({
+  return useQuery<JournalView | null>({
     queryKey: ['journal', journalId, 'aggregate', JSON.stringify(slice)],
     queryFn: async () => {
       if (!indexQuery.data || !journalQuery.data) {
-        return undefined;
+        return null;
       }
 
       const aggregate = aggregateJournalIndexBySlice(slice, indexQuery.data);
@@ -39,6 +39,6 @@ export const useJournalView = (journalId: JournalUrn | undefined | null, slice: 
         aggregate,
       };
     },
-    initialData: undefined,
+    initialData: null,
   });
 }

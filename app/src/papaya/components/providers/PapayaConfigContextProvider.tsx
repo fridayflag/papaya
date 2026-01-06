@@ -9,10 +9,13 @@ export default function PapayaConfigContextProvider(props: PropsWithChildren) {
   const getPapayaConfigQuery = useQuery<PapayaConfig | null>({
     queryKey: ['papaya:config'],
     queryFn: async () => {
+      console.log('return getOrCreatePapayaConfig()')
       return getOrCreatePapayaConfig()
     },
     initialData: null,
   })
+
+  console.log('getPapayaConfigQuery.data', getPapayaConfigQuery.data)
 
   const updateSettings = async (settings: UserSettings): Promise<void> => {
     try {

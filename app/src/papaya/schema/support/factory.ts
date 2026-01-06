@@ -27,8 +27,11 @@ export const makeJournal = (journal: Pick<Journal, 'name'>): Journal => {
 }
 
 export const makeDefaultConfig = (): PapayaConfig => {
+  const id = makePapayaUrn('papaya:document:config');
   return {
-    _id: 'papaya:config',
+    _id: id,
+    urn: id,
+    kind: 'papaya:document:config',
     '@version': SCHEMA_VERSION,
     userSettings: {
       kind: 'papaya:entity:usersettings',

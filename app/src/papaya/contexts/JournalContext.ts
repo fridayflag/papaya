@@ -4,9 +4,9 @@ import { UseQueryResult } from '@tanstack/react-query'
 import { createContext } from 'react'
 
 export interface JournalContext {
-  activeJournalId: JournalUrn | undefined | null
+  activeJournalId: JournalUrn | null
   queries: {
-    journal: UseQueryResult<Journal | undefined>
+    journal: UseQueryResult<Journal | null>
   }
   setActiveJournalId: (journalId: JournalUrn | null) => void
 }

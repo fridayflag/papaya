@@ -1,9 +1,8 @@
-import { JournalFilterContext } from '@/contexts/JournalFilterContext'
-import { DailyDateView, DateView, DateViewVariant, SearchFacetKey } from '@/schema/support/search/facet'
+import { DailyDateView, DateView, DateViewVariant } from '@/schema/journal/facet'
 import { getAnnualDateViewFromDate, getMonthlyDateViewFromDate, getWeeklyDateViewFromDate } from '@/utils/date'
 import { useNavigate } from '@tanstack/react-router'
 import dayjs from 'dayjs'
-import { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 interface UseDateView {
   dateView: DateView
@@ -50,8 +49,8 @@ export default function useDateView(): UseDateView {
     [navigate],
   )
 
-  const journalFilterContext = useContext(JournalFilterContext)
-  const dateView: DateView = journalFilterContext?.activeJournalFilters?.[SearchFacetKey.DATE] ?? defaultDateView
+  const dateView: DateView = defaultDateView
+  //= journalFilterContext?.activeJournalFilters?.[SearchFacetKey.DATE] ?? defaultDateView
 
   const startDate = useMemo((): dayjs.Dayjs => {
     if (dateView.view === DateViewVariant.CUSTOM) {

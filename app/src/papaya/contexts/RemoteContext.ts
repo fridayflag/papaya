@@ -1,5 +1,4 @@
 import { createContext } from 'react'
-import { SyncIndication } from '../utils/syncing'
 
 export enum OnlineStatusEnum {
   ONLINE = 'ONLINE',
@@ -39,15 +38,15 @@ export enum SyncErrorEnum {
   MISSING_DATABASE = 'MISSING_DATABASE',
 }
 
-export interface RemoteContext {
-  authStatus: AuthStatusEnum,
-  onlineStatus: OnlineStatusEnum
-  syncStatus: SyncStatusEnum,
-  // syncError: SyncErrorEnum,
-  syncDisabled: boolean
-  syncSupported: boolean
-  syncIndication: SyncIndication
-  sync: () => Promise<void>
+export type RemoteContext = {
+  // authStatus: AuthStatusEnum,
+  // onlineStatus: OnlineStatusEnum
+  // syncStatus: SyncStatusEnum,
+  // // syncError: SyncErrorEnum,
+  // syncDisabled: boolean
+  // syncSupported: boolean
+  // syncIndication: SyncIndication
+  // sync: () => Promise<void>
 }
 
 export const RemoteContext = createContext<RemoteContext>({} as RemoteContext)

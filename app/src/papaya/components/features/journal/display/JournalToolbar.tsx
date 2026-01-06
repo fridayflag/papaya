@@ -1,21 +1,15 @@
 import { Badge, Button, Stack, Typography } from '@mui/material'
 
-import { JournalFilterContext } from '@/contexts/JournalFilterContext'
-import { SearchFacetKey } from '@/schema/support/search/facet'
-import { enumerateFilters } from '@/utils/filtering'
 import { Add } from '@mui/icons-material'
-import { useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import LedgerDateNavigation from '../navigation/LedgerDateNavigation'
 
 export default function LedgerToolbar() {
   const [showFiltersMenu, setShowFiltersMenu] = useState<boolean>(false)
   const filtersMenuButtonRef = useRef<HTMLButtonElement | null>(null)
 
-  const journalFilterContext = useContext(JournalFilterContext)
 
-  const activeFilterSlots: Set<SearchFacetKey> = journalFilterContext?.activeJournalFilters
-    ? enumerateFilters(journalFilterContext.activeJournalFilters)
-    : new Set()
+  const activeFilterSlots: Set<unknown> = new Set()
 
   const numFilters = activeFilterSlots.size
 

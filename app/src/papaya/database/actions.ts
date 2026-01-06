@@ -8,9 +8,22 @@ const db = getDatabaseClient()
 
 export const ARBITRARY_MAX_FIND_LIMIT = 10000 as const
 
+const configNamespace = 'papaya:document:config' as const satisfies PapayaConfig['kind'];
+
 export const getOrCreatePapayaConfig = async (): Promise<PapayaConfig> => {
-  const configKey = 'papaya:config' as const satisfies PapayaConfig['_id'];
-  const config: PapayaConfig | undefined = await db.get<PapayaConfig>(configKey);
+
+  const result = await db.find({
+    selector: {
+      kind: configNamespace,
+    },
+    limit: 2,
+  });
+
+  if (result.docs.length > 1) {
+    console.warn('Multiple papaya:entity:config documents found.')
+  }
+
+  const config = result.docs[0] as PapayaConfig;
 
   if (config) {
     return config
@@ -29,31 +42,32 @@ export const getOrCreatePapayaConfig = async (): Promise<PapayaConfig> => {
   newConfig.userSettings.journal.defaultJournal = defaultJournal.urn;
   newConfig.userSettings.journal.journalSelection = 'DEFAULT_JOURNAL';
   db.put(newConfig)
-  console.log('Created app config:', newConfig);
+  console.log('Created new app config:', newConfig);
 
   return newConfig
 }
 
-export const getJournal = async (journalId: JournalUrn | null): Promise<Journal | undefined> => {
+export const getJournal = async (journalId: JournalUrn | null): Promise<Journal | null> => {
   if (!journalId) {
-    return undefined;
+    return null;
   }
   return db.get<Journal>(journalId);
 }
 
 export const getJournals = async (): Promise<Journal[]> => {
   console.log('Use Math.infinite() to get all journals');
-  const journals = await db.find({
+  const result = await db.find({
     selector: {
       kind: 'papaya:document:journal',
     },
     limit: ARBITRARY_MAX_FIND_LIMIT,
   });
 
-  return journals.docs as Journal[];
+  const journals = result.docs as Journal[];
+  return journals;
 }
 
-export const getLastOpenedJournal = async (): Promise<Journal | undefined> => {
+export const getLastOpenedJournal = async (): Promise<Journal | null> => {
   const journals = await getJournals();
   return journals.sort((a, b) => {
     return (a.lastOpenedAt ? new Date(a.lastOpenedAt).getTime() : 0) - (b.lastOpenedAt ? new Date(b.lastOpenedAt).getTime() : 0);

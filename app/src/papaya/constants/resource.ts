@@ -4,7 +4,6 @@ export const PAPAYA_ENTITY_NAMESPACE = {
       usersettings: {},
       pictogram: {},
       figure: {},
-      journalaggregate: {},
     },
     resource: {
       stem: {
@@ -21,6 +20,7 @@ export const PAPAYA_ENTITY_NAMESPACE = {
       subentry: {},
     },
     document: {
+      config: {},
       journal: {},
       person: {},
       entry: {},

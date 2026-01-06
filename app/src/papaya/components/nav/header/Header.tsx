@@ -1,10 +1,8 @@
-import { useAppMenuStateStore } from '@/store/useAppMenuStateStore'
 import { Menu, MenuOpen, Settings } from '@mui/icons-material'
 import { IconButton, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import ActiveJournal from './ActiveJournal'
 import AppLogo from './AppLogo'
 import SearchWidget from './search/SearchWidget'
-import SyncHeaderWidget from './SyncHeaderWidget'
 import UserWidget from './UserWidget'
 
 interface HeaderProps {
@@ -16,9 +14,9 @@ export default function Header(props: HeaderProps) {
   const showLogo = !useMediaQuery(theme.breakpoints.down('md'))
 
   // Get toggle menu function from zustand store
-  const toggleExpanded = useAppMenuStateStore((state) => state.toggleExpanded)
-  const openDrawer = useAppMenuStateStore((state) => state.openDrawer)
-  const isExpanded = useAppMenuStateStore((state) => state.isExpanded)
+  const toggleExpanded = () => { } // useAppMenuStateStore((state) => state.toggleExpanded)
+  const openDrawer = () => { } // useAppMenuStateStore((state) => state.openDrawer)
+  const isExpanded = true; // useAppMenuStateStore((state) => state.isExpanded)
 
   const handleClickMenuButton = () => {
     // If the screen is small, open the drawer. Otherwise, toggle the menu
@@ -51,7 +49,7 @@ export default function Header(props: HeaderProps) {
           <Typography variant="h6" sx={(theme) => ({ color: theme.palette.text.secondary })}>Journal</Typography>
           <Typography component="span" sx={(theme) => ({ color: theme.palette.text.secondary })}>/</Typography>
           <ActiveJournal sx={{ ml: -1 }} />
-          <SyncHeaderWidget />
+          {/* <SyncHeaderWidget /> */}
         </Stack>
       </Stack>
       <Stack direction="row" gap={1} alignItems={'center'} sx={{ flex: 1, justifyContent: 'flex-end' }}>

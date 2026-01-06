@@ -1,6 +1,7 @@
 import z from "zod";
 import {
   AttachmentStemNamespaceSchema,
+  ConfigNamespaceSchema,
   EntryNamespaceSchema,
   GratuityStemNamespaceSchema,
   JournalNamespaceSchema,
@@ -15,6 +16,9 @@ import {
   TaskListStemNamespaceSchema,
   TaskNamespaceSchema
 } from "./namespace";
+
+export const ConfigUrnSchema = z.templateLiteral([ConfigNamespaceSchema, ':', z.uuid()]);
+export type ConfigUrn = z.infer<typeof ConfigUrnSchema>;
 
 export const JournalUrnSchema = z.templateLiteral([JournalNamespaceSchema, ':', z.uuid()]);
 export type JournalUrn = z.infer<typeof JournalUrnSchema>;
@@ -66,6 +70,7 @@ export const PapayaUrnSchema = z.union(Object.values({
   'papaya:resource:stem:obligation': ObligationStemUrnSchema,
   'papaya:resource:stem:recurrence': RecurrenceStemUrnSchema,
   'papaya:resource:stem:tasklist': TaskListStemUrnSchema,
+  'papaya:document:config': ConfigUrnSchema,
   'papaya:document:journal': JournalUrnSchema,
   'papaya:document:person': PersonUrnSchema,
   'papaya:document:entry': EntryUrnSchema,

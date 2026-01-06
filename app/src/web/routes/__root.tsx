@@ -1,4 +1,4 @@
-import PapayaProviders from '@/providers'
+import PapayaProviders from '@/components/providers'
 import { QueryClient } from '@tanstack/react-query'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 

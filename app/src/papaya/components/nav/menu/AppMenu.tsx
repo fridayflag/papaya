@@ -1,6 +1,4 @@
 import { APP_MENU } from '@/constants/menu'
-import { useOpenEntryEditModalForCreate } from '@/store/app/useJournalEntryEditModalState'
-import { useAppMenuStateStore } from '@/store/useAppMenuStateStore'
 import { Add, Create, Menu } from '@mui/icons-material'
 import {
   Box,
@@ -29,10 +27,9 @@ interface CreateEntryButtonProps extends AppMenuProps {
 }
 
 const CreateEntryButton = (props: CreateEntryButtonProps) => {
-  const openEntryEditModalForCreate = useOpenEntryEditModalForCreate()
 
   const handleCreateEntry = () => {
-    openEntryEditModalForCreate()
+    // openEntryEditModalForCreate()
   }
 
   if (props.view === 'mobile') {
@@ -77,11 +74,11 @@ const LOCAL_STORAGE_KEY = 'PAPAYA_APP_MENU_OPEN_STATE'
 
 export default function AppMenu(props: AppMenuProps) {
   const { view } = props
-  const isExpanded = useAppMenuStateStore((state) => state.isExpanded)
-  const isDrawerOpen = useAppMenuStateStore((state) => state.isDrawerOpen)
-  const closeMenu = useAppMenuStateStore((state) => state.collapse)
-  const openMenu = useAppMenuStateStore((state) => state.expand)
-  const closeDrawer = useAppMenuStateStore((state) => state.closeDrawer)
+  const isExpanded = true; // useAppMenuStateStore((state) => state.isExpanded)
+  const isDrawerOpen = false // useAppMenuStateStore((state) => state.isDrawerOpen)
+  const closeMenu = () => { } // useAppMenuStateStore((state) => state.collapse)
+  const openMenu = () => { } // useAppMenuStateStore((state) => state.expand)
+  const closeDrawer = () => { } // useAppMenuStateStore((state) => state.closeDrawer)
   const location = useLocation();
 
   useEffect(() => {

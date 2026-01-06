@@ -2,6 +2,7 @@ import KeyboardShortcut from '@/components/display/KeyboardShortcut'
 import { KeyboardActionName } from '@/constants/keyboard'
 import useDateView from '@/hooks/facets/useDateView'
 import useKeyboardAction from '@/hooks/useKeyboardAction'
+import { DisplayableJournalEntry } from '@/schema/journal/aggregate'
 import { DateViewVariant } from '@/schema/journal/facet'
 import { getAbsoluteDateRangeFromDateView, getEmpiracleDateRangeFromJournalEntries } from '@/utils/date'
 import { ArrowBack, ArrowDropDown, ArrowForward, CalendarToday } from '@mui/icons-material'
@@ -55,7 +56,7 @@ export default function JournalDateActions() {
   const dateViewPickerButtonRef = useRef<HTMLButtonElement | null>(null)
   const hideTodayButton = dateView.view === DateViewVariant.CUSTOM
 
-  const getJournalEntriesQuery = useFilteredJournalEntries()
+  // const getJournalEntriesQuery = useFilteredJournalEntries()
 
   const theme = useTheme()
 
@@ -108,7 +109,7 @@ export default function JournalDateActions() {
 
     // Handle case where an incomplete range is given
     if (!startDate || !endDate) {
-      const journalEntries: JournalEntry[] = Object.values(getJournalEntriesQuery.data ?? {})
+      const journalEntries: DisplayableJournalEntry[] = Object.values([])
       const { startDate: empiracleStartDate, endDate: empiracleEndDate } =
         getEmpiracleDateRangeFromJournalEntries(journalEntries)
       if (empiracleStartDate && empiracleEndDate) {
@@ -156,7 +157,7 @@ export default function JournalDateActions() {
 
     const format = dateView.view === DateViewVariant.WEEKLY ? 'MMM D, YYYY' : 'MMM YYYY'
     return [startDate.format(format), endDate.format(format)].join(DATE_RANGE_SEPERATOR)
-  }, [dateView, getJournalEntriesQuery.data])
+  }, [dateView])
 
   // const calendarAvailableViews = useMemo((): DateView[] => {
   // 	switch (journalSliceContext.view) {

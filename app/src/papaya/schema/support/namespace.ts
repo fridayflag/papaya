@@ -36,9 +36,6 @@ type _PapayaResourceNamespace =
 type _StemNamespace = Namespaced<typeof PAPAYA_ENTITY_NAMESPACE['papaya']['resource']['stem'], 'papaya:resource:stem'>;
 
 // Entity Namespaces
-export const JournalAggregateNamespaceSchema = z.literal('papaya:entity:journalaggregate');
-export type JournalAggregateNamespace = z.infer<typeof JournalAggregateNamespaceSchema>;
-
 export const PictogramNamespaceSchema = z.literal('papaya:entity:pictogram');
 export type PictogramNamespace = z.infer<typeof PictogramNamespaceSchema>;
 
@@ -80,6 +77,9 @@ export const TaskListStemNamespaceSchema = z.literal('papaya:resource:stem:taskl
 export type TaskListStemNamespace = z.infer<typeof TaskListStemNamespaceSchema>;
 
 // Document Namespaces
+export const ConfigNamespaceSchema = z.literal('papaya:document:config');
+export type ConfigNamespace = z.infer<typeof ConfigNamespaceSchema>;
+
 export const JournalNamespaceSchema = z.literal('papaya:document:journal');
 export type JournalNamespace = z.infer<typeof JournalNamespaceSchema>;
 
@@ -100,6 +100,7 @@ const PapayaResourceNamespaceShape = {
   'papaya:resource:stem:obligation': ObligationStemNamespaceSchema,
   'papaya:resource:stem:recurrence': RecurrenceStemNamespaceSchema,
   'papaya:resource:stem:tasklist': TaskListStemNamespaceSchema,
+  'papaya:document:config': ConfigNamespaceSchema,
   'papaya:document:journal': JournalNamespaceSchema,
   'papaya:document:entry': EntryNamespaceSchema,
   'papaya:document:person': PersonNamespaceSchema,
@@ -111,7 +112,6 @@ export type PapayaResourceNamespace = z.infer<typeof PapayaResourceNamespaceSche
 
 export const PapayaEntityNamespaceSchema = z.union(Object.values({
   ...PapayaResourceNamespaceShape,
-  'papaya:entity:journalaggregate': JournalAggregateNamespaceSchema,
   'papaya:entity:usersettings': UserSettingsNamespaceSchema,
   'papaya:entity:pictogram': PictogramNamespaceSchema,
   'papaya:entity:figure': FigureNamespaceSchema,
