@@ -3,6 +3,11 @@ import { CurrencyIso4217Schema } from "../journal/money";
 import { createPapayaDocumentSchema, createPapayaEntitySchema } from "../support/template";
 import { JournalUrnSchema } from "../support/urn";
 
+export const CurrencyPrefererencesSchema = z.object({
+  display: CurrencyIso4217Schema,
+  entry: CurrencyIso4217Schema,
+});
+
 export const UserSettingsSchema = createPapayaEntitySchema('papaya:entity:usersettings', {
   journal: z.object({
     journalSelection: z.enum([
@@ -28,13 +33,14 @@ export const UserSettingsSchema = createPapayaEntitySchema('papaya:entity:userse
     /**
      * Currency preferences
      */
-    currency: z.object({
-      display: CurrencyIso4217Schema,
-      journaling: CurrencyIso4217Schema,
-    }),
+    currency: CurrencyPrefererencesSchema,
   }),
 });
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
+
+export const JournalSettingsSchema = z.object({
+  currency: CurrencyPrefererencesSchema,
+});
 
 export const PapayaConfigSchema = createPapayaDocumentSchema('papaya:document:config', {
   userSettings: UserSettingsSchema,

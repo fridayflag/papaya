@@ -1,5 +1,6 @@
 import z from "zod";
 import { StampVariantSchema } from "./display";
+import { FigureSchema } from "./entity/figure";
 import { DateViewSchema } from "./facet";
 import { JournalSchema } from "./resource/document";
 import { AccountSlugSchema, TopicSlugSchema } from "./string";
@@ -11,8 +12,10 @@ const DisplayableJournalEntryActionSchema = z.object({
 });
 
 const DisplayableJournalEntrySchema = z.object({
-  date: z.iso.date(),
+  displayableEntryId: z.uuid(),
   memo: z.string(),
+  date: z.iso.date(),
+  netAmount: FigureSchema,
   topics: z.array(TopicSlugSchema),
   sourceAccount: AccountSlugSchema.nullable(),
   destinationAccount: AccountSlugSchema.nullable(),
@@ -55,11 +58,27 @@ export const DisplayableJournalEntryAggregateSchema = z.object({
 });
 export type DisplayableJournalEntryAggregate = z.infer<typeof DisplayableJournalEntryAggregateSchema>;
 
+export const DisplayableTopicSchema = z.object({
+  displayableTopicId: z.uuid(),
+  slug: TopicSlugSchema,
+  entries: z.array(z.uuid()),
+});
+export type DisplayableTopic = z.infer<typeof DisplayableTopicSchema>;
+
+export const DisplayableAccountSchema = z.object({
+  displayableAccountId: z.uuid(),
+  slug: AccountSlugSchema,
+  entries: z.array(z.uuid()),
+});
+export type DisplayableAccount = z.infer<typeof DisplayableAccountSchema>;
+
 /**
  * Represents the set of searchable, displayable journal objects.
  */
 export const JournalIndexSchema = z.object({
-  entries: z.array(DisplayableJournalEntrySchema),
+  entries: z.record(DisplayableJournalEntrySchema.shape.displayableEntryId, DisplayableJournalEntrySchema),
+  topics: z.record(DisplayableTopicSchema.shape.displayableTopicId, DisplayableTopicSchema),
+  accounts: z.record(DisplayableAccountSchema.shape.displayableAccountId, DisplayableAccountSchema),
 })
 
 export type JournalIndex = z.infer<typeof JournalIndexSchema>;

@@ -72,7 +72,7 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
               {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
               {status === 'idle' && <DisplayableJournalTable slice={props.slice} />}
             </Grid>
-            <Grid size={6}>
+            <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>
               <JournalEntryEditor />
             </Grid>
           </Grid>

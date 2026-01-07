@@ -1,9 +1,11 @@
-import { getJournal } from "@/database/actions";
+import { JournalContext } from "@/contexts/JournalContext";
+import { getJournal, getJournalEntries } from "@/database/actions";
 import { JournalIndex, JournalSlice, JournalView } from "@/schema/journal/aggregate";
-import { Journal } from "@/schema/journal/resource/document";
-import { JournalUrn } from "@/schema/support/urn";
+import { Entry, Journal } from "@/schema/journal/resource/document";
+import { EntryUrn, JournalUrn } from "@/schema/support/urn";
 import { aggregateJournalIndexBySlice, generateJournalIndex } from "@/utils/aggregate";
 import { useQuery } from "@tanstack/react-query";
+import { useContext } from "react";
 
 export const useJournal = (journalId: JournalUrn | null) => useQuery<Journal | null>({
   queryKey: ['journal', journalId],
@@ -13,20 +15,43 @@ export const useJournal = (journalId: JournalUrn | null) => useQuery<Journal | n
   initialData: null,
 });
 
-export const useJournalIndex = (journalId: JournalUrn | null | null) => useQuery<JournalIndex | null>({
-  queryKey: ['journal', journalId, 'index'],
-  queryFn: async () => {
-    return journalId ? await generateJournalIndex(journalId) : null;
+export const useJournalEntries = (journalId: JournalUrn | null) => useQuery<Record<EntryUrn, Entry>>({
+  queryKey: ['journal', journalId, 'entries'],
+  queryFn: async (): Promise<Record<EntryUrn, Entry>> => {
+    const entries = await getJournalEntries(journalId);
+    return Object.fromEntries(entries.map((entry) => [entry.urn, entry]));
   },
-  initialData: null,
+  enabled: Boolean(journalId),
+  initialData: {},
 });
 
-export const useJournalView = (journalId: JournalUrn | null | null, slice: JournalSlice) => {
-  const indexQuery = useJournalIndex(journalId);
-  const journalQuery = useJournal(journalId);
+export const useActiveJournal = () => {
+  const activeJournalId = useContext(JournalContext).activeJournalId;
+  return useJournal(activeJournalId);
+}
+
+export const useActiveJournalIndex = () => {
+  const activeJournalId = useContext(JournalContext).activeJournalId;
+  const entriesQuery = useJournalEntries(activeJournalId);
+
+  return useQuery<JournalIndex | null>({
+    queryKey: ['journal', activeJournalId, 'index'],
+    queryFn: async () => {
+      return activeJournalId ? await generateJournalIndex(entriesQuery.data) : null;
+    },
+    enabled: Boolean(activeJournalId),
+    initialData: null,
+  });
+}
+
+export const useActiveJournalView = (slice: JournalSlice) => {
+  const activeJournalId = useContext(JournalContext).activeJournalId;
+
+  const indexQuery = useActiveJournalIndex();
+  const journalQuery = useActiveJournal();
 
   return useQuery<JournalView | null>({
-    queryKey: ['journal', journalId, 'aggregate', JSON.stringify(slice)],
+    queryKey: ['journal', activeJournalId, 'aggregate', JSON.stringify(slice)],
     queryFn: async () => {
       if (!indexQuery.data || !journalQuery.data) {
         return null;
@@ -40,6 +65,6 @@ export const useJournalView = (journalId: JournalUrn | null | null, slice: Journ
       };
     },
     initialData: null,
-    enabled: Boolean(journalId) && Boolean(indexQuery.data) && Boolean(journalQuery.data),
+    enabled: Boolean(activeJournalId) && indexQuery.isFetched && journalQuery.isFetched,
   });
 }

@@ -1,8 +1,10 @@
+import { JournalSettingsSchema } from "@/schema/application/config";
 import { CouchDbBaseDocumentShape } from "@/schema/application/database";
 import { EntryNamespace, EntryNamespaceSchema, SubEntryNamespace, SubEntryNamespaceSchema } from "@/schema/support/namespace";
 import { createPapayaDocumentSchema, PapayaDocumentSchemaTemplate, PapayaResourceSchemaTemplate, VersionTagSchema } from "@/schema/support/template";
 import { EntryUrnSchema, JournalUrnSchema, SubEntryUrnSchema } from "@/schema/support/urn";
 import z from "zod";
+import { FigureSchema } from "../entity/figure";
 import { PictogramSchema } from "../entity/pictogram";
 import { AccountSlugSchema, PersonSlugSchema, TopicSlugSchema } from "../string";
 import { StemSchema } from "./stems";
@@ -11,6 +13,7 @@ export const JournalSchema = createPapayaDocumentSchema('papaya:document:journal
   name: z.string(),
   notes: z.string(),
   lastOpenedAt: z.iso.datetime().nullable(),
+  settings: JournalSettingsSchema,
   createdAt: z.iso.datetime(),
 });
 export type Journal = z.infer<typeof JournalSchema>;
@@ -29,6 +32,7 @@ const SubEntrySchema = z.object({
     '@version': VersionTagSchema,
   } as const satisfies PapayaResourceSchemaTemplate<SubEntryNamespace>),
   memo: z.string(),
+  amount: FigureSchema,
   date: z.iso.date(),
   time: z.iso.time().nullish(),
   sourceAccount: AccountSlugSchema.nullish(),

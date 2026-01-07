@@ -1,11 +1,9 @@
-import { JournalContext } from '@/contexts/JournalContext'
-import { useJournalView } from '@/hooks/queries'
+import { useActiveJournalView } from '@/hooks/queries'
 import { JournalSlice } from '@/schema/journal/aggregate'
 import { Figure } from '@/schema/journal/entity/figure'
 import {
   Typography
 } from '@mui/material'
-import { useContext } from 'react'
 
 
 interface DisplayableJournalTableProps {
@@ -25,9 +23,8 @@ const _formatFigure = (figure: Figure): string => {
 
 
 export default function DisplayableJournalTable(props: DisplayableJournalTableProps) {
-  const journalContext = useContext(JournalContext)
 
-  const viewQuery = useJournalView(journalContext.activeJournalId, props.slice);
+  const viewQuery = useActiveJournalView(props.slice);
 
   if (viewQuery.isLoading) {
     return <Typography variant="body1">Loading table...</Typography>

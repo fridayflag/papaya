@@ -35,7 +35,12 @@ export const getOrCreatePapayaConfig = async (): Promise<PapayaConfig> => {
    * Assume that because the config wasn't in the database, there must also be
    * no journal to open by default.
    */
-  const defaultJournal = makeJournal({ name: 'Default Journal' });
+  const defaultJournal = makeJournal({
+    name: 'Default Journal',
+    settings: {
+      currency: { ...newConfig.userSettings.journal.currency }
+    },
+  });
   db.put(defaultJournal)
   console.log('Created new default journal:', defaultJournal);
 
@@ -83,6 +88,9 @@ export const updateSettings = async (settings: UserSettings): Promise<void> => {
 }
 
 export const getJournalEntries = async (journalId: JournalUrn | null): Promise<Entry[]> => {
+  if (!journalId) {
+    return [];
+  }
   const entries = await db.find({
     selector: {
       kind: 'papaya:document:entry',
