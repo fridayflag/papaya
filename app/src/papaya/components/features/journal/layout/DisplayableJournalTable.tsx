@@ -1,9 +1,9 @@
-import { useActiveJournalView } from '@/hooks/queries'
-import { JournalSlice } from '@/schema/journal/aggregate'
-import { Figure } from '@/schema/journal/entity/figure'
+import { useActiveJournalView } from '@/hooks/queries';
+import { JournalSlice } from '@/schema/journal/aggregate';
+import { Figure } from '@/schema/journal/entity/figure';
 import {
   Typography
-} from '@mui/material'
+} from '@mui/material';
 
 
 interface DisplayableJournalTableProps {
@@ -32,7 +32,7 @@ export default function DisplayableJournalTable(props: DisplayableJournalTablePr
 
   return (
     <div>
-      {/* {JSON.stringify(viewQuery.data)} */}
+      {JSON.stringify(viewQuery.data)}
     </div>
   )
 }

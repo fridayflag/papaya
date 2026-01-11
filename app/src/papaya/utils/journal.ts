@@ -1,31 +1,11 @@
-import { DEFAULT_AVATAR } from '@/components/input/picker/PictogramPicker'
-import { JournalEntry } from '@/schema/documents/JournalEntry'
+
+import { DEFAULT_PICTOGRAM } from '@/components/input/picker/PictogramPicker'
+import { Figure } from '@/schema/journal/entity/figure'
 import { Pictogram } from '@/schema/journal/entity/pictogram'
-import { Figure } from '@/schema/new/legacy/Figure'
+import { CurrencyIso4217 } from '@/schema/journal/money'
+import { makeFigure } from '@/schema/support/factory'
 
-/**
- * Strips optional fields from a JournalEntry object
- */
-export const simplifyJournalEntry = (entry: JournalEntry): JournalEntry => {
-  if (!entry.tagIds?.length) {
-    delete entry.tagIds
-  }
-  if (!entry.relatedEntryIds?.length) {
-    delete entry.relatedEntryIds
-  }
-  if (!entry.categoryId) {
-    delete entry.categoryId
-  }
-  if (!entry.notes) {
-    delete entry.notes
-  }
-
-  return {
-    ...entry,
-  }
-}
-
-export const parseJournalEntryAmount = (amount: string | undefined): Figure | undefined => {
+export const parseJournalEntryAmount = (amount: string | undefined, currency: CurrencyIso4217): Figure | undefined => {
   if (!amount) {
     return undefined
   }
@@ -41,11 +21,7 @@ export const parseJournalEntryAmount = (amount: string | undefined): Figure | un
 
   const parsedNetAmount = amount.startsWith('+') ? parsedAmount : -parsedAmount
 
-  return {
-    kind: 'papaya:figure',
-    amount: parsedNetAmount,
-    currency: 'CAD',
-  }
+  return makeFigure(parsedNetAmount, currency);
 }
 
 export const serializeJournalEntryAmount = (amount: number): string => {
@@ -59,7 +35,7 @@ export const generateRandomPictogram = (): Pictogram => {
     .toString(16)
     .padStart(6, '0')}`
   return {
-    ...DEFAULT_AVATAR,
+    ...DEFAULT_PICTOGRAM,
     primaryColor,
   }
 }

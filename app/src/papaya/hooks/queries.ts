@@ -30,16 +30,21 @@ export const useActiveJournal = () => {
   return useJournal(activeJournalId);
 }
 
+export const useActiveJournalEntries = () => {
+  const activeJournalId = useContext(JournalContext).activeJournalId;
+  return useJournalEntries(activeJournalId);
+}
+
 export const useActiveJournalIndex = () => {
   const activeJournalId = useContext(JournalContext).activeJournalId;
-  const entriesQuery = useJournalEntries(activeJournalId);
+  const entriesQuery = useActiveJournalEntries();
 
   return useQuery<JournalIndex | null>({
     queryKey: ['journal', activeJournalId, 'index'],
     queryFn: async () => {
-      return activeJournalId ? await generateJournalIndex(entriesQuery.data) : null;
+      return entriesQuery.data ? await generateJournalIndex(entriesQuery.data) : null;
     },
-    enabled: Boolean(activeJournalId),
+    enabled: entriesQuery.isFetched,
     initialData: null,
   });
 }

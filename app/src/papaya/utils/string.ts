@@ -1,10 +1,11 @@
-import { Figure } from '@/schema/new/legacy/Figure'
-import { Currency } from '@/schema/support/currency'
+import { DEFAULT_CURRENCY } from "@/constants/settings"
+import { Figure } from "@/schema/journal/entity/figure"
+import { CurrencyIso4217 } from "@/schema/journal/money"
 
 export interface FormatCurrencyAmountOptions {
   minimumFractionDigits: number
   maximumFractionDigits: number
-  currency: Currency
+  currency: CurrencyIso4217
 }
 
 /**
@@ -14,7 +15,7 @@ const formatCurrencyAmount = (amount: number, options: Partial<FormatCurrencyAmo
   const combinedOptions: FormatCurrencyAmountOptions = {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-    currency: 'USD',
+    currency: DEFAULT_CURRENCY,
     ...options,
   }
 
@@ -24,14 +25,14 @@ const formatCurrencyAmount = (amount: number, options: Partial<FormatCurrencyAmo
 
 type SymbolRendering = 'simplified' | 'full'
 
-const SYMBOLS_BY_CURRENCY: Record<`${Currency}.${SymbolRendering}`, string> = {
+const SYMBOLS_BY_CURRENCY: Record<`${CurrencyIso4217}.${SymbolRendering}`, string> = {
   'CAD.full': 'C$',
   'CAD.simplified': '$',
   'USD.full': 'US$',
   'USD.simplified': '$',
 }
 
-const getSymbolFromCurrency = (currency: Currency, symbol: SymbolRendering | 'none') => {
+const getSymbolFromCurrency = (currency: CurrencyIso4217, symbol: SymbolRendering | 'none') => {
   if (symbol === 'none') {
     return ''
   }
@@ -44,6 +45,7 @@ export interface PriceStringOptions {
   symbol: SymbolRendering | 'none'
   isApproximate: boolean
   round: boolean
+  fullyQualifyZero: boolean
 }
 
 export const getFigureString = (figure: Figure | undefined, options: Partial<PriceStringOptions> = {}): string => {
@@ -52,6 +54,7 @@ export const getFigureString = (figure: Figure | undefined, options: Partial<Pri
     symbol: 'full',
     isApproximate: false,
     round: false,
+    fullyQualifyZero: false,
     ...options,
   }
   const price = figure?.amount ?? 0
@@ -80,16 +83,11 @@ export const getFigureString = (figure: Figure | undefined, options: Partial<Pri
   }
 
   if (price === 0) {
-    priceStringParts.push('0.00')
+    priceStringParts.push(combinedOptions.fullyQualifyZero ? '0.00' : '0')
   } else {
     priceStringParts.push(formatCurrencyAmount(Math.abs(price), formatOptions))
   }
-
-  return priceStringParts.join('')
-}
-
-export const formatBasisPointsDiff = (basisPoints: number) => {
-  return `${basisPoints >= 0 ? '+' : '-'}${(basisPoints / 100).toFixed(1)}%`
+  return priceStringParts.join('');
 }
 
 export const formatFileSize = (bytes: number): string => {

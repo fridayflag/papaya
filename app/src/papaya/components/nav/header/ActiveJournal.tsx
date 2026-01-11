@@ -1,37 +1,21 @@
-import { JournalContext } from '@/contexts/JournalContext'
+import { useActiveJournal } from '@/hooks/queries'
 import { UnfoldMore } from '@mui/icons-material'
 import { Button, ButtonProps, Tooltip, Typography } from '@mui/material'
-import { useContext } from 'react'
 
 type ActiveJournalProps = ButtonProps
 
 export default function ActiveJournal(props: ActiveJournalProps) {
-  const journalContext = useContext(JournalContext)
-  const { activeJournalId } = journalContext
-
-  const setJournalSelectorStatus = () => { } // useSetJournalSelectorStatus()
-  const journalSelectorStatus = 'CLOSED' // useJournalSelectorStatus()
-
-  // const getJournalsQuery = useJournals()
-  // const journals = getJournalsQuery.data
-  // const activeJournal: Journal | null = activeJournalId ? (journals[activeJournalId] ?? null) : null
-
-  const activeJournal = null;
-
-  let journalName = '' // activeJournal?.journalName
-  if (journalName === '') {
-    journalName = 'Unnamed Journal'
-  }
+  const activeJournalQuery = useActiveJournal()
 
   return (
     <Tooltip title="Manage Journals">
-      {journalSelectorStatus === 'CLOSED' && !activeJournal ? (
-        <Button variant="contained" onClick={() => setJournalSelectorStatus('SELECTING')} {...props}>
+      {!activeJournalQuery.data ? (
+        <Button variant="contained" onClick={() => { }} {...props}>
           Select Journal
         </Button>
       ) : (
-        <Button endIcon={<UnfoldMore />} onClick={() => setJournalSelectorStatus('SELECTING')} {...props}>
-          <Typography variant="h6">{journalName}</Typography>
+        <Button endIcon={<UnfoldMore />} onClick={() => { }} {...props}>
+          <Typography variant="h6">{activeJournalQuery.data?.name}</Typography>
         </Button>
       )}
     </Tooltip>

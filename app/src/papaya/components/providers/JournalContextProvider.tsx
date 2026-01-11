@@ -15,7 +15,7 @@ export function JournalContextProvider(props: PropsWithChildren) {
   const { papayaConfig } = useContext(PapayaConfigContext)
 
   useEffect(() => {
-    if (initialized || !papayaConfig || activeJournalId) {
+    if (initialized || !papayaConfig) {
       return
     }
 
@@ -33,7 +33,6 @@ export function JournalContextProvider(props: PropsWithChildren) {
     // No active journal for this session
     decideActiveJournalId()
       .then((journalId) => {
-        console.log('decided journal ID:', journalId)
         if (journalId) {
           handleSetActiveJournalId(journalId)
         }
@@ -41,7 +40,7 @@ export function JournalContextProvider(props: PropsWithChildren) {
       .finally(() => {
         setInitialized(true)
       })
-  }, [initialized, activeJournalId, papayaConfig]);
+  }, [initialized, papayaConfig]);
 
   const handleSetActiveJournalId = (journalId: JournalUrn | null) => {
     setActiveJournalId(journalId)

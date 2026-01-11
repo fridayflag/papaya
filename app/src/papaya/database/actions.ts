@@ -1,6 +1,6 @@
 import { PapayaConfig, PapayaConfigSchema, UserSettings, UserSettingsSchema } from '@/schema/application/config'
 import { Entry, Journal } from '@/schema/journal/resource/document'
-import { makeDefaultConfig, makeJournal } from '@/schema/support/factory'
+import { _makeTempJournalEntries, makeDefaultConfig, makeJournal } from '@/schema/support/factory'
 import { JournalUrn } from '@/schema/support/urn'
 import { getDatabaseClient } from './client'
 
@@ -48,6 +48,10 @@ export const getOrCreatePapayaConfig = async (): Promise<PapayaConfig> => {
   newConfig.userSettings.journal.journalSelection = 'DEFAULT_JOURNAL';
   db.put(newConfig)
   console.log('Created new app config:', newConfig);
+
+  const tempEntries = _makeTempJournalEntries(defaultJournal.urn);
+  console.log('Creating temp entries:', tempEntries);
+  db.bulkDocs(tempEntries);
 
   return newConfig
 }

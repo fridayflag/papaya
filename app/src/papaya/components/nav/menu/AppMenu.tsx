@@ -74,7 +74,7 @@ const LOCAL_STORAGE_KEY = 'PAPAYA_APP_MENU_OPEN_STATE'
 
 export default function AppMenu(props: AppMenuProps) {
   const { view } = props
-  const isExpanded = true; // useAppMenuStateStore((state) => state.isExpanded)
+  const isExpanded = false; // useAppMenuStateStore((state) => state.isExpanded)
   const isDrawerOpen = false // useAppMenuStateStore((state) => state.isDrawerOpen)
   const closeMenu = () => { } // useAppMenuStateStore((state) => state.collapse)
   const openMenu = () => { } // useAppMenuStateStore((state) => state.expand)

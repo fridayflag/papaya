@@ -21,7 +21,7 @@ const calculateNetFigure = (entry: Entry): Figure => {
  * @param entry 
  * @param context 
  */
-export const makeDisplayableJournalEntry = (entry: Entry, context: Record<EntryUrn, Entry>): DisplayableJournalEntry => {
+export const makeDisplayableJournalEntry = (entry: Entry, _context: Record<EntryUrn, Entry>): DisplayableJournalEntry => {
   // TODO for now we ignore context
   return {
     displayableEntryId: generateId(),

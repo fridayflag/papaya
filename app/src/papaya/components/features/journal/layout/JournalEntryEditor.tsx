@@ -1,11 +1,21 @@
+import { DEFAULT_CURRENCY } from "@/constants/settings";
+import { useUserPreferences } from "@/hooks/state/useUserPreferences";
 import { JournalForm, JournalFormSchema } from "@/schema/form/journal";
+import { JournalUrn } from "@/schema/support/urn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import JournalEntryFormSummary from "../display/JournalEntryFormSummary";
 import JournalEntryForm from "../form/JournalEntryForm";
 
-export default function JournalEntryEditor() {
+interface JournalEntryEditorProps {
+  journalId: JournalUrn;
+}
+
+export default function JournalEntryEditor(props: JournalEntryEditorProps) {
+  const userPreferences = useUserPreferences();
+  const currency = userPreferences?.journal.currency.entry ?? DEFAULT_CURRENCY;
+
   const form = useForm<JournalForm>({
     resolver: zodResolver(JournalFormSchema),
     defaultValues: {
@@ -16,26 +26,14 @@ export default function JournalEntryEditor() {
         topics: [],
         sourceAccount: null,
         destinationAccount: null,
+        urn: null,
       },
-      children: [
-        {
-          memo: 'Child 1',
-          amount: '5',
-          date: new Date().toISOString(),
-          topics: [],
-          sourceAccount: null,
-          destinationAccount: null,
-        },
-        {
-          memo: 'Child 2',
-          amount: '10',
-          date: new Date().toISOString(),
-          topics: [],
-          sourceAccount: null,
-          destinationAccount: null,
-        },
-      ],
-    },
+      childEntries: [],
+      context: {
+        journalId: props.journalId,
+        currency,
+      },
+    } satisfies JournalForm,
   })
   return (
     <FormProvider {...form}>

@@ -1,7 +1,7 @@
 import { JournalContext } from "@/contexts/JournalContext";
 import { JournalSlice } from "@/schema/journal/aggregate";
 import { Divider, Grid, Paper, Stack, Typography } from "@mui/material";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import JournalToolbar from "../display/JournalToolbar";
 import DisplayableJournalTable from "./DisplayableJournalTable";
 import JournalEntryEditor from "./JournalEntryEditor";
@@ -13,10 +13,12 @@ interface DisplayableJournalProps {
 type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
 export default function DisplayableJournal(props: DisplayableJournalProps) {
+  const [isEditing, _setIsEditing] = useState(true);
   const journalContext = useContext(JournalContext)
+  const activeJournalId = journalContext.activeJournalId;
 
   const status: DisplayableJournalStatus = useMemo(() => {
-    if (!journalContext.activeJournalId) {
+    if (!activeJournalId) {
       return 'no-journal';
     } else if (journalContext.queries.journal.isFetched && !journalContext.queries.journal.data) {
       return 'no-journal';
@@ -25,7 +27,7 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
     }
 
     return 'idle';
-  }, [journalContext.activeJournalId, journalContext.queries.journal]);
+  }, [activeJournalId, journalContext.queries.journal]);
 
   return (
     <Stack
@@ -67,14 +69,16 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
               overflowY: 'auto',
               minHeight: 0, // Allow flex item to shrink
             }}>
-            <Grid size={6}>
+            <Grid size={isEditing ? 6 : 12}>
               {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
               {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
               {status === 'idle' && <DisplayableJournalTable slice={props.slice} />}
             </Grid>
-            <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>
-              <JournalEntryEditor />
-            </Grid>
+            {isEditing && activeJournalId && (
+              <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>
+                <JournalEntryEditor journalId={activeJournalId} />
+              </Grid>
+            )}
           </Grid>
         </Stack>
       </Stack>

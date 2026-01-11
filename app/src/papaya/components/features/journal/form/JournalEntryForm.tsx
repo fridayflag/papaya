@@ -1,15 +1,11 @@
 import { JournalForm } from '@/schema/form/journal'
 import { Box } from '@mui/material'
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form'
+import { useFormContext, useWatch } from 'react-hook-form'
 import JournalFormBaseForm from './JournalFormBaseForm'
 
 export default function JournalEntryForm() {
   const { control } = useFormContext<JournalForm>()
-  const children = useWatch({ control, name: 'children' }) ?? []
-  const childEntriesFieldArray = useFieldArray({
-    control,
-    name: 'children',
-  })
+  const children = useWatch({ control, name: 'childEntries' }) ?? []
 
 
   return (

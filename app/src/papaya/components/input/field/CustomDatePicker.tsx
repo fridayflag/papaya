@@ -1,9 +1,11 @@
-import { Popover, TextField } from '@mui/material'
-import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { useState } from 'react'
+import { Popover, TextField, TextFieldProps } from '@mui/material';
+import { DateCalendar, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useState } from 'react';
 
-export default function CustomDatePicker() {
+type CustomDatePickerProps = TextFieldProps;
+
+export default function CustomDatePicker(props: CustomDatePickerProps) {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
 
   return (
@@ -14,6 +16,7 @@ export default function CustomDatePicker() {
         fullWidth
         onClick={(event) => setAnchorEl(event.currentTarget)}
         // onBlur={() => setAnchorEl(null)}
+        {...props}
       />
 
       <Popover

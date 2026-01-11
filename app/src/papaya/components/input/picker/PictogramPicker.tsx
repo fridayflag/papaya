@@ -1,4 +1,5 @@
-import { Pictogram } from '@/schema/journal/entity/pictogram'
+import { SCHEMA_VERSION } from '@/database/SchemaMigration'
+import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
 import { Box, colors, Fade, Icon, Popover, Select, Tab, Tabs } from '@mui/material'
 import { useState } from 'react'
 import IconPicker from './IconPicker'
@@ -10,16 +11,18 @@ interface PictogramPickerProps {
 }
 
 export const DEFAULT_PICTOGRAM = {
+  kind: 'papaya:entity:pictogram',
+  '@version': SCHEMA_VERSION,
   content: 'layers',
-  variant: PictogramVariant.enum.PICTORIAL,
+  variant: PictogramVariantSchema.enum.PICTORIAL,
   primaryColor: colors.grey[500],
 } as const satisfies Pictogram;
 
 const renderPictogramItem = (pictogram: Pictogram) => {
   switch (pictogram.variant) {
-    case PictogramVariant.enum.PICTORIAL:
+    case PictogramVariantSchema.enum.PICTORIAL:
       return <Icon sx={{ color: pictogram.primaryColor }}>{pictogram.content}</Icon>
-    case PictogramVariant.enum.IMAGE:
+    case PictogramVariantSchema.enum.IMAGE:
       return <ImagePictogram pictogram={pictogram} sx={{ my: -0.5, width: '32px', height: '32px' }} />
     default:
       return null

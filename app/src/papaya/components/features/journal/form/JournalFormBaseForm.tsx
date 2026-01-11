@@ -1,7 +1,9 @@
+import DateField from '@/components/input/field/DateField'
 import TopicField from '@/components/input/field/TopicField'
 import { JournalForm } from '@/schema/form/journal'
 import { DeleteOutline, LocalOffer } from '@mui/icons-material'
 import { Card, Grid, IconButton, Stack, TextField } from '@mui/material'
+import dayjs from 'dayjs'
 import { ReactNode } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import AmountField from '../../../input/field/AmountField'
@@ -27,26 +29,47 @@ export default function JournalFormBaseForm(props: JournalFormBaseFormProps) {
     <Stack gap={2}>
       <Card sx={{ p: 2 }}>
         <Grid container columns={12} spacing={1} rowSpacing={1.5} sx={{ flex: '1' }}>
-          <Grid size={12}>
-            <div>
-              <Controller<JournalForm>
-                control={control}
-                name={isBase ? 'baseEntry.memo' : `children.${childIndex}.memo`}
-                render={({ field }) => <TextField size="small" label="Memo" fullWidth {...field} />}
-              />
-            </div>
+          <Grid size={8}>
+            <Controller<JournalForm>
+              control={control}
+              name={isBase ? 'baseEntry.memo' : `childEntries.${childIndex}.memo`}
+              render={({ field }) => <TextField size="small" label="Memo" fullWidth {...field} />}
+            />
           </Grid>
           <Grid size={4}>
             <Controller<JournalForm>
               control={control}
-              name={isBase ? 'baseEntry.amount' : `children.${childIndex}.amount`}
+              name={isBase ? 'baseEntry.date' : `childEntries.${childIndex}.date`}
+              render={({ field }) => (
+                <DateField
+                  slotProps={{
+                    textField: {
+                      size: 'small',
+                      fullWidth: true,
+                    },
+                  }}
+                  label="Date"
+                  {...field}
+                  value={dayjs(field.value)}
+                  onChange={(value) => {
+                    field.onChange(value?.format('YYYY-MM-DD') ?? '')
+                  }}
+
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={4}>
+            <Controller<JournalForm>
+              control={control}
+              name={isBase ? 'baseEntry.amount' : `childEntries.${childIndex}.amount`}
               render={({ field }) => <AmountField size="small" approximate={false} {...field} />}
             />
           </Grid>
           <Grid size={'grow'}>
             <Controller<JournalForm>
               control={control}
-              name={isBase ? 'baseEntry.topics' : `children.${childIndex}.topics`}
+              name={isBase ? 'baseEntry.topics' : `childEntries.${childIndex}.topics`}
               render={({ field }) => <TopicField size="small" label="Topics" fullWidth {...field} />}
             />
           </Grid>

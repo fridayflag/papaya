@@ -3,17 +3,17 @@ import { FixedSizeGrid } from 'react-window'
 
 import icons from '@/constants/icons'
 import { useScrollbarWidth } from '@/hooks/useScrollbarWidth'
-import { Avatar, AvatarVariant } from '@/schema/new/legacy/Avatar'
+import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
 import { Search, Shuffle } from '@mui/icons-material'
 import Fuse from 'fuse.js'
 import { useMemo, useState } from 'react'
-import ColorPicker from '../pickers/ColorPicker'
+import ColorPicker from './ColorPicker'
 
 // const DEFAULT_ICON = 'home'
 
 interface IconPickerProps {
-  value: Avatar
-  onChange: (avatar: Avatar) => void
+  value: Pictogram
+  onChange: (pictogram: Pictogram) => void
 }
 
 const sortedIcons = icons.sort((a, b) => b.popularity - a.popularity)
@@ -48,14 +48,14 @@ export default function IconPicker(props: IconPickerProps) {
     props.onChange({
       ...props.value,
       content: newIcon,
-      variant: AvatarVariant.enum.PICTORIAL,
+      variant: PictogramVariantSchema.enum.PICTORIAL,
     })
   }
 
   const handleChangeColor = (color: string) => {
     props.onChange({
       ...props.value,
-      variant: AvatarVariant.enum.PICTORIAL,
+      variant: PictogramVariantSchema.enum.PICTORIAL,
       primaryColor: color,
     })
   }
@@ -63,7 +63,7 @@ export default function IconPicker(props: IconPickerProps) {
   const handleChangeIcon = (icon: string) => {
     props.onChange({
       ...props.value,
-      variant: AvatarVariant.enum.PICTORIAL,
+      variant: PictogramVariantSchema.enum.PICTORIAL,
       content: icon,
     })
   }

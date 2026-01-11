@@ -1,6 +1,8 @@
 import { amountValidationPattern } from "@/constants/regex";
 import z from "zod";
+import { CurrencyIso4217Schema } from "../journal/money";
 import { AccountSlugSchema, TopicSlugSchema } from "../journal/string";
+import { EntryUrnSchema, JournalUrnSchema, SubEntryUrnSchema } from "../support/urn";
 
 export const JournalFormBaseSchema = z.object({
   memo: z.string(),
@@ -12,9 +14,21 @@ export const JournalFormBaseSchema = z.object({
 });
 export type JournalFormBase = z.infer<typeof JournalFormBaseSchema>;
 
+const JournalFormEntrySchema = JournalFormBaseSchema.extend({
+  urn: EntryUrnSchema.nullable(),
+});
+
+const JournalFormChildEntrySchema = JournalFormEntrySchema.extend({
+  urn: SubEntryUrnSchema.nullable(),
+});
+
 export const JournalFormSchema = z.object({
-  baseEntry: JournalFormBaseSchema,
-  children: z.array(JournalFormBaseSchema),
+  baseEntry: JournalFormEntrySchema,
+  childEntries: z.array(JournalFormChildEntrySchema),
+  context: z.object({
+    journalId: JournalUrnSchema,
+    currency: CurrencyIso4217Schema,
+  }),
 });
 
 export type JournalForm = z.infer<typeof JournalFormSchema>;

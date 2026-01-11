@@ -1,38 +1,38 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings";
-import { JournalContext } from "@/contexts/JournalContext";
-import { useActiveJournalIndex, useJournalEntries } from "@/hooks/queries";
+import { useActiveJournalEntries, useActiveJournalIndex } from "@/hooks/queries";
+import { useUserPreferences } from "@/hooks/state/useUserPreferences";
 import { JournalForm } from "@/schema/form/journal";
 import { DisplayableJournalEntry } from "@/schema/journal/aggregate";
-import { CurrencyIso4217 } from "@/schema/journal/money";
 import { makeFigure } from "@/schema/support/factory";
 import { makeDisplayableJournalEntry } from "@/utils/aggregate";
 import { serializeJournalForm } from "@/utils/form";
+import { getFigureString } from "@/utils/string";
 import { Stack, Typography } from "@mui/material";
-import { useContext, useId, useMemo } from "react";
+import { useId, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 
 
 export default function JournalEntryFormSummary() {
-  const { getValues } = useFormContext<JournalForm>()
+  const { watch } = useFormContext<JournalForm>()
 
-  const defaultDisplayableEntryId = useId();
+  const displayableEntryFallbackId = useId();
   const defaultDate = useMemo(() => new Date().toISOString(), []);
 
-  const { activeJournalId, queries: { journal: journalQuery } } = useContext(JournalContext);
-  const defaultCurrency: CurrencyIso4217 = journalQuery.data?.settings.currency.entry ?? DEFAULT_CURRENCY;
+  const settings = useUserPreferences();
+  const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
+  const indexQuery = useActiveJournalIndex()
+  const entriesQuery = useActiveJournalEntries();
 
-  const journalEntriesQuery = useJournalEntries(activeJournalId);
-  const activeJournalIndexQuery = useActiveJournalIndex()
-
-  const formValues = getValues();
+  const baseEntryMemo = watch('baseEntry.memo');
+  const formValues = watch(); // TODO don't watch all values, but get them on debounce/onblur
 
   const displayableEntry: DisplayableJournalEntry = useMemo(() => {
-    if (!journalEntriesQuery.data || !activeJournalIndexQuery.data) {
+    if (!indexQuery.data) {
       return {
-        displayableEntryId: defaultDisplayableEntryId,
+        displayableEntryId: displayableEntryFallbackId,
         date: defaultDate,
-        memo: '',
-        netAmount: makeFigure(defaultCurrency),
+        memo: baseEntryMemo,
+        netAmount: makeFigure(0, currency),
         topics: [],
         sourceAccount: null,
         destinationAccount: null,
@@ -42,16 +42,37 @@ export default function JournalEntryFormSummary() {
         children: [],
       } satisfies DisplayableJournalEntry;
     }
-    const serialized = serializeJournalForm(formValues);
-    return makeDisplayableJournalEntry(serialized, journalEntriesQuery.data);
-  }, [formValues, journalEntriesQuery.data, activeJournalIndexQuery.data]);
+
+    const serialized = serializeJournalForm({
+      ...formValues,
+      baseEntry: {
+        ...formValues.baseEntry,
+        memo: baseEntryMemo,
+      },
+    });
+    return makeDisplayableJournalEntry(serialized, entriesQuery.data);
+  }, [
+    baseEntryMemo,
+    formValues,
+    entriesQuery.data,
+    displayableEntryFallbackId,
+    defaultDate,
+    currency,
+    indexQuery.data,
+  ]);
+
+  const netAmountString = getFigureString(displayableEntry.netAmount, {
+    sign: 'whenPositive',
+    symbol: 'simplified',
+    fullyQualifyZero: false,
+  })
 
   return (
     <Stack>
       <Typography>{displayableEntry.memo ?? 'Journal entry'}</Typography>
 
       <Stack direction="row" gap={2}>
-        <Typography>{JSON.stringify(displayableEntry.netAmount)}</Typography>
+        <Typography>{netAmountString}</Typography>
         <Typography>{displayableEntry.topics.join(', ')}</Typography>
       </Stack>
     </Stack>
