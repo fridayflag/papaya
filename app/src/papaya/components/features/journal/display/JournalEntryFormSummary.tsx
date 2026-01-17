@@ -5,9 +5,9 @@ import { JournalForm } from "@/schema/form/journal";
 import { DisplayableJournalEntry } from "@/schema/journal/aggregate";
 import { makeFigure } from "@/schema/support/factory";
 import { makeDisplayableJournalEntry } from "@/utils/aggregate";
-import { serializeJournalForm } from "@/utils/form";
 import { getFigureString } from "@/utils/string";
 import { Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import { useId, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -16,20 +16,21 @@ export default function JournalEntryFormSummary() {
   const { watch } = useFormContext<JournalForm>()
 
   const displayableEntryFallbackId = useId();
-  const defaultDate = useMemo(() => new Date().toISOString(), []);
+  const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DD'), []);
 
   const settings = useUserPreferences();
   const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
   const indexQuery = useActiveJournalIndex()
   const entriesQuery = useActiveJournalEntries();
 
-  const baseEntryMemo = watch('baseEntry.memo');
+  const baseEntryMemo = watch('root.memo');
   const formValues = watch(); // TODO don't watch all values, but get them on debounce/onblur
 
   const displayableEntry: DisplayableJournalEntry = useMemo(() => {
     if (!indexQuery.data) {
       return {
         displayableEntryId: displayableEntryFallbackId,
+        reference: null,
         date: defaultDate,
         memo: baseEntryMemo,
         netAmount: makeFigure(0, currency),
@@ -69,7 +70,7 @@ export default function JournalEntryFormSummary() {
 
   return (
     <Stack>
-      <Typography>{displayableEntry.memo ?? 'Journal entry'}</Typography>
+      <Typography>{baseEntryMemo.trim() || 'Journal entry'}</Typography>
 
       <Stack direction="row" gap={2}>
         <Typography>{netAmountString}</Typography>

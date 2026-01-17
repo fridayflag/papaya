@@ -1,38 +1,54 @@
 import { useActiveJournalView } from '@/hooks/queries';
-import { JournalSlice } from '@/schema/journal/aggregate';
-import { Figure } from '@/schema/journal/entity/figure';
+import { DisplayableJournalEntry, JournalSlice } from '@/schema/journal/aggregate';
+import { getFigureString } from '@/utils/string';
 import {
   Typography
 } from '@mui/material';
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import { useMemo } from 'react';
 
 
 interface DisplayableJournalTableProps {
   slice: JournalSlice;
+  onSelectForEdit: (displayableEntryId: string) => void;
 }
 
-const _formatFigure = (figure: Figure): string => {
-  const symbol = figure.currency === 'CAD' ? 'C$' : '$'
-  const value = Math.abs(figure.amount)
-  const formatted = value.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-  const sign = figure.amount >= 0 ? '+' : '-'
-  return `${sign}${symbol}${formatted}`
-}
-
+const columns: GridColDef[] = [
+  { field: 'date', headerName: 'Date', width: 100 },
+  { field: 'memo', headerName: 'Memo', width: 100 },
+  { field: 'amount', headerName: 'Amount', width: 100 },
+]
 
 export default function DisplayableJournalTable(props: DisplayableJournalTableProps) {
 
   const viewQuery = useActiveJournalView(props.slice);
+
+  const flattenedDisplayableEntries = useMemo((): DisplayableJournalEntry[] => {
+    return viewQuery.data?.aggregate.groups.flatMap((group) => group.entries) ?? [];
+  }, [viewQuery.data]);
+
+  const rows: GridRowsProp = useMemo((): GridRowsProp => {
+    console.log(flattenedDisplayableEntries);
+    return flattenedDisplayableEntries.map((entry) => ({
+      id: entry.displayableEntryId,
+      date: entry.date,
+      memo: entry.memo,
+      amount: getFigureString(entry.netAmount),
+    }));
+  }, [flattenedDisplayableEntries]);
 
   if (viewQuery.isLoading) {
     return <Typography variant="body1">Loading table...</Typography>
   }
 
   return (
-    <div>
-      {JSON.stringify(viewQuery.data)}
-    </div>
+    <DataGrid
+      editMode="row"
+      rows={rows}
+      columns={columns}
+      onRowClick={(params) => {
+        props.onSelectForEdit(String(params.id));
+      }}
+    />
   )
 }

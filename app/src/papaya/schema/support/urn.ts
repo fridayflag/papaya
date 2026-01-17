@@ -12,7 +12,6 @@ import {
   RecurrenceStemNamespaceSchema,
   RelationNamespaceSchema,
   StampStemNamespaceSchema,
-  SubEntryNamespaceSchema,
   TaskListStemNamespaceSchema,
   TaskNamespaceSchema
 } from "./namespace";
@@ -31,9 +30,6 @@ export type PersonUrn = z.infer<typeof PersonUrnSchema>;
 
 export const TaskUrnSchema = z.templateLiteral([TaskNamespaceSchema, ':', z.uuid()]);
 export type TaskUrn = z.infer<typeof TaskUrnSchema>;
-
-export const SubEntryUrnSchema = z.templateLiteral([SubEntryNamespaceSchema, ':', z.uuid()]);
-export type SubEntryUrn = z.infer<typeof SubEntryUrnSchema>;
 
 export const RelationUrnSchema = z.templateLiteral([RelationNamespaceSchema, ':', z.uuid()]);
 export type RelationUrn = z.infer<typeof RelationUrnSchema>;
@@ -61,7 +57,6 @@ export type TaskListStemUrn = z.infer<typeof TaskListStemUrnSchema>;
 
 export const PapayaUrnSchema = z.union(Object.values({
   'papaya:resource:task': TaskUrnSchema,
-  'papaya:resource:subentry': SubEntryUrnSchema,
   'papaya:resource:stem:relation': RelationUrnSchema,
   'papaya:resource:stem:attachment': AttachmentStemUrnSchema,
   'papaya:resource:stem:stamp': StampStemUrnSchema,

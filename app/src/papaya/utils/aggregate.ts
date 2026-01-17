@@ -25,6 +25,7 @@ export const makeDisplayableJournalEntry = (entry: Entry, _context: Record<Entry
   // TODO for now we ignore context
   return {
     displayableEntryId: generateId(),
+    reference: entry.urn,
     date: entry.date,
     memo: entry.memo,
     netAmount: calculateNetFigure(entry),

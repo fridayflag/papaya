@@ -1,4 +1,5 @@
 import { SCHEMA_VERSION } from '@/database/SchemaMigration';
+import dayjs from 'dayjs';
 import { v6 as uuidv6 } from 'uuid';
 import { PapayaConfig } from '../application/config';
 import { Figure } from '../journal/entity/figure';
@@ -67,7 +68,7 @@ export const makeFigure = (amount: number, currency: CurrencyIso4217): Figure =>
 }
 
 export const _makeTempJournalEntries = (journalId: JournalUrn): Entry[] => {
-  const date = new Date().toISOString();
+  const date = dayjs().format('YYYY-MM-DD');
   const memos = ['Groceries', 'Rent', 'Utilities', 'Transportation', 'Entertainment', 'Food', 'Other'];
 
   const entries = []

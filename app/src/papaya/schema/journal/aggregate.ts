@@ -1,4 +1,5 @@
 import z from "zod";
+import { EntryUrnSchema } from "../support/urn";
 import { StampVariantSchema } from "./display";
 import { FigureSchema } from "./entity/figure";
 import { DateViewSchema } from "./facet";
@@ -13,6 +14,7 @@ const DisplayableJournalEntryActionSchema = z.object({
 
 const DisplayableJournalEntrySchema = z.object({
   displayableEntryId: z.uuid(),
+  reference: EntryUrnSchema.nullable(),
   memo: z.string(),
   date: z.iso.date(),
   netAmount: FigureSchema,

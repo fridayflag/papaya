@@ -1,11 +1,12 @@
-import { Button, Checkbox, IconButton, InputBase, Link, Stack, Typography } from '@mui/material'
-import { AddTask, CheckCircle, RadioButtonUnchecked } from '@mui/icons-material'
-import { Controller, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
-import { useContext, useRef } from 'react'
 import { JournalContext } from '@/contexts/JournalContext'
-import { makeEntryTask } from '@/utils/journal'
-import { EntryTask } from '@/schema/models/EntryTask'
 import { JournalEntry } from '@/schema/documents/JournalEntry'
+import { EntryTask } from '@/schema/models/EntryTask'
+import { makeEntryTask } from '@/utils/journal'
+import { AddTask, CheckCircle, RadioButtonUnchecked } from '@mui/icons-material'
+import { Button, Checkbox, IconButton, InputBase, Link, Stack, Typography } from '@mui/material'
+import dayjs from 'dayjs'
+import { useContext, useRef } from 'react'
+import { Controller, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
 
 export default function EntryTasksForm() {
   const { activeJournalId } = useContext(JournalContext)
@@ -114,7 +115,7 @@ export default function EntryTasksForm() {
                   <Checkbox
                     checked={Boolean(value)}
                     onChange={(event) => {
-                      onChange(event.target.checked ? new Date().toISOString() : null)
+                      onChange(event.target.checked ? dayjs().format('YYYY-MM-DD') : null)
                     }}
                     icon={<RadioButtonUnchecked />}
                     checkedIcon={<CheckCircle />}

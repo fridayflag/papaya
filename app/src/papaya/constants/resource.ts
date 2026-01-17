@@ -17,7 +17,6 @@ export const PAPAYA_ENTITY_NAMESPACE = {
         tasklist: {},
       },
       task: {},
-      subentry: {},
     },
     document: {
       config: {},

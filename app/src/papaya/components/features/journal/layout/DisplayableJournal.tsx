@@ -13,9 +13,11 @@ interface DisplayableJournalProps {
 type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
 export default function DisplayableJournal(props: DisplayableJournalProps) {
-  const [isEditing, _setIsEditing] = useState(true);
+  const [editingDisplayableEntryId, setEditingDisplayableEntryId] = useState<string | null>(null);
   const journalContext = useContext(JournalContext)
   const activeJournalId = journalContext.activeJournalId;
+
+  const isEditing = Boolean(editingDisplayableEntryId);
 
   const status: DisplayableJournalStatus = useMemo(() => {
     if (!activeJournalId) {
@@ -72,11 +74,11 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
             <Grid size={isEditing ? 6 : 12}>
               {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
               {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
-              {status === 'idle' && <DisplayableJournalTable slice={props.slice} />}
+              {status === 'idle' && <DisplayableJournalTable slice={props.slice} onSelectForEdit={setEditingDisplayableEntryId} />}
             </Grid>
             {isEditing && activeJournalId && (
               <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>
-                <JournalEntryEditor journalId={activeJournalId} />
+                <JournalEntryEditor journalId={activeJournalId} editingDisplayableEntryId={editingDisplayableEntryId!} />
               </Grid>
             )}
           </Grid>
