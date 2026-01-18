@@ -1,35 +1,46 @@
 import z from "zod";
-import { EntryUrnSchema } from "../support/urn";
-import { StampVariantSchema } from "./display";
-import { FigureSchema } from "./entity/figure";
-import { DateViewSchema } from "./facet";
-import { JournalSchema } from "./resource/document";
-import { AccountSlugSchema, TopicSlugSchema } from "./string";
+import { StampVariantSchema } from "./journal/display";
+import { FigureSchema } from "./journal/entity/figure";
+import { DateViewSchema } from "./journal/facet";
+import { MonetaryEnumerationSchema } from "./journal/money";
+import { JournalSchema } from "./journal/resource/documents";
+import { AccountSlugSchema, TopicSlugSchema } from "./journal/string";
+import { EntryUrnSchema, TransactionUrnSchema } from "./support/urn";
 
-const DisplayableJournalEntryActionSchema = z.object({
+export const DisplayableJournalEntryActionSchema = z.object({
   variant: z.enum(['ACCEPT', 'REJECT', 'NUDGE']),
   label: z.string(),
-  // icon: PictogramSchema,
 });
 
-const DisplayableJournalEntrySchema = z.object({
-  displayableEntryId: z.uuid(),
-  reference: EntryUrnSchema.nullable(),
+export const DisplayableTransactionSchema = z.object({
+  transactionUrn: TransactionUrnSchema,
   memo: z.string(),
   date: z.iso.date(),
-  netAmount: FigureSchema,
-  topics: z.array(TopicSlugSchema),
+  amount: FigureSchema,
   sourceAccount: AccountSlugSchema.nullable(),
   destinationAccount: AccountSlugSchema.nullable(),
-  primaryAction: DisplayableJournalEntryActionSchema.nullable(),
-  secondaryAction: DisplayableJournalEntryActionSchema.nullable(),
-  stamps: z.array(StampVariantSchema).nullable(),
+  topics: z.array(TopicSlugSchema),
 
   get children() {
-    return z.array(DisplayableJournalEntrySchema);
+    return z.array(DisplayableTransactionSchema);
   }
 });
+export type DisplayableTransaction = z.infer<typeof DisplayableTransactionSchema>;
 
+export const DisplayableJournalEntrySchema = z.object({
+  entryUrn: EntryUrnSchema,
+  aggregate: z.object({
+    memo: z.string(),
+    date: z.iso.date(),
+    topics: z.set(TopicSlugSchema),
+    accounts: z.set(AccountSlugSchema),
+    sum: MonetaryEnumerationSchema,
+  }),
+  primaryAction: DisplayableJournalEntryActionSchema.nullable(),
+  secondaryAction: DisplayableJournalEntryActionSchema.nullable(),
+  stamps: z.array(StampVariantSchema),
+  rootTransaction: DisplayableTransactionSchema,
+});
 export type DisplayableJournalEntry = z.infer<typeof DisplayableJournalEntrySchema>;
 
 export const JournalSliceSchema = z.object({
@@ -61,16 +72,14 @@ export const DisplayableJournalEntryAggregateSchema = z.object({
 export type DisplayableJournalEntryAggregate = z.infer<typeof DisplayableJournalEntryAggregateSchema>;
 
 export const DisplayableTopicSchema = z.object({
-  displayableTopicId: z.uuid(),
   slug: TopicSlugSchema,
-  entries: z.array(z.uuid()),
+  entries: z.set(EntryUrnSchema),
 });
 export type DisplayableTopic = z.infer<typeof DisplayableTopicSchema>;
 
 export const DisplayableAccountSchema = z.object({
-  displayableAccountId: z.uuid(),
   slug: AccountSlugSchema,
-  entries: z.array(z.uuid()),
+  entries: z.set(EntryUrnSchema),
 });
 export type DisplayableAccount = z.infer<typeof DisplayableAccountSchema>;
 
@@ -78,9 +87,9 @@ export type DisplayableAccount = z.infer<typeof DisplayableAccountSchema>;
  * Represents the set of searchable, displayable journal objects.
  */
 export const JournalIndexSchema = z.object({
-  entries: z.record(DisplayableJournalEntrySchema.shape.displayableEntryId, DisplayableJournalEntrySchema),
-  topics: z.record(DisplayableTopicSchema.shape.displayableTopicId, DisplayableTopicSchema),
-  accounts: z.record(DisplayableAccountSchema.shape.displayableAccountId, DisplayableAccountSchema),
+  entries: z.record(EntryUrnSchema, DisplayableJournalEntrySchema),
+  topics: z.record(TopicSlugSchema, DisplayableTopicSchema),
+  accounts: z.record(AccountSlugSchema, DisplayableAccountSchema),
 })
 
 export type JournalIndex = z.infer<typeof JournalIndexSchema>;

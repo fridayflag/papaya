@@ -1,10 +1,10 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings";
 import { useActiveJournalEntries, useActiveJournalIndex } from "@/hooks/queries";
 import { useUserPreferences } from "@/hooks/state/useUserPreferences";
+import { DisplayableJournalEntry } from "@/schema/aggregate-schemas";
 import { JournalForm } from "@/schema/form/journal";
-import { DisplayableJournalEntry } from "@/schema/journal/aggregate";
 import { makeFigure } from "@/schema/support/factory";
-import { makeDisplayableJournalEntry } from "@/utils/aggregate";
+import { makeDisplayableJournalEntry } from "@/utils/aggregate-utils";
 import { getFigureString } from "@/utils/string";
 import { Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";

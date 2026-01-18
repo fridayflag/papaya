@@ -46,6 +46,9 @@ export const FigureNamespaceSchema = z.literal('papaya:entity:figure');
 export type FigureNamespace = z.infer<typeof FigureNamespaceSchema>;
 
 // Resource Namespaces
+export const TransactionNamespaceSchema = z.literal('papaya:resource:transaction');
+export type TransactionNamespace = z.infer<typeof TransactionNamespaceSchema>;
+
 export const TaskNamespaceSchema = z.literal('papaya:resource:task');
 export type TaskNamespace = z.infer<typeof TaskNamespaceSchema>;
 
@@ -87,6 +90,7 @@ export const EntryNamespaceSchema = z.literal('papaya:document:entry');
 export type EntryNamespace = z.infer<typeof EntryNamespaceSchema>;
 
 const PapayaResourceNamespaceShape = {
+  'papaya:resource:transaction': TransactionNamespaceSchema,
   'papaya:resource:task': TaskNamespaceSchema,
   'papaya:resource:stem:relation': RelationNamespaceSchema,
   'papaya:resource:stem:attachment': AttachmentStemNamespaceSchema,

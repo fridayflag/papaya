@@ -1,4 +1,4 @@
-import { DisplayableJournalEntry } from '@/schema/journal/aggregate'
+import { DisplayableJournalEntry } from '@/schema/aggregate-schemas'
 import {
   AnnualDateView,
   DateView,

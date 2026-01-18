@@ -2,7 +2,7 @@ import { StemNamespace } from "@/schema/support/namespace";
 import { createPapayaResourceSchema } from "@/schema/support/template";
 import { PapayaUrnSchema } from "@/schema/support/urn";
 import z from "zod";
-import { RelationTypeSchema } from "../../relation";
+import { RelationTypeSchema } from "../../relation-schemas";
 import { StampVariantSchema } from "../display";
 import { FigureSchema } from "../entity/figure";
 import { PersonSlugSchema } from "../string";

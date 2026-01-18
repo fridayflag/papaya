@@ -4,7 +4,7 @@ import { v6 as uuidv6 } from 'uuid';
 import { PapayaConfig } from '../application/config';
 import { Figure } from '../journal/entity/figure';
 import { CurrencyIso4217 } from '../journal/money';
-import { Entry, Journal } from '../journal/resource/document';
+import { Entry, Journal } from '../journal/resource/documents';
 import { PapayaResourceNamespace } from './namespace';
 import { JournalUrn, PapayaUrn } from './urn';
 

@@ -1,6 +1,8 @@
-import { DisplayableAccount, DisplayableJournalEntry, DisplayableJournalEntryAggregate, DisplayableTopic, JournalIndex, JournalSlice } from "@/schema/journal/aggregate";
-import { Figure } from "@/schema/journal/entity/figure";
-import { Entry } from "@/schema/journal/resource/document";
+import { DisplayableAccount, DisplayableJournalEntry, DisplayableJournalEntryAggregate, DisplayableTopic, DisplayableTransaction, JournalIndex, JournalSlice } from "@/schema/aggregate-schemas";
+import { MonetaryEnumeration } from "@/schema/journal/money";
+import { Entry } from "@/schema/journal/resource/documents";
+import { Transaction } from "@/schema/journal/resource/transaction";
+import { AccountSlug, TopicSlug } from "@/schema/journal/string";
 import { EntryUrn } from "@/schema/support/urn";
 import dayjs from "dayjs";
 import { v6 as uuidv6 } from 'uuid';
@@ -10,32 +12,84 @@ const generateId = () => {
   return uuidv6();
 }
 
-const calculateNetFigure = (entry: Entry): Figure => {
-  // TODO
-  return entry.amount;
+/**
+ * Sums the transaction amounts into a MonetaryEnumeration.
+ * @param transactions 
+ * @returns 
+ */
+const sumTransactions = (transactions: Transaction[]): MonetaryEnumeration => {
+  return transactions.reduce((acc: MonetaryEnumeration, transaction) => {
+    if (acc[transaction.amount.currency] === undefined) {
+      acc[transaction.amount.currency] = 0;
+    }
+    acc[transaction.amount.currency] += transaction.amount.amount;
+    return acc;
+  }, {} as MonetaryEnumeration);
 }
 
-/**
- * Makes a displayable journal entry from a given entry. Other entries are provided, since
- * entries can make reference on each other.
- * @param entry 
- * @param context 
- */
-export const makeDisplayableJournalEntry = (entry: Entry, _context: Record<EntryUrn, Entry>): DisplayableJournalEntry => {
+// export const makeDisplayableTransaction = (transaction: Transaction): DisplayableTransaction => {
+//   return {
+//     transactionUrn: transaction.urn,
+//     memo: transaction.memo,
+//     date: transaction.date,
+//     amount: transaction.amount,
+//     sourceAccount: transaction.sourceAccount ?? null,
+//     destinationAccount: transaction.destinationAccount ?? null,
+//     topics: transaction.topics ?? [],
+//     // children: [], // TODO
+//   }
+// }
+
+export const makeDisplayableJournalEntry = (entry: Entry): DisplayableJournalEntry | null => {
   // TODO for now we ignore context
+
+  const transactions: Transaction[] = Object.values(entry.transactions);
+
+  const root = transactions.find((transaction) => transaction.parentUrn === null);
+  if (!root) {
+    return null;
+  }
+
+  const sum: MonetaryEnumeration = sumTransactions(transactions);
+  const topics = new Set<TopicSlug>(transactions
+    .flatMap((transaction) => transaction.topics)
+    .filter((topic): topic is TopicSlug => Boolean(topic))
+  );
+  const accounts = new Set<AccountSlug>(transactions
+    .flatMap((transaction) => [transaction.sourceAccount, transaction.destinationAccount])
+    .filter((account): account is AccountSlug => Boolean(account))
+  );
+  const memo = root.memo;
+  const date = root.date;
+
+  // Gather all transactions into a tree of DisplayableTransaction
+  const rootTransaction: DisplayableTransaction = transactions.reduce((acc: DisplayableTransaction, transaction: Transaction) => {
+    const current: DisplayableTransaction = acc;
+
+  }, {
+    transactionUrn: root.urn,
+    memo: root.memo,
+    date: root.date,
+    amount: root.amount,
+    sourceAccount: root.sourceAccount ?? null,
+    destinationAccount: root.destinationAccount ?? null,
+    topics: root.topics ?? [],
+    children: [],
+  })
+
   return {
-    displayableEntryId: generateId(),
-    reference: entry.urn,
-    date: entry.date,
-    memo: entry.memo,
-    netAmount: calculateNetFigure(entry),
-    topics: entry.topics ?? [],
-    sourceAccount: entry.sourceAccount ?? null,
-    destinationAccount: entry.destinationAccount ?? null,
+    entryUrn: entry.urn,
+    aggregate: {
+      memo,
+      date,
+      topics,
+      accounts,
+      sum,
+    },
     primaryAction: null,
     secondaryAction: null,
     stamps: [],
-    children: [],
+    rootTransaction,
   };
 }
 

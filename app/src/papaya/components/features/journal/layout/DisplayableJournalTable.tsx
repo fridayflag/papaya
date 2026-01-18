@@ -1,5 +1,5 @@
 import { useActiveJournalView } from '@/hooks/queries';
-import { DisplayableJournalEntry, JournalSlice } from '@/schema/journal/aggregate';
+import { DisplayableJournalEntry, JournalSlice } from '@/schema/aggregate-schemas';
 import { getFigureString } from '@/utils/string';
 import {
   Typography

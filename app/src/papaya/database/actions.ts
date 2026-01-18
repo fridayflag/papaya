@@ -1,5 +1,5 @@
 import { PapayaConfig, PapayaConfigSchema, UserSettings, UserSettingsSchema } from '@/schema/application/config'
-import { Entry, Journal } from '@/schema/journal/resource/document'
+import { Entry, Journal } from '@/schema/journal/resource/documents'
 import { _makeTempJournalEntries, makeDefaultConfig, makeJournal } from '@/schema/support/factory'
 import { JournalUrn } from '@/schema/support/urn'
 import { getDatabaseClient } from './client'

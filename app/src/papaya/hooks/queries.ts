@@ -1,9 +1,9 @@
 import { JournalContext } from "@/contexts/JournalContext";
 import { getJournal, getJournalEntries } from "@/database/actions";
-import { JournalIndex, JournalSlice, JournalView } from "@/schema/journal/aggregate";
-import { Entry, Journal } from "@/schema/journal/resource/document";
+import { JournalIndex, JournalSlice, JournalView } from "@/schema/aggregate-schemas";
+import { Entry, Journal } from "@/schema/journal/resource/documents";
 import { EntryUrn, JournalUrn } from "@/schema/support/urn";
-import { aggregateJournalIndexBySlice, generateJournalIndex } from "@/utils/aggregate";
+import { aggregateJournalIndexBySlice, generateJournalIndex } from "@/utils/aggregate-utils";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 

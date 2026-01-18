@@ -1,5 +1,5 @@
 import { JournalContext } from "@/contexts/JournalContext";
-import { JournalSlice } from "@/schema/journal/aggregate";
+import { JournalSlice } from "@/schema/aggregate-schemas";
 import { Divider, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useContext, useMemo, useState } from "react";
 import JournalToolbar from "../display/JournalToolbar";

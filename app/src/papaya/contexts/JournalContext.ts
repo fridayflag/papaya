@@ -1,4 +1,4 @@
-import { Journal } from '@/schema/journal/resource/document'
+import { Journal } from '@/schema/journal/resource/documents'
 import { JournalUrn } from '@/schema/support/urn'
 import { UseQueryResult } from '@tanstack/react-query'
 import { createContext } from 'react'

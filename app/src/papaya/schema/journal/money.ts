@@ -7,3 +7,9 @@ export const MonetaryAmountSchema = z.object({
   currency: CurrencyIso4217Schema,
   amount: z.number(),
 });
+
+export const MonetaryEnumerationSchema = z.record(
+  CurrencyIso4217Schema,
+  z.number()
+);
+export type MonetaryEnumeration = z.infer<typeof MonetaryEnumerationSchema>;

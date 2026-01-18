@@ -6,6 +6,7 @@ export const PAPAYA_ENTITY_NAMESPACE = {
       figure: {},
     },
     resource: {
+      transaction: {},
       stem: {
         relation: {},
         attachment: {},

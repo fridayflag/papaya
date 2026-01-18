@@ -12,9 +12,12 @@ import {
   RecurrenceStemNamespaceSchema,
   RelationNamespaceSchema,
   StampStemNamespaceSchema,
+  StemNamespace,
   TaskListStemNamespaceSchema,
-  TaskNamespaceSchema
+  TaskNamespaceSchema,
+  TransactionNamespaceSchema
 } from "./namespace";
+
 
 export const ConfigUrnSchema = z.templateLiteral([ConfigNamespaceSchema, ':', z.uuid()]);
 export type ConfigUrn = z.infer<typeof ConfigUrnSchema>;
@@ -27,6 +30,9 @@ export type EntryUrn = z.infer<typeof EntryUrnSchema>;
 
 export const PersonUrnSchema = z.templateLiteral([PersonNamespaceSchema, ':', z.uuid()]);
 export type PersonUrn = z.infer<typeof PersonUrnSchema>;
+
+export const TransactionUrnSchema = z.templateLiteral([TransactionNamespaceSchema, ':', z.uuid()]);
+export type TransactionUrn = z.infer<typeof TransactionUrnSchema>;
 
 export const TaskUrnSchema = z.templateLiteral([TaskNamespaceSchema, ':', z.uuid()]);
 export type TaskUrn = z.infer<typeof TaskUrnSchema>;
@@ -55,8 +61,7 @@ export type RecurrenceStemUrn = z.infer<typeof RecurrenceStemUrnSchema>;
 export const TaskListStemUrnSchema = z.templateLiteral([TaskListStemNamespaceSchema, ':', z.uuid()]);
 export type TaskListStemUrn = z.infer<typeof TaskListStemUrnSchema>;
 
-export const PapayaUrnSchema = z.union(Object.values({
-  'papaya:resource:task': TaskUrnSchema,
+const StemUrnSchemaShape = {
   'papaya:resource:stem:relation': RelationUrnSchema,
   'papaya:resource:stem:attachment': AttachmentStemUrnSchema,
   'papaya:resource:stem:stamp': StampStemUrnSchema,
@@ -65,6 +70,15 @@ export const PapayaUrnSchema = z.union(Object.values({
   'papaya:resource:stem:obligation': ObligationStemUrnSchema,
   'papaya:resource:stem:recurrence': RecurrenceStemUrnSchema,
   'papaya:resource:stem:tasklist': TaskListStemUrnSchema,
+} as const satisfies Record<StemNamespace, z.ZodTemplateLiteral<`${StemNamespace}:${string}`>>;
+
+export const StemUrnSchema = z.union(Object.values(StemUrnSchemaShape));
+export type StemUrn = z.infer<typeof StemUrnSchema>;
+
+export const PapayaUrnSchema = z.union(Object.values({
+  'papaya:resource:transaction': TransactionUrnSchema,
+  'papaya:resource:task': TaskUrnSchema,
+  ...StemUrnSchemaShape,
   'papaya:document:config': ConfigUrnSchema,
   'papaya:document:journal': JournalUrnSchema,
   'papaya:document:person': PersonUrnSchema,

@@ -1,5 +1,5 @@
 import DisplayableJournal from '@/components/features/journal/layout/DisplayableJournal'
-import { JournalSlice } from '@/schema/journal/aggregate'
+import { JournalSlice } from '@/schema/aggregate-schemas'
 import { DateView, DateViewVariant } from '@/schema/journal/facet'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import dayjs from 'dayjs'
