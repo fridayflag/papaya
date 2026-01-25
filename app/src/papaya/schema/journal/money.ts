@@ -8,7 +8,7 @@ export const MonetaryAmountSchema = z.object({
   amount: z.number(),
 });
 
-export const MonetaryEnumerationSchema = z.record(
+export const MonetaryEnumerationSchema = z.partialRecord(
   CurrencyIso4217Schema,
   z.number()
 );

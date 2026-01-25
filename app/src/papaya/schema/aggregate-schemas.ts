@@ -13,7 +13,7 @@ export const DisplayableJournalEntryActionSchema = z.object({
 });
 
 export const DisplayableTransactionSchema = z.object({
-  transactionUrn: TransactionUrnSchema,
+  transactionUrn: TransactionUrnSchema.nullable(),
   memo: z.string(),
   date: z.iso.date(),
   amount: FigureSchema,
@@ -45,7 +45,7 @@ export type DisplayableJournalEntry = z.infer<typeof DisplayableJournalEntrySche
 
 export const JournalSliceSchema = z.object({
   timeframe: DateViewSchema,
-  filters: z.literal(null), // TODO: implement filters later
+  refinements: z.literal(null), // TODO: implement filters later
   sortBy: z.enum(['DATE', 'MEMO', 'AMOUNT']).optional().default('DATE'),
   sortOrder: z.enum(['ASC', 'DESC']).optional().default('ASC'),
   groupBy: z.enum(['DATE']).optional().default('DATE'),
@@ -88,8 +88,8 @@ export type DisplayableAccount = z.infer<typeof DisplayableAccountSchema>;
  */
 export const JournalIndexSchema = z.object({
   entries: z.record(EntryUrnSchema, DisplayableJournalEntrySchema),
-  topics: z.record(TopicSlugSchema, DisplayableTopicSchema),
-  accounts: z.record(AccountSlugSchema, DisplayableAccountSchema),
+  // topics: z.record(TopicSlugSchema, DisplayableTopicSchema),
+  // accounts: z.record(AccountSlugSchema, DisplayableAccountSchema),
 })
 
 export type JournalIndex = z.infer<typeof JournalIndexSchema>;

@@ -4,7 +4,6 @@ import { CurrencyIso4217Schema } from "./journal/money";
 import { AccountSlugSchema } from "./journal/string";
 import { TransactionUrnSchema } from "./support/urn";
 
-
 export const TransactionFormSchema = z.object({
   urn: TransactionUrnSchema,
   parentUrn: TransactionUrnSchema,

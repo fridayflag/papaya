@@ -11,7 +11,7 @@ export const JournalFormCodec = z.codec(
 
       }
     },
-    encode: (form: JournalEntryForm) => {
+    encode: (form: JournalEntryForm): Entry => {
       //;
     },
 

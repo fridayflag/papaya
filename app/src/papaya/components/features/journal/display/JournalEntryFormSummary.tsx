@@ -1,68 +1,64 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings";
-import { useActiveJournalEntries, useActiveJournalIndex } from "@/hooks/queries";
 import { useUserPreferences } from "@/hooks/state/useUserPreferences";
 import { DisplayableJournalEntry } from "@/schema/aggregate-schemas";
-import { JournalForm } from "@/schema/form/journal";
+import { JournalFormCodec } from "@/schema/codec-schemas";
+import { JournalEntryForm } from "@/schema/form-schemas";
+import { Entry } from "@/schema/journal/resource/documents";
+import { AccountSlug, TopicSlug } from "@/schema/journal/string";
 import { makeFigure } from "@/schema/support/factory";
 import { makeDisplayableJournalEntry } from "@/utils/aggregate-utils";
-import { getFigureString } from "@/utils/string";
+import { getMonetaryEnumerationString } from "@/utils/string";
 import { Stack, Typography } from "@mui/material";
 import dayjs from "dayjs";
-import { useId, useMemo } from "react";
+import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 
 
 export default function JournalEntryFormSummary() {
-  const { watch } = useFormContext<JournalForm>()
+  const { watch } = useFormContext<JournalEntryForm>()
 
-  const displayableEntryFallbackId = useId();
   const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DD'), []);
 
   const settings = useUserPreferences();
   const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
-  const indexQuery = useActiveJournalIndex()
-  const entriesQuery = useActiveJournalEntries();
+  // const indexQuery = useActiveJournalIndex()
+  // const entriesQuery = useActiveJournalEntries();
 
-  const baseEntryMemo = watch('root.memo');
-  const formValues = watch(); // TODO don't watch all values, but get them on debounce/onblur
+  const baseEntryMemo = watch('rootTransaction.memo');
+  const formValues = watch();
+
+  const marshalledEntry: Entry = useMemo(() => {
+    // TODO use debouncing
+    return JournalFormCodec.encode(formValues);
+  }, [formValues]);
 
   const displayableEntry: DisplayableJournalEntry = useMemo(() => {
-    if (!indexQuery.data) {
-      return {
-        displayableEntryId: displayableEntryFallbackId,
-        reference: null,
+    return makeDisplayableJournalEntry(marshalledEntry) ?? {
+      entryUrn: marshalledEntry.urn,
+      aggregate: {
+        memo: '',
         date: defaultDate,
-        memo: baseEntryMemo,
-        netAmount: makeFigure(0, currency),
-        topics: [],
+        topics: new Set<TopicSlug>(),
+        accounts: new Set<AccountSlug>(),
+        sum: {},
+      },
+      primaryAction: null,
+      secondaryAction: null,
+      stamps: [],
+      rootTransaction: {
+        date: defaultDate,
+        memo: '',
+        transactionUrn: null,
+        amount: makeFigure(0, currency),
         sourceAccount: null,
         destinationAccount: null,
-        primaryAction: null,
-        secondaryAction: null,
-        stamps: [],
+        topics: [],
         children: [],
-      } satisfies DisplayableJournalEntry;
-    }
-
-    const serialized = serializeJournalForm({
-      ...formValues,
-      baseEntry: {
-        ...formValues.baseEntry,
-        memo: baseEntryMemo,
       },
-    });
-    return makeDisplayableJournalEntry(serialized, entriesQuery.data);
-  }, [
-    baseEntryMemo,
-    formValues,
-    entriesQuery.data,
-    displayableEntryFallbackId,
-    defaultDate,
-    currency,
-    indexQuery.data,
-  ]);
+    } satisfies DisplayableJournalEntry;
+  }, [marshalledEntry, defaultDate, currency]);
 
-  const netAmountString = getFigureString(displayableEntry.netAmount, {
+  const netAmountString = getMonetaryEnumerationString(displayableEntry.aggregate.sum, {
     sign: 'whenPositive',
     symbol: 'simplified',
     fullyQualifyZero: false,
@@ -74,7 +70,7 @@ export default function JournalEntryFormSummary() {
 
       <Stack direction="row" gap={2}>
         <Typography>{netAmountString}</Typography>
-        <Typography>{displayableEntry.topics.join(', ')}</Typography>
+        <Typography>{Array.from(displayableEntry.aggregate.topics).join(', ')}</Typography>
       </Stack>
     </Stack>
   )

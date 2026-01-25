@@ -1,6 +1,7 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings"
 import { Figure } from "@/schema/journal/entity/figure"
-import { CurrencyIso4217 } from "@/schema/journal/money"
+import { CurrencyIso4217, MonetaryEnumeration } from "@/schema/journal/money"
+import { makeFigure } from "@/schema/support/factory"
 
 export interface FormatCurrencyAmountOptions {
   minimumFractionDigits: number
@@ -46,6 +47,12 @@ export interface PriceStringOptions {
   isApproximate: boolean
   round: boolean
   fullyQualifyZero: boolean
+}
+
+export const getMonetaryEnumerationString = (monetaryEnumeration: MonetaryEnumeration, options: Partial<PriceStringOptions> = {}): string => {
+  return Object.entries(monetaryEnumeration).map(([currency, amount]) => {
+    return getFigureString(makeFigure(Number(amount), currency as CurrencyIso4217), options);
+  }).join(' + ');
 }
 
 export const getFigureString = (figure: Figure | undefined, options: Partial<PriceStringOptions> = {}): string => {

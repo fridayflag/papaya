@@ -5,8 +5,9 @@ import { PapayaConfig } from '../application/config';
 import { Figure } from '../journal/entity/figure';
 import { CurrencyIso4217 } from '../journal/money';
 import { Entry, Journal } from '../journal/resource/documents';
+import { Transaction } from '../journal/resource/transaction';
 import { PapayaResourceNamespace } from './namespace';
-import { JournalUrn, PapayaUrn } from './urn';
+import { EntryUrn, JournalUrn, PapayaUrn } from './urn';
 
 export const makePapayaUrn = <N extends PapayaResourceNamespace>(namespace: N): `${N}:${string}` => {
   const uuid = uuidv6();
@@ -67,26 +68,36 @@ export const makeFigure = (amount: number, currency: CurrencyIso4217): Figure =>
   }
 }
 
-export const _makeTempJournalEntries = (journalId: JournalUrn): Entry[] => {
-  const date = dayjs().format('YYYY-MM-DD');
-  const memos = ['Groceries', 'Rent', 'Utilities', 'Transportation', 'Entertainment', 'Food', 'Other'];
-
-  const entries = []
-  for (let i = 0; i < 10; i++) {
-    const id = makePapayaUrn('papaya:document:entry');
-    const memo = memos[Math.floor(Math.random() * memos.length)];
-    const amount = makeFigure(Math.random() * 1000, 'CAD');
-    const entry: Entry = {
-      _id: id,
-      journalId,
-      urn: id,
-      kind: 'papaya:document:entry',
-      '@version': SCHEMA_VERSION,
-      date,
-      memo,
-      amount,
-    }
-    entries.push(entry);
+export const makeTransaction = (entryUrn: EntryUrn, currency: CurrencyIso4217): Transaction => {
+  return {
+    urn: makePapayaUrn('papaya:resource:transaction'),
+    kind: 'papaya:resource:transaction',
+    '@version': SCHEMA_VERSION,
+    entryUrn,
+    parentUrn: null,
+    amount: makeFigure(0, currency),
+    memo: '',
+    date: dayjs().format('YYYY-MM-DD'),
+    stems: {},
+    time: null,
+    sourceAccount: null,
+    destinationAccount: null,
+    topics: [],
   }
-  return entries;
+}
+
+export const makeJournalEntry = (journalUrn: JournalUrn, currency: CurrencyIso4217): Entry => {
+  const entryUrn = makePapayaUrn('papaya:document:entry');
+  const rootTransaction = makeTransaction(entryUrn, currency);
+  const entry: Entry = {
+    _id: entryUrn,
+    journalId: journalUrn,
+    urn: entryUrn,
+    kind: 'papaya:document:entry',
+    '@version': SCHEMA_VERSION,
+    transactions: {
+      [rootTransaction.urn]: rootTransaction,
+    },
+  }
+  return entry;
 }
