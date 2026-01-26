@@ -1,7 +1,10 @@
+import { DEFAULT_CURRENCY } from "@/constants/settings";
 import { JournalContext } from "@/contexts/JournalContext";
 import { useActiveJournalEntries } from "@/hooks/queries";
+import { useUserPreferences } from "@/hooks/state/useUserPreferences";
 import { JournalSlice } from "@/schema/aggregate-schemas";
 import { Entry } from "@/schema/journal/resource/documents";
+import { makeJournalEntry } from "@/schema/support/factory";
 import { EntryUrn } from "@/schema/support/urn";
 import { Divider, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useContext, useMemo, useState } from "react";
@@ -16,25 +19,21 @@ interface DisplayableJournalProps {
 type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
 export default function DisplayableJournal(props: DisplayableJournalProps) {
-  const [editingEntryUrn, setEditingEntryUrn] = useState<EntryUrn | null>(null);
-  const [creatingEntry, setCreatingEntry] = useState<boolean>(false);
+  const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const journalContext = useContext(JournalContext)
   const activeJournalId = journalContext.activeJournalId;
 
-  const showEditor = Boolean(editingEntryUrn) || creatingEntry;
+  const settings = useUserPreferences();
+  const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
 
   const handleSelectForEdit = (entryUrn: EntryUrn) => {
-    setEditingEntryUrn(entryUrn);
+    const entry = journalEntriesQuery.data?.[entryUrn] ?? null;
+    setEditingEntry(entry);
   }
 
   const journalEntriesQuery = useActiveJournalEntries();
 
-  const editingEntry: Entry | null = useMemo(() => {
-    if (!editingEntryUrn) {
-      return null;
-    }
-    return journalEntriesQuery.data?.[editingEntryUrn] ?? null;
-  }, [editingEntryUrn, journalEntriesQuery]);
+  const showEditor = !!editingEntry;
 
   const status: DisplayableJournalStatus = useMemo(() => {
     if (!activeJournalId) {
@@ -49,8 +48,11 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
   }, [activeJournalId, journalContext.queries.journal]);
 
   const handleNewEntry = () => {
-    setCreatingEntry(true);
-    setEditingEntryUrn(null);
+    if (!activeJournalId) {
+      return;
+    }
+    const entry = makeJournalEntry(activeJournalId, currency);
+    setEditingEntry(entry);
   }
 
   return (
@@ -102,11 +104,10 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
               <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>
                 <JournalEntryEditor
                   journalId={activeJournalId}
-                  editingEntry={editingEntry!}
+                  editingEntry={editingEntry}
                   onSaved={() => {
-                    setEditingEntryUrn(null);
-                    setCreatingEntry(false);
-                    // TODO refetch the journal entries
+                    setEditingEntry(null);
+                    journalEntriesQuery.refetch();
                   }}
                 />
               </Grid>

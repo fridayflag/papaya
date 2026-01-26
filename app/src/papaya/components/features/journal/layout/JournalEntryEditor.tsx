@@ -1,12 +1,9 @@
 import DateField from '@/components/input/field/DateField';
 import TopicField from '@/components/input/field/TopicField';
-import { DEFAULT_CURRENCY } from '@/constants/settings';
 import { putJournalEntry } from '@/database/actions';
-import { useUserPreferences } from '@/hooks/state/useUserPreferences';
 import { JournalFormCodec } from '@/schema/codec-schemas';
 import { JournalEntryForm, JournalEntryFormSchema } from '@/schema/form-schemas';
 import { Entry } from '@/schema/journal/resource/documents';
-import { makeJournalEntry } from '@/schema/support/factory';
 import { JournalUrn, TransactionUrn } from "@/schema/support/urn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DeleteOutline, LocalOffer } from '@mui/icons-material';
@@ -101,17 +98,14 @@ function EditTransactionForm(props: EditTransactionFormProps) {
 
 interface JournalEntryEditorProps {
   journalId: JournalUrn;
-  editingEntry: Entry | null;
+  editingEntry: Entry;
   onSaved: () => void;
 }
 
 export default function JournalEntryEditor(props: JournalEntryEditorProps) {
-  const settings = useUserPreferences();
-  const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
-
   const initialFormValues: JournalEntryForm = useMemo(() => {
-    return JournalFormCodec.decode(props.editingEntry ?? makeJournalEntry(props.journalId, currency));
-  }, [props.editingEntry, props.journalId, currency]);
+    return JournalFormCodec.decode(props.editingEntry);
+  }, [props.editingEntry]);
 
   const form = useForm<JournalEntryForm>({
     resolver: zodResolver(JournalEntryFormSchema),
@@ -128,8 +122,16 @@ export default function JournalEntryEditor(props: JournalEntryEditorProps) {
 
   const handleSave = async (formData: JournalEntryForm) => {
     const marshalledEntry: Entry = JournalFormCodec.encode(formData);
+    const mergedEntry: Entry = {
+      /**
+       * Need to merge the editing entry with the marshalled entry to ensure
+       * ID and revision number are preserved.
+       */
+      ...props.editingEntry,
+      ...marshalledEntry,
+    }
     try {
-      await putJournalEntry(marshalledEntry);
+      await putJournalEntry(mergedEntry);
       props.onSaved();
     } catch (error) {
       console.error('Error saving journal entry:', error);
