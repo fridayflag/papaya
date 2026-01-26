@@ -1,7 +1,7 @@
 import z from "zod";
 import { CurrencyIso4217Schema } from "./journal/money";
 import { AccountSlugSchema } from "./journal/string";
-import { EntryUrnSchema, TransactionUrnSchema } from "./support/urn";
+import { EntryUrnSchema, JournalUrnSchema, TransactionUrnSchema } from "./support/urn";
 
 export const TransactionFormSchema = z.object({
   urn: TransactionUrnSchema,
@@ -18,7 +18,8 @@ export const TransactionFormSchema = z.object({
 export type TransactionForm = z.infer<typeof TransactionFormSchema>;
 
 export const JournalEntryFormSchema = z.object({
-  urn: EntryUrnSchema,
+  entryUrn: EntryUrnSchema,
+  journalUrn: JournalUrnSchema,
   rootTransaction: TransactionFormSchema,
   childTransactions: z.record(TransactionUrnSchema, TransactionFormSchema)
 });

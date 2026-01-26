@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { DeleteOutline, LocalOffer } from '@mui/icons-material';
 import { Button, Card, Grid, IconButton, Stack, TextField } from "@mui/material";
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
 import AmountField from '../../../input/field/AmountField';
 import JournalEntryFormSummary from '../display/JournalEntryFormSummary';
@@ -117,6 +117,14 @@ export default function JournalEntryEditor(props: JournalEntryEditorProps) {
     resolver: zodResolver(JournalEntryFormSchema),
     defaultValues: initialFormValues,
   });
+
+  const resetForm = () => {
+    form.reset(initialFormValues);
+  };
+
+  useEffect(() => {
+    resetForm();
+  }, [props.editingEntry]);
 
   const handleSave = async (formData: JournalEntryForm) => {
     const marshalledEntry: Entry = JournalFormCodec.encode(formData);

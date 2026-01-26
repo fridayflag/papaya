@@ -114,7 +114,8 @@ export const JournalFormCodec = z.codec(
       // Convert root transaction to form (with parentUrn: null)
       const rootTransactionForm: TransactionForm = TransactionFormCodec.decode(rootTransaction);
       return {
-        urn: entry.urn,
+        entryUrn: entry.urn,
+        journalUrn: entry.journalId,
         rootTransaction: {
           ...rootTransactionForm,
           parentUrn: null,
@@ -128,7 +129,7 @@ export const JournalFormCodec = z.codec(
       };
     },
     encode: (form: JournalEntryForm): Entry => {
-      const { urn: entryUrn } = form;
+      const { entryUrn } = form;
       // Create root transaction (using helper since it has parentUrn: null)
       const rootTransaction = encodeTransactionForm(form.rootTransaction, entryUrn);
 
@@ -139,14 +140,9 @@ export const JournalFormCodec = z.codec(
         return acc;
       }, {} as Record<string, Transaction>);
 
-      // Create Entry with all transactions
-      // Note: journalId is required by schema but not used for display purposes
-      // Using a placeholder that matches the schema format
-      const placeholderJournalId = 'papaya:document:journal:00000000-0000-0000-0000-000000000000' as const;
-
       return {
         _id: entryUrn,
-        journalId: placeholderJournalId,
+        journalId: form.journalUrn,
         urn: entryUrn,
         kind: 'papaya:document:entry',
         '@version': SCHEMA_VERSION,

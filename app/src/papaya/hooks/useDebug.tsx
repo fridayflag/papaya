@@ -5,8 +5,8 @@ export function useDebug() {
   const allDbRecordsQuery = useQuery({
     queryKey: ['all-db-records'],
     queryFn: async () => {
-      const allRecords = await getDatabaseClient().allDocs();
-      return allRecords;
+      const db = getDatabaseClient()
+      return db.allDocs({ include_docs: true })
     },
   });
 

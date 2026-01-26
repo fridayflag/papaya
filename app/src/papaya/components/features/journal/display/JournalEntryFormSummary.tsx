@@ -15,7 +15,8 @@ import { useFormContext } from "react-hook-form";
 
 export default function JournalEntryFormSummary() {
   const { watch } = useFormContext<JournalEntryForm>()
-  const entryUrn = watch('urn');
+  const entryUrn = watch('entryUrn');
+  const journalUrn = watch('journalUrn');
 
   const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DD'), []);
 
@@ -26,6 +27,7 @@ export default function JournalEntryFormSummary() {
   const defaultDisplayableEntry: DisplayableJournalEntry = useMemo(() => {
     return {
       entryUrn,
+      journalUrn,
       aggregate: {
         memo: '',
         date: defaultDate,
@@ -47,7 +49,7 @@ export default function JournalEntryFormSummary() {
         children: [],
       },
     };
-  }, [entryUrn, defaultDate, currency]);
+  }, [entryUrn, journalUrn, defaultDate, currency]);
 
   const baseEntryMemo = watch('rootTransaction.memo');
   const formValues = watch();

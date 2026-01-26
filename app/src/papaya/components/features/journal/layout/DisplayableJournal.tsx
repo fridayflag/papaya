@@ -48,6 +48,11 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
     return 'idle';
   }, [activeJournalId, journalContext.queries.journal]);
 
+  const handleNewEntry = () => {
+    setCreatingEntry(true);
+    setEditingEntryUrn(null);
+  }
+
   return (
     <Stack
       direction="row"
@@ -78,7 +83,7 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
             flexDirection: 'column',
             minHeight: 0, // Allow flex item to shrink
           })}>
-          <JournalToolbar onNewEntry={() => setCreatingEntry(true)} />
+          <JournalToolbar onNewEntry={handleNewEntry} />
           <Divider />
           <Grid
             container
