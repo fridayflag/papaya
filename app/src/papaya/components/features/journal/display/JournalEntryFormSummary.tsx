@@ -13,28 +13,19 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 
-
 export default function JournalEntryFormSummary() {
   const { watch } = useFormContext<JournalEntryForm>()
+  const entryUrn = watch('urn');
 
   const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DD'), []);
 
   const settings = useUserPreferences();
   const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
-  // const indexQuery = useActiveJournalIndex()
-  // const entriesQuery = useActiveJournalEntries();
 
-  const baseEntryMemo = watch('rootTransaction.memo');
-  const formValues = watch();
 
-  const marshalledEntry: Entry = useMemo(() => {
-    // TODO use debouncing
-    return JournalFormCodec.encode(formValues);
-  }, [formValues]);
-
-  const displayableEntry: DisplayableJournalEntry = useMemo(() => {
-    return makeDisplayableJournalEntry(marshalledEntry) ?? {
-      entryUrn: marshalledEntry.urn,
+  const defaultDisplayableEntry: DisplayableJournalEntry = useMemo(() => {
+    return {
+      entryUrn,
       aggregate: {
         memo: '',
         date: defaultDate,
@@ -49,14 +40,26 @@ export default function JournalEntryFormSummary() {
         date: defaultDate,
         memo: '',
         transactionUrn: null,
-        amount: makeFigure(0, currency),
+        figure: makeFigure(0, currency),
         sourceAccount: null,
         destinationAccount: null,
         topics: [],
         children: [],
       },
-    } satisfies DisplayableJournalEntry;
-  }, [marshalledEntry, defaultDate, currency]);
+    };
+  }, [entryUrn, defaultDate, currency]);
+
+  const baseEntryMemo = watch('rootTransaction.memo');
+  const formValues = watch();
+
+  const marshalledEntry: Entry = useMemo(() => {
+    // TODO use debouncing
+    return JournalFormCodec.encode(formValues);
+  }, [formValues]);
+
+  const displayableEntry: DisplayableJournalEntry = useMemo(() => {
+    return makeDisplayableJournalEntry(marshalledEntry) ?? defaultDisplayableEntry;
+  }, [marshalledEntry, defaultDisplayableEntry]);
 
   const netAmountString = getMonetaryEnumerationString(displayableEntry.aggregate.sum, {
     sign: 'whenPositive',

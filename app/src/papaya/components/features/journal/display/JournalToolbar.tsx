@@ -1,10 +1,14 @@
-import { Badge, Button, Stack, Typography } from '@mui/material'
+import { Badge, Button, Stack, Typography } from '@mui/material';
 
-import { Add } from '@mui/icons-material'
-import { useRef, useState } from 'react'
-import LedgerDateNavigation from '../navigation/LedgerDateNavigation'
+import { Add } from '@mui/icons-material';
+import { useRef, useState } from 'react';
+import LedgerDateNavigation from '../navigation/LedgerDateNavigation';
 
-export default function LedgerToolbar() {
+interface JournalToolbarProps {
+  onNewEntry: () => void;
+}
+
+export default function JournalToolbar(props: JournalToolbarProps) {
   const [showFiltersMenu, setShowFiltersMenu] = useState<boolean>(false)
   const filtersMenuButtonRef = useRef<HTMLButtonElement | null>(null)
 
@@ -49,6 +53,10 @@ export default function LedgerToolbar() {
                     <Typography>Filter</Typography>
                   </Button>
                 </Badge>
+                <Button variant="contained" onClick={() => props.onNewEntry()}>
+                  <Add />
+                  New Entry
+                </Button>
               </Stack>
             )}
           </Stack>

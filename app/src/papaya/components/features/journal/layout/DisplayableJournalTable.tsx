@@ -1,6 +1,9 @@
 import { useActiveJournalView } from '@/hooks/queries';
+import { useDebug } from '@/hooks/useDebug';
 import { DisplayableJournalEntry, JournalSlice } from '@/schema/aggregate-schemas';
-import { getFigureString } from '@/utils/string';
+import { MonetaryEnumeration } from '@/schema/journal/money';
+import { EntryUrn } from '@/schema/support/urn';
+import { getMonetaryEnumerationString } from '@/utils/string';
 import {
   Typography
 } from '@mui/material';
@@ -10,16 +13,27 @@ import { useMemo } from 'react';
 
 interface DisplayableJournalTableProps {
   slice: JournalSlice;
-  onSelectForEdit: (displayableEntryId: string) => void;
+  onSelectForEdit: (entryUrn: EntryUrn) => void;
 }
 
 const columns: GridColDef[] = [
   { field: 'date', headerName: 'Date', width: 100 },
   { field: 'memo', headerName: 'Memo', width: 100 },
-  { field: 'amount', headerName: 'Amount', width: 100 },
+  {
+    field: 'sum',
+    headerName: 'Amount',
+    width: 100,
+    // TODO strong typing
+    valueFormatter: (value: unknown) => {
+      return getMonetaryEnumerationString(value as MonetaryEnumeration)
+    }
+  },
 ]
 
 export default function DisplayableJournalTable(props: DisplayableJournalTableProps) {
+
+  const { allDbRecordsQuery } = useDebug();
+  console.log('allDbRecordsQuery:', allDbRecordsQuery.data);
 
   const viewQuery = useActiveJournalView(props.slice);
 
@@ -28,12 +42,11 @@ export default function DisplayableJournalTable(props: DisplayableJournalTablePr
   }, [viewQuery.data]);
 
   const rows: GridRowsProp = useMemo((): GridRowsProp => {
-    console.log(flattenedDisplayableEntries);
-    return flattenedDisplayableEntries.map((entry) => ({
-      id: entry.displayableEntryId,
-      date: entry.date,
-      memo: entry.memo,
-      amount: getFigureString(entry.netAmount),
+    return flattenedDisplayableEntries.map((entry: DisplayableJournalEntry) => ({
+      id: entry.entryUrn,
+      date: entry.aggregate.date,
+      memo: entry.aggregate.memo,
+      sum: entry.aggregate.sum,
     }));
   }, [flattenedDisplayableEntries]);
 
@@ -47,7 +60,7 @@ export default function DisplayableJournalTable(props: DisplayableJournalTablePr
       rows={rows}
       columns={columns}
       onRowClick={(params) => {
-        props.onSelectForEdit(String(params.id));
+        props.onSelectForEdit(params.id as EntryUrn);
       }}
     />
   )

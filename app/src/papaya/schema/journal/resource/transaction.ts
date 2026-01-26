@@ -11,7 +11,7 @@ export const TransactionSchema = createPapayaResourceSchema('papaya:resource:tra
   entryUrn: EntryUrnSchema,
   parentUrn: TransactionUrnSchema.nullable(),
   memo: z.string(),
-  amount: FigureSchema,
+  figure: FigureSchema,
   date: z.iso.date(),
   stems: z.record(StemUrnSchema, StemSchema),
   time: z.iso.time().nullish(),

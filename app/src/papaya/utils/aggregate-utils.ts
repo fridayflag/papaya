@@ -14,10 +14,10 @@ import { sortDatesChronologically } from "./date";
  */
 const sumTransactions = (transactions: Transaction[]): MonetaryEnumeration => {
   return transactions.reduce((acc: MonetaryEnumeration, transaction) => {
-    if (!acc[transaction.amount.currency]) {
-      acc[transaction.amount.currency] = 0;
+    if (!acc[transaction.figure.currency]) {
+      acc[transaction.figure.currency] = 0;
     }
-    acc[transaction.amount.currency]! += transaction.amount.amount;
+    acc[transaction.figure.currency]! += transaction.figure.amount;
     return acc;
   }, {} as MonetaryEnumeration);
 }
@@ -60,7 +60,7 @@ export const makeDisplayableJournalEntry = (entry: Entry): DisplayableJournalEnt
     transactionUrn: root.urn,
     memo: root.memo,
     date: root.date,
-    amount: root.amount,
+    figure: root.figure,
     sourceAccount: root.sourceAccount ?? null,
     destinationAccount: root.destinationAccount ?? null,
     topics: root.topics ?? [],

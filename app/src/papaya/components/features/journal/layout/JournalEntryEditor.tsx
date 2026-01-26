@@ -1,6 +1,7 @@
 import DateField from '@/components/input/field/DateField';
 import TopicField from '@/components/input/field/TopicField';
 import { DEFAULT_CURRENCY } from '@/constants/settings';
+import { putJournalEntry } from '@/database/actions';
 import { useUserPreferences } from '@/hooks/state/useUserPreferences';
 import { JournalFormCodec } from '@/schema/codec-schemas';
 import { JournalEntryForm, JournalEntryFormSchema } from '@/schema/form-schemas';
@@ -9,7 +10,7 @@ import { makeJournalEntry } from '@/schema/support/factory';
 import { JournalUrn, TransactionUrn } from "@/schema/support/urn";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DeleteOutline, LocalOffer } from '@mui/icons-material';
-import { Card, Grid, IconButton, Stack, TextField } from "@mui/material";
+import { Button, Card, Grid, IconButton, Stack, TextField } from "@mui/material";
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
@@ -59,10 +60,19 @@ function EditTransactionForm(props: EditTransactionFormProps) {
             />
           </Grid>
           <Grid size={4}>
-            <AmountField
-              size="small"
-              approximate={false}
-              {...register(`${props.prefix}.amount`)}
+            <Controller
+              control={control}
+              name={`${props.prefix}.amountString`}
+              render={({ field }) => (
+                <AmountField
+                  size="small"
+                  approximate={false}
+                  {...field}
+                  fullWidth
+                  sx={{ flex: 1 }}
+                  autoComplete="off"
+                />
+              )}
             />
           </Grid>
           <Grid size={'grow'}>
@@ -70,7 +80,7 @@ function EditTransactionForm(props: EditTransactionFormProps) {
               size="small"
               label="Topics"
               fullWidth
-              {...register(`${props.prefix}.topics`)}
+              {...register(`${props.prefix}.topicsString`)}
             />
           </Grid>
           <Grid size="auto">
@@ -92,6 +102,7 @@ function EditTransactionForm(props: EditTransactionFormProps) {
 interface JournalEntryEditorProps {
   journalId: JournalUrn;
   editingEntry: Entry | null;
+  onSaved: () => void;
 }
 
 export default function JournalEntryEditor(props: JournalEntryEditorProps) {
@@ -105,11 +116,22 @@ export default function JournalEntryEditor(props: JournalEntryEditorProps) {
   const form = useForm<JournalEntryForm>({
     resolver: zodResolver(JournalEntryFormSchema),
     defaultValues: initialFormValues,
-  })
+  });
+
+  const handleSave = async (formData: JournalEntryForm) => {
+    const marshalledEntry: Entry = JournalFormCodec.encode(formData);
+    try {
+      await putJournalEntry(marshalledEntry);
+      props.onSaved();
+    } catch (error) {
+      console.error('Error saving journal entry:', error);
+    }
+  }
 
   return (
     <FormProvider {...form}>
-      <Stack gap={1} component="form" sx={{ flex: 1 }}>
+      <Stack gap={1} component="form" onSubmit={form.handleSubmit(handleSave)} sx={{ flex: 1 }}>
+        <Button type="submit" variant="contained">Save</Button>
         <JournalEntryFormSummary />
         <EditTransactionForm prefix="rootTransaction" />
       </Stack>

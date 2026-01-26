@@ -16,7 +16,7 @@ export const DisplayableTransactionSchema = z.object({
   transactionUrn: TransactionUrnSchema.nullable(),
   memo: z.string(),
   date: z.iso.date(),
-  amount: FigureSchema,
+  figure: FigureSchema,
   sourceAccount: AccountSlugSchema.nullable(),
   destinationAccount: AccountSlugSchema.nullable(),
   topics: z.array(TopicSlugSchema),

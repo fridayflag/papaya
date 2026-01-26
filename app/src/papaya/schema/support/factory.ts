@@ -75,7 +75,7 @@ export const makeTransaction = (entryUrn: EntryUrn, currency: CurrencyIso4217): 
     '@version': SCHEMA_VERSION,
     entryUrn,
     parentUrn: null,
-    amount: makeFigure(0, currency),
+    figure: makeFigure(0, currency),
     memo: '',
     date: dayjs().format('YYYY-MM-DD'),
     stems: {},

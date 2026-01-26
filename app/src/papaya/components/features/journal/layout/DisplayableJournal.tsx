@@ -1,5 +1,8 @@
 import { JournalContext } from "@/contexts/JournalContext";
+import { useActiveJournalEntries } from "@/hooks/queries";
 import { JournalSlice } from "@/schema/aggregate-schemas";
+import { Entry } from "@/schema/journal/resource/documents";
+import { EntryUrn } from "@/schema/support/urn";
 import { Divider, Grid, Paper, Stack, Typography } from "@mui/material";
 import { useContext, useMemo, useState } from "react";
 import JournalToolbar from "../display/JournalToolbar";
@@ -13,11 +16,25 @@ interface DisplayableJournalProps {
 type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
 export default function DisplayableJournal(props: DisplayableJournalProps) {
-  const [editingDisplayableEntryId, setEditingDisplayableEntryId] = useState<string | null>(null);
+  const [editingEntryUrn, setEditingEntryUrn] = useState<EntryUrn | null>(null);
+  const [creatingEntry, setCreatingEntry] = useState<boolean>(false);
   const journalContext = useContext(JournalContext)
   const activeJournalId = journalContext.activeJournalId;
 
-  const isEditing = Boolean(editingDisplayableEntryId);
+  const showEditor = Boolean(editingEntryUrn) || creatingEntry;
+
+  const handleSelectForEdit = (entryUrn: EntryUrn) => {
+    setEditingEntryUrn(entryUrn);
+  }
+
+  const journalEntriesQuery = useActiveJournalEntries();
+
+  const editingEntry: Entry | null = useMemo(() => {
+    if (!editingEntryUrn) {
+      return null;
+    }
+    return journalEntriesQuery.data?.[editingEntryUrn] ?? null;
+  }, [editingEntryUrn, journalEntriesQuery]);
 
   const status: DisplayableJournalStatus = useMemo(() => {
     if (!activeJournalId) {
@@ -61,7 +78,7 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
             flexDirection: 'column',
             minHeight: 0, // Allow flex item to shrink
           })}>
-          <JournalToolbar />
+          <JournalToolbar onNewEntry={() => setCreatingEntry(true)} />
           <Divider />
           <Grid
             container
@@ -71,14 +88,22 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
               overflowY: 'auto',
               minHeight: 0, // Allow flex item to shrink
             }}>
-            <Grid size={isEditing ? 6 : 12}>
+            <Grid size={showEditor ? 6 : 12}>
               {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
               {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
-              {status === 'idle' && <DisplayableJournalTable slice={props.slice} onSelectForEdit={setEditingDisplayableEntryId} />}
+              {status === 'idle' && <DisplayableJournalTable slice={props.slice} onSelectForEdit={handleSelectForEdit} />}
             </Grid>
-            {isEditing && activeJournalId && (
+            {showEditor && activeJournalId && (
               <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>
-                <JournalEntryEditor journalId={activeJournalId} editingDisplayableEntryId={editingDisplayableEntryId!} />
+                <JournalEntryEditor
+                  journalId={activeJournalId}
+                  editingEntry={editingEntry!}
+                  onSaved={() => {
+                    setEditingEntryUrn(null);
+                    setCreatingEntry(false);
+                    // TODO refetch the journal entries
+                  }}
+                />
               </Grid>
             )}
           </Grid>
