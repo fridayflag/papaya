@@ -1,4 +1,5 @@
-import { Pictogram } from '@/schema/journal/entity/pictogram'
+import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
+import { makePictogram } from '@/schema/support/factory'
 import { Vibrant } from 'node-vibrant/browser'
 
 export async function createImagePictogram(file: File): Promise<Pictogram> {
@@ -7,11 +8,11 @@ export async function createImagePictogram(file: File): Promise<Pictogram> {
   // Resize image to 64x64
   const resizedBase64 = resizeImage(image, 64, 64)
 
-  return {
+  return makePictogram({
     content: resizedBase64, // `data:image/png;base64,${resizedBase64}`,
-    variant: PictogramVariant.enum.IMAGE,
+    variant: PictogramVariantSchema.enum.IMAGE,
     primaryColor: '',
-  }
+  })
 }
 
 export async function getPaletteColors(file: File): Promise<string[]> {

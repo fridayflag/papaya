@@ -1,29 +1,3 @@
-import { UserSettings } from '@/schema/models/UserSettings'
-import { PapayaMeta } from '@/schema/new/legacy/PapayaMeta'
-import { generateGenericPapayaUniqueId } from './id'
-
-export const makeDefaultUserSettings = (): UserSettings => {
-  return {
-    kind: 'papaya:usersettings',
-    appearance: {
-      menuExpanded: true,
-    },
-    syncStrategy: {
-      syncType: 'LOCAL',
-    },
-  }
-}
-
-export const makeDefaultPapayaMeta = (): PapayaMeta => {
-  return {
-    kind: 'papaya:meta',
-    _id: generateGenericPapayaUniqueId(),
-    activeJournalId: null,
-    userSettings: makeDefaultUserSettings(),
-    createdAt: new Date().toISOString(),
-  }
-}
-
 export const dbNameToUsername = (prefixedHexName: string) => {
   const hex = prefixedHexName.replace('userdb-', '');
   const bytes = new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));

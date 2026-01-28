@@ -84,7 +84,7 @@ export const getAbsoluteDateRangeFromDateView = (dateView: DateView) => {
 }
 
 export const getEmpiracleDateRangeFromJournalEntries = (entries: DisplayableJournalEntry[]) => {
-  const dates = entries.map((entry) => entry.date)
+  const dates = entries.map((entry) => entry.aggregate.date)
     .filter((date): date is string => Boolean(date));
 
   const sortedDates = sortDatesChronologically(...dates);

@@ -7,11 +7,17 @@ import SyncIcon from '../display/SyncIcon'
 export default function SyncWidget() {
   const remoteContext = useContext(RemoteContext)
 
-  const { syncSupported, syncDisabled } = remoteContext
-  const { title, description, indicator } = remoteContext.syncIndication
+  // const { syncSupported, syncDisabled } = remoteContext
+  // const { title, description, indicator } = remoteContext.syncIndication
+
+  const syncSupported = false;
+  const syncDisabled = false;
+  const title = '';
+  const description = '';
+  const indicator: SyncIndicatorEnum = SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC;
 
   const handleSync = () => {
-    remoteContext.sync()
+    // remoteContext.sync()
   }
 
   return (

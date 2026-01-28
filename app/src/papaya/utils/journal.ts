@@ -5,11 +5,11 @@ import { Pictogram } from '@/schema/journal/entity/pictogram'
 import { CurrencyIso4217 } from '@/schema/journal/money'
 import { makeFigure } from '@/schema/support/factory'
 
-export const parseJournalEntryAmount = (amount: string | undefined, currency: CurrencyIso4217): Figure | undefined => {
-  if (!amount) {
+export const parseJournalEntryAmountString = (amountString: string | undefined, currency: CurrencyIso4217): Figure | undefined => {
+  if (!amountString) {
     return undefined
   }
-  const sanitizedAmount = String(amount).replace(/[^0-9.-]/g, '')
+  const sanitizedAmount = String(amountString).replace(/[^0-9.-]/g, '')
   if (!sanitizedAmount) {
     return undefined
   }
@@ -19,7 +19,7 @@ export const parseJournalEntryAmount = (amount: string | undefined, currency: Cu
     return undefined
   }
 
-  const parsedNetAmount = amount.startsWith('+') ? parsedAmount : -parsedAmount
+  const parsedNetAmount = amountString.startsWith('+') ? parsedAmount : -parsedAmount
 
   return makeFigure(parsedNetAmount, currency);
 }

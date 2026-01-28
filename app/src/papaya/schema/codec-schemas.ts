@@ -1,5 +1,5 @@
 import { SCHEMA_VERSION } from "@/database/SchemaMigration";
-import { parseJournalEntryAmount, serializeJournalEntryAmount } from "@/utils/journal";
+import { parseJournalEntryAmountString, serializeJournalEntryAmount } from "@/utils/journal";
 import z from "zod";
 import { JournalEntryFormSchema, TransactionFormSchema, type JournalEntryForm, type TransactionForm } from "./form-schemas";
 import { EntrySchema, type Entry } from "./journal/resource/documents";
@@ -32,7 +32,7 @@ export const TransactionFormCodec = z.codec(
       };
     },
     encode: (form: TransactionForm): Transaction => {
-      const figure = parseJournalEntryAmount(form.amountString, form.currency) ?? makeFigure(0, form.currency);
+      const figure = parseJournalEntryAmountString(form.amountString, form.currency) ?? makeFigure(0, form.currency);
       const topics: z.infer<typeof TopicSlugSchema>[] = form.topicsString
         ? form.topicsString
           .split(',')
@@ -65,7 +65,7 @@ export const TransactionFormCodec = z.codec(
 
 // Helper function to encode TransactionForm to Transaction with entryUrn
 const encodeTransactionForm = (form: Omit<TransactionForm, 'parentUrn'> & { parentUrn: TransactionForm['parentUrn'] | null }, entryUrn: EntryUrn): Transaction => {
-  const figure = parseJournalEntryAmount(form.amountString, form.currency) ?? makeFigure(0, form.currency);
+  const figure = parseJournalEntryAmountString(form.amountString, form.currency) ?? makeFigure(0, form.currency);
 
   // Parse and validate topics as TopicSlug
   const topics: z.infer<typeof TopicSlugSchema>[] = form.topicsString

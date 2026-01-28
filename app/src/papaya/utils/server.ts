@@ -1,5 +1,3 @@
-import { SyncStrategy } from "@/schema/application/syncing"
-import { UserSettings } from "@/schema/models/UserSettings"
 
 export const isValidUrl = (url: string): boolean => {
   try {
@@ -74,11 +72,4 @@ export const getServerDatabaseUrl = (url: string | null): string => {
   } catch {
     return ''
   }
-}
-
-export const getSyncStrategy = (settings: UserSettings | null): SyncStrategy => {
-  if (!settings?.syncStrategy) {
-    return { syncType: 'LOCAL' }
-  }
-  return settings.syncStrategy
 }

@@ -1,4 +1,3 @@
-import { PLACEHOLDER_UNNAMED_PAPAYA_SERVER } from '@/constants/server'
 import { prettyPrintServerUrl } from '@/utils/server'
 import { Box, Grow, Stack, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material'
 import { ReactNode } from 'react'
@@ -17,7 +16,7 @@ interface ServerWidgetProps extends ServerData {
 }
 
 export default function ServerWidget(props: ServerWidgetProps) {
-  const printedServerName: string = props.serverNickname || props.serverName || PLACEHOLDER_UNNAMED_PAPAYA_SERVER
+  const printedServerName: string = props.serverNickname || props.serverName || "Papaya Server"
 
   return (
     <Box sx={{ py: 2, px: 2.5 }}>

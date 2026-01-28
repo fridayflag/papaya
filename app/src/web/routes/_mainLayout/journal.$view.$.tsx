@@ -98,7 +98,7 @@ function JournalPage() {
   const slice: JournalSlice = {
     timeframe: dateView,
     groupBy: 'DATE',
-    filters: null,
+    refinements: null,
     sortBy: 'DATE',
     sortOrder: 'ASC',
     layout: 'TABLE',

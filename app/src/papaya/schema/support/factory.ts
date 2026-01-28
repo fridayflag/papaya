@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { v6 as uuidv6 } from 'uuid';
 import { PapayaConfig } from '../application/config';
 import { Figure } from '../journal/entity/figure';
+import { Pictogram } from '../journal/entity/pictogram';
 import { CurrencyIso4217 } from '../journal/money';
 import { Entry, Journal } from '../journal/resource/documents';
 import { Transaction } from '../journal/resource/transaction';
@@ -65,6 +66,14 @@ export const makeFigure = (amount: number, currency: CurrencyIso4217): Figure =>
     '@version': SCHEMA_VERSION,
     currency,
     amount,
+  }
+}
+
+export const makePictogram = (pictogram: Pick<Pictogram, 'content' | 'variant' | 'primaryColor' | 'secondaryColor'>): Pictogram => {
+  return {
+    kind: 'papaya:entity:pictogram',
+    '@version': SCHEMA_VERSION,
+    ...pictogram,
   }
 }
 
