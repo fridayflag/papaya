@@ -1,5 +1,5 @@
-import { AdornedResource } from "@/schema/new/object/AdornedResourceSchema";
-import { DecoratedSlug } from "@/schema/new/object/DecoratedSlug";
+
+import { AdornedResource, DecoratedSlug } from "@/schema/journal/display";
 import { Typography } from "@mui/material";
 
 interface DisplayableResourceProps {

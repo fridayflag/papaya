@@ -49,7 +49,7 @@ export default function useDateView(): UseDateView {
     [navigate],
   )
 
-  const dateView: DateView = defaultDateView
+  const dateView = defaultDateView as DateView;
   //= journalFilterContext?.activeJournalFilters?.[SearchFacetKey.DATE] ?? defaultDateView
 
   const startDate = useMemo((): dayjs.Dayjs => {

@@ -13,7 +13,12 @@ export default function SyncHeaderWidget() {
   const buttonAnchorRef = useRef<HTMLDivElement>(null)
 
   const remoteContext = useContext(RemoteContext)
-  const { syncIndication, } = remoteContext
+  // const { syncIndication, } = remoteContext
+  const syncIndication = {
+    indicator: SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC as SyncIndicatorEnum,
+    title: '',
+    description: '',
+  }
   const isIdle = syncIndication.indicator === SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC
 
   const syncIconVerboseColor: IconColor = useMemo(() => {

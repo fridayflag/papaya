@@ -14,7 +14,7 @@ export default function SyncWidget() {
   const syncDisabled = false;
   const title = '';
   const description = '';
-  const indicator: SyncIndicatorEnum = SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC;
+  const indicator = SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC as SyncIndicatorEnum;
 
   const handleSync = () => {
     // remoteContext.sync()

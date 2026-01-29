@@ -1,4 +1,4 @@
-import { Pictogram } from '@/schema/journal/entity/pictogram'
+import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
 import { Icon, SxProps, Theme } from '@mui/material'
 import { ImagePictogram } from '../input/picker/ImagePictogramPicker'
 import { DEFAULT_PICTOGRAM } from '../input/picker/PictogramPicker'
@@ -13,7 +13,7 @@ interface PictogramIconProps {
 export default function PictogramIcon(props: PictogramIconProps) {
   const pictogram: Pictogram = props.pictogram ?? { ...DEFAULT_PICTOGRAM }
   switch (pictogram.variant) {
-    case PictogramVariant.enum.PICTORIAL:
+    case PictogramVariantSchema.enum.PICTORIAL:
       return (
         <Icon
           className={props.className}
@@ -23,7 +23,7 @@ export default function PictogramIcon(props: PictogramIconProps) {
           {pictogram.content}
         </Icon>
       )
-    case PictogramVariant.enum.IMAGE:
+    case PictogramVariantSchema.enum.IMAGE:
       return (
         <ImagePictogram className={props.className} pictogram={pictogram} sx={{ width: '28px', height: '28px', ...props.sx }} />
       )

@@ -1,6 +1,19 @@
-import { DAYS_OF_WEEK_NAMES } from '@/constants/date'
-import { DayOfWeek } from '@/schema/support/recurrence'
 import { Stack, ToggleButton, Tooltip } from '@mui/material'
+import z from 'zod'
+
+export const DayOfWeek = z.enum(['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'])
+
+type DayOfWeek = z.infer<typeof DayOfWeek>
+
+export const DAYS_OF_WEEK_NAMES: Record<DayOfWeek, string> = {
+  SU: 'Sunday',
+  MO: 'Monday',
+  TU: 'Tuesday',
+  WE: 'Wednesday',
+  TH: 'Thursday',
+  FR: 'Friday',
+  SA: 'Saturday',
+}
 
 interface DaysOfWeekPickerProps {
   value: Set<DayOfWeek>

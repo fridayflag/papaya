@@ -1,4 +1,4 @@
-import { Pictogram } from '@/schema/journal/entity/pictogram'
+import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
 import { createImagePictogram, getPaletteColors } from '@/utils/image'
 import { AddPhotoAlternate, RemoveCircle } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
@@ -33,7 +33,7 @@ export default function ImagePictogramPicker(props: ImagePictogramPicker) {
     return [
       Boolean(props.value),
       Boolean(props.value?.content),
-      props.value?.variant === PictogramVariant.enum.IMAGE,
+      props.value?.variant === PictogramVariantSchema.enum.IMAGE,
     ].every(Boolean)
   }, [props.value])
 
