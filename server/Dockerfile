@@ -1,6 +1,3 @@
-# Build arg: where to put static assets in the final image (must match STATIC_ASSETS_DIR at runtime).
-ARG STATIC_ASSETS_DIR=/var/www/papaya
-
 # Stage 1: build the web app (node deps + compile)
 FROM node:20-alpine AS app-builder
 WORKDIR /app
@@ -17,8 +14,9 @@ RUN go mod download
 COPY server/ .
 RUN go build -o /papaya ./cmd/papaya
 
-# Stage 3: run server with baked-in static assets
+# Stage 3: run server and serve static assets
 FROM alpine:3.19
+ARG STATIC_ASSETS_DIR=/var/www/papaya
 RUN apk add --no-cache ca-certificates
 WORKDIR /app
 COPY --from=go-builder /papaya .
