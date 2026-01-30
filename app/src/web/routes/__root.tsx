@@ -1,3 +1,4 @@
+import NotFoundPage from '@/components/NotFoundPage'
 import PapayaProviders from '@/components/providers'
 import { QueryClient } from '@tanstack/react-query'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
@@ -16,4 +17,5 @@ export const Route = createRootRoute({
       <Outlet />
     </PapayaProviders>
   ),
+  notFoundComponent: NotFoundPage,
 })
