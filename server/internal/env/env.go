@@ -12,8 +12,6 @@ type Config struct {
 	ServerPort        int
 	AuthTokenSecret   string
 	AuthRefreshSecret string
-	CouchDBAdminUser  string
-	CouchDBAdminPass  string
 	CouchDBHost       string
 	CouchDBPort       int
 	StaticAssetsDir   string
@@ -21,13 +19,12 @@ type Config struct {
 }
 
 // CouchDBProxiedURL returns the URL to which /db/* requests are proxied.
-// Uses COUCH_DB_PROXIED_URL if set; otherwise builds from COUCHDB_* variables.
+// Uses COUCH_DB_PROXIED_URL if set; otherwise builds from COUCHDB_HOST and COUCHDB_PORT (no credentials).
 func (c *Config) CouchDBProxiedURL() string {
 	if u := os.Getenv("COUCH_DB_PROXIED_URL"); u != "" {
 		return u
 	}
-	return fmt.Sprintf("http://%s:%s@%s:%d",
-		c.CouchDBAdminUser, c.CouchDBAdminPass, c.CouchDBHost, c.CouchDBPort)
+	return c.CouchDBBaseURL()
 }
 
 // CouchDBBaseURL returns the CouchDB origin without credentials (e.g. for _session).
@@ -49,8 +46,6 @@ func Load() (*Config, error) {
 		ServerPort:        port,
 		AuthTokenSecret:   getEnv("AUTH_TOKEN_SECRET", ""),
 		AuthRefreshSecret: getEnv("AUTH_REFRESH_SECRET", ""),
-		CouchDBAdminUser:  getEnv("COUCHDB_ADMIN_USER", "papaya"),
-		CouchDBAdminPass:  getEnv("COUCHDB_ADMIN_PASS", "admin"),
 		CouchDBHost:       getEnv("COUCHDB_HOST", "localhost"),
 		CouchDBPort:       couchPort,
 		StaticAssetsDir:   getEnv("STATIC_ASSETS_DIR", "/var/www/papaya"),
