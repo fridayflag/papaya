@@ -12,22 +12,11 @@ go build -o bin/papaya ./cmd/papaya
 ./bin/papaya
 ```
 
-Copy `.env.example` to `.env` in the project root and set variables (see root `.env.example`).
-
-## Local development (dev paths)
-
-To use local paths for static assets and config (e.g. your machine’s app dist dir), build with the `dev` tag:
-
-```bash
-go build -tags dev -o bin/papaya ./cmd/papaya
-```
-
-Then adjust `configs/paths_dev.go` (e.g. `StaticAssetsDir`) for your machine. Default (no tag) uses `/var/www/papaya` and `/opt/papaya` for production/Docker.
+Copy `.env.example` to `.env` in the project root and set variables (see root `.env.example`). Paths like `STATIC_ASSETS_DIR` and `CONFIG_DIR` are runtime; set them for local dev (e.g. `STATIC_ASSETS_DIR=./app/dist`, `CONFIG_DIR=./`) or leave defaults for Docker.
 
 ## Layout
 
 - **cmd/papaya** – main binary
-- **configs** – compile-time path constants (default + `dev` build tag)
 - **internal/api** – Gin routes: `/api/login`, `/api/refresh`, `/api/logout`
 - **internal/auth** – JWT minting/validation and cookie names
 - **internal/config** – stub for reading `config.yaml` at startup (TODO)

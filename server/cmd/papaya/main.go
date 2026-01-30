@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/fridayflag/papaya/configs"
 	"github.com/fridayflag/papaya/internal/api"
 	"github.com/fridayflag/papaya/internal/config"
 	"github.com/fridayflag/papaya/internal/env"
@@ -19,7 +18,7 @@ func main() {
 		log.Fatalf("env: %v", err)
 	}
 
-	_, _ = config.Load() // TODO: use when config is implemented
+	_, _ = config.Load(cfg.ConfigDir) // TODO: use when config is implemented
 
 	dbProxy, err := proxy.ReverseProxy("/db", cfg.CouchDBProxiedURL())
 	if err != nil {
@@ -31,7 +30,7 @@ func main() {
 		log.Fatalf("api: %v", err)
 	}
 
-	spa, err := static.SPA(configs.Paths.StaticAssetsDir)
+	spa, err := static.SPA(cfg.StaticAssetsDir)
 	if err != nil {
 		log.Fatalf("static: %v", err)
 	}

@@ -16,6 +16,8 @@ type Config struct {
 	CouchDBAdminPass  string
 	CouchDBHost       string
 	CouchDBPort       int
+	StaticAssetsDir   string
+	ConfigDir         string
 }
 
 // CouchDBProxiedURL returns the URL to which /db/* requests are proxied.
@@ -46,11 +48,13 @@ func Load() (*Config, error) {
 	return &Config{
 		ServerPort:        port,
 		AuthTokenSecret:   getEnv("AUTH_TOKEN_SECRET", ""),
-		AuthRefreshSecret: getEnv("AUTH_REFRESH_TOKEN", ""),
+		AuthRefreshSecret: getEnv("AUTH_REFRESH_SECRET", ""),
 		CouchDBAdminUser:  getEnv("COUCHDB_ADMIN_USER", "papaya"),
 		CouchDBAdminPass:  getEnv("COUCHDB_ADMIN_PASS", "admin"),
 		CouchDBHost:       getEnv("COUCHDB_HOST", "localhost"),
 		CouchDBPort:       couchPort,
+		StaticAssetsDir:   getEnv("STATIC_ASSETS_DIR", "/var/www/papaya"),
+		ConfigDir:         getEnv("CONFIG_DIR", "/opt/papaya"),
 	}, nil
 }
 

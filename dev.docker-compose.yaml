@@ -16,6 +16,9 @@ services:
     build:
       context: .
       dockerfile: server/Dockerfile
+      args:
+        # Must match STATIC_ASSETS_DIR in .env so runtime serves from the path we copied to
+        STATIC_ASSETS_DIR: ${STATIC_ASSETS_DIR:-/var/www/papaya}
     env_file:
       - ./.env
     environment:
