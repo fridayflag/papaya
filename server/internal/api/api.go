@@ -16,11 +16,18 @@ func Router(cfg *env.Config) (*gin.Engine, error) {
 
 	api := r.Group("/api")
 	{
+		api.GET("/health", healthHandler())
 		api.POST("/login", loginHandler(cfg))
 		api.POST("/refresh", refreshHandler(cfg))
 		api.POST("/logout", logoutHandler(cfg))
 	}
 	return r, nil
+}
+
+func healthHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	}
 }
 
 type loginRequest struct {
