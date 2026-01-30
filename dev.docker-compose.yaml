@@ -1,0 +1,34 @@
+services:
+  couchdb:
+    image: couchdb:3
+    env_file:
+      - ./.env
+    environment:
+      # CouchDB internalizes admin user on first startup (see .env.example)
+      COUCHDB_USER: ${COUCHDB_ADMIN_USER:-papaya}
+      COUCHDB_PASSWORD: ${COUCHDB_ADMIN_PASS:-admin}
+    ports:
+      - "${COUCHDB_PORT:-5984}:5984"
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    env_file:
+      - ./.env
+    environment:
+      # Reach CouchDB by service name when running in compose
+      COUCHDB_HOST: couchdb
+      COUCHDB_PORT: ${COUCHDB_PORT:-5984}
+      SERVER_PORT: ${SERVER_PORT:-9475}
+      AUTH_TOKEN_SECRET: ${AUTH_TOKEN_SECRET}
+      AUTH_REFRESH_SECRET: ${AUTH_REFRESH_SECRET}
+    ports:
+      - "${SERVER_PORT:-1234}:${SERVER_PORT:-1234}"
+    depends_on:
+      - couchdb
+
+volumes:
+  couchdb_data:

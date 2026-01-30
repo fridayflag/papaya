@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WelcomeLayoutRouteImport } from './routes/_welcomeLayout'
 import { Route as MainLayoutRouteImport } from './routes/_mainLayout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MainLayoutSettingsIndexRouteImport } from './routes/_mainLayout/settings.index'
@@ -17,10 +16,6 @@ import { Route as MainLayoutJournalIndexRouteImport } from './routes/_mainLayout
 import { Route as MainLayoutSettingsSectionRouteImport } from './routes/_mainLayout/settings.$section'
 import { Route as MainLayoutJournalViewSplatRouteImport } from './routes/_mainLayout/journal.$view.$'
 
-const WelcomeLayoutRoute = WelcomeLayoutRouteImport.update({
-  id: '/_welcomeLayout',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MainLayoutRoute = MainLayoutRouteImport.update({
   id: '/_mainLayout',
   getParentRoute: () => rootRouteImport,
@@ -71,7 +66,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_mainLayout': typeof MainLayoutRouteWithChildren
-  '/_welcomeLayout': typeof WelcomeLayoutRoute
   '/_mainLayout/settings/$section': typeof MainLayoutSettingsSectionRoute
   '/_mainLayout/journal/': typeof MainLayoutJournalIndexRoute
   '/_mainLayout/settings/': typeof MainLayoutSettingsIndexRoute
@@ -91,7 +85,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_mainLayout'
-    | '/_welcomeLayout'
     | '/_mainLayout/settings/$section'
     | '/_mainLayout/journal/'
     | '/_mainLayout/settings/'
@@ -101,18 +94,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainLayoutRoute: typeof MainLayoutRouteWithChildren
-  WelcomeLayoutRoute: typeof WelcomeLayoutRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_welcomeLayout': {
-      id: '/_welcomeLayout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof WelcomeLayoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_mainLayout': {
       id: '/_mainLayout'
       path: ''
@@ -179,7 +164,6 @@ const MainLayoutRouteWithChildren = MainLayoutRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainLayoutRoute: MainLayoutRouteWithChildren,
-  WelcomeLayoutRoute: WelcomeLayoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
