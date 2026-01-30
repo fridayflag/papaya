@@ -20,7 +20,7 @@ func main() {
 
 	_, _ = config.Load(cfg.ConfigDir) // TODO: use when config is implemented
 
-	dbProxy, err := proxy.ReverseProxy("/db", cfg.CouchDBProxiedURL())
+	dbProxy, err := proxy.ReverseProxy("/db", cfg.CouchDBProxiedURL)
 	if err != nil {
 		log.Fatalf("proxy: %v", err)
 	}
