@@ -1,12 +1,16 @@
 services:
   couchdb:
-    image: couchdb:3
+    build:
+      context: .
+      dockerfile: database/Dockerfile
+    image: papaya-couchdb
     env_file:
       - ./.env
     environment:
-      # CouchDB internalizes admin user on first startup (see .env.example)
-      COUCHDB_USER: ${COUCHDB_ADMIN_USER:-papaya}
-      COUCHDB_PASSWORD: ${COUCHDB_ADMIN_PASS:-admin}
+      # Custom image uses papaya.couchdb.ini (disables Admin Party, couch_per_user, JWT)
+      PAPAYA_COUCHDB_ADMIN_USER: ${PAPAYA_COUCHDB_ADMIN_USER:-papaya}
+      PAPAYA_COUCHDB_ADMIN_PASS: ${PAPAYA_COUCHDB_ADMIN_PASS:-admin}
+      AUTH_TOKEN_SECRET: ${AUTH_TOKEN_SECRET}
     ports:
       - "${COUCHDB_PORT:-5984}:5984"
     volumes:
