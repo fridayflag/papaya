@@ -12,16 +12,14 @@ const (
 	refreshTokenDuration = 7 * 24 * time.Hour
 )
 
-// Claims holds JWT claims for the access token.
+// AccessClaims holds JWT claims for the access token.
 type AccessClaims struct {
 	jwt.RegisteredClaims
-	Username string `json:"username"`
 }
 
 // RefreshClaims holds JWT claims for the refresh token.
 type RefreshClaims struct {
 	jwt.RegisteredClaims
-	Username string `json:"username"`
 }
 
 // MintAccessToken creates a new JWT access token for the given username.
@@ -29,10 +27,10 @@ type RefreshClaims struct {
 func MintAccessToken(username, secret, kid string) (string, error) {
 	claims := AccessClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   username,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(accessTokenDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
-		Username: username,
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	if kid != "" {
@@ -46,10 +44,10 @@ func MintAccessToken(username, secret, kid string) (string, error) {
 func MintRefreshToken(username, secret, kid string) (string, error) {
 	claims := RefreshClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   username,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(refreshTokenDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
-		Username: username,
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	if kid != "" {
@@ -70,7 +68,7 @@ func ValidateAccessToken(tokenStr, secret string) (username string, err error) {
 	if !ok || !t.Valid {
 		return "", errors.New("invalid access token")
 	}
-	return claims.Username, nil
+	return claims.Subject, nil
 }
 
 // ValidateRefreshToken parses and validates the refresh token; returns the username.
@@ -85,5 +83,5 @@ func ValidateRefreshToken(tokenStr, secret string) (username string, err error) 
 	if !ok || !t.Valid {
 		return "", errors.New("invalid refresh token")
 	}
-	return claims.Username, nil
+	return claims.Subject, nil
 }
