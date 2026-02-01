@@ -47,12 +47,12 @@ func loginHandler(cfg *env.Config) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 			return
 		}
-		access, err := auth.MintAccessToken(req.Username, cfg.AuthTokenSecret)
+		access, err := auth.MintAccessToken(req.Username, cfg.AuthTokenSecret, cfg.AuthTokenKid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint token"})
 			return
 		}
-		refresh, err := auth.MintRefreshToken(req.Username, cfg.AuthRefreshSecret)
+		refresh, err := auth.MintRefreshToken(req.Username, cfg.AuthRefreshSecret, cfg.AuthTokenKid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint refresh token"})
 			return
@@ -75,12 +75,12 @@ func refreshHandler(cfg *env.Config) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
 			return
 		}
-		access, err := auth.MintAccessToken(username, cfg.AuthTokenSecret)
+		access, err := auth.MintAccessToken(username, cfg.AuthTokenSecret, cfg.AuthTokenKid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint token"})
 			return
 		}
-		newRefresh, err := auth.MintRefreshToken(username, cfg.AuthRefreshSecret)
+		newRefresh, err := auth.MintRefreshToken(username, cfg.AuthRefreshSecret, cfg.AuthTokenKid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint refresh token"})
 			return

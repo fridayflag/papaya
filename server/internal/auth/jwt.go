@@ -25,7 +25,8 @@ type RefreshClaims struct {
 }
 
 // MintAccessToken creates a new JWT access token for the given username.
-func MintAccessToken(username, secret string) (string, error) {
+// If kid is non-empty, it is set as the JWT "kid" header (key ID).
+func MintAccessToken(username, secret, kid string) (string, error) {
 	claims := AccessClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(accessTokenDuration)),
@@ -34,11 +35,15 @@ func MintAccessToken(username, secret string) (string, error) {
 		Username: username,
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if kid != "" {
+		t.Header["kid"] = kid
+	}
 	return t.SignedString([]byte(secret))
 }
 
 // MintRefreshToken creates a new refresh token for the given username.
-func MintRefreshToken(username, secret string) (string, error) {
+// If kid is non-empty, it is set as the JWT "kid" header (key ID).
+func MintRefreshToken(username, secret, kid string) (string, error) {
 	claims := RefreshClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(refreshTokenDuration)),
@@ -47,6 +52,9 @@ func MintRefreshToken(username, secret string) (string, error) {
 		Username: username,
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if kid != "" {
+		t.Header["kid"] = kid
+	}
 	return t.SignedString([]byte(secret))
 }
 

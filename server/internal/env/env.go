@@ -13,6 +13,7 @@ type Config struct {
 	ServerPort         int
 	AuthTokenSecret    string
 	AuthRefreshSecret  string
+	AuthTokenKid       string
 	CouchDBHost        string
 	CouchDBPort        int
 	CouchDBProxiedURL  string // URL for /db/* proxy; from COUCH_DB_PROXIED_URL or built from host:port
@@ -44,6 +45,7 @@ func Load() (*Config, error) {
 		ServerPort:        port,
 		AuthTokenSecret:   getEnv("AUTH_TOKEN_SECRET", ""),
 		AuthRefreshSecret: getEnv("AUTH_REFRESH_SECRET", ""),
+		AuthTokenKid:      getEnv("AUTH_TOKEN_KID", ""),
 		CouchDBHost:       couchHost,
 		CouchDBPort:       couchPort,
 		CouchDBProxiedURL: proxiedURL,

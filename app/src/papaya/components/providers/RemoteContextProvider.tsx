@@ -1,5 +1,5 @@
-import { RemoteContext } from '@/contexts/RemoteContext'
-import { PropsWithChildren } from 'react'
+import { RemoteContext } from '@/contexts/RemoteContext';
+import { PropsWithChildren } from 'react';
 
 export default function RemoteContextProvider(props: PropsWithChildren) {
   // const [syncError, setSyncError] = useState<SyncErrorEnum | null>(null)
@@ -163,7 +163,7 @@ export default function RemoteContextProvider(props: PropsWithChildren) {
   //   sync,
   // }
 
-  const remoteContext: RemoteContext = {}
+  const remoteContext: RemoteContext = {} as RemoteContext;
 
   return <RemoteContext.Provider value={remoteContext}>{props.children}</RemoteContext.Provider>
 }

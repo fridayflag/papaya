@@ -8,6 +8,8 @@ COPY database/papaya.couchdb.ini /tmp/papaya.couchdb.ini.template
 
 # Create a script to process the config at runtime
 RUN echo '#!/bin/bash\n\
+# Compute base64 HMAC for JWT from AUTH_TOKEN_SECRET (envsubst does not run shell)\n\
+export JWT_HMAC_B64=$(echo -n "${AUTH_TOKEN_SECRET}" | base64)\n\
 # Process the CouchDB configuration with environment variables\n\
 envsubst < /tmp/papaya.couchdb.ini.template > /opt/couchdb/etc/default.d/papaya.ini\n\
 \n\
