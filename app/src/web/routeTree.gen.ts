@@ -13,6 +13,7 @@ import { Route as MainLayoutRouteImport } from './routes/_mainLayout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MainLayoutSettingsIndexRouteImport } from './routes/_mainLayout/settings.index'
 import { Route as MainLayoutJournalIndexRouteImport } from './routes/_mainLayout/journal.index'
+import { Route as MainLayoutAdminIndexRouteImport } from './routes/_mainLayout/admin/index'
 import { Route as MainLayoutSettingsSectionRouteImport } from './routes/_mainLayout/settings.$section'
 import { Route as MainLayoutJournalViewSplatRouteImport } from './routes/_mainLayout/journal.$view.$'
 
@@ -35,6 +36,11 @@ const MainLayoutJournalIndexRoute = MainLayoutJournalIndexRouteImport.update({
   path: '/journal/',
   getParentRoute: () => MainLayoutRoute,
 } as any)
+const MainLayoutAdminIndexRoute = MainLayoutAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => MainLayoutRoute,
+} as any)
 const MainLayoutSettingsSectionRoute =
   MainLayoutSettingsSectionRouteImport.update({
     id: '/settings/$section',
@@ -51,6 +57,7 @@ const MainLayoutJournalViewSplatRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/settings/$section': typeof MainLayoutSettingsSectionRoute
+  '/admin': typeof MainLayoutAdminIndexRoute
   '/journal': typeof MainLayoutJournalIndexRoute
   '/settings': typeof MainLayoutSettingsIndexRoute
   '/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings/$section': typeof MainLayoutSettingsSectionRoute
+  '/admin': typeof MainLayoutAdminIndexRoute
   '/journal': typeof MainLayoutJournalIndexRoute
   '/settings': typeof MainLayoutSettingsIndexRoute
   '/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_mainLayout': typeof MainLayoutRouteWithChildren
   '/_mainLayout/settings/$section': typeof MainLayoutSettingsSectionRoute
+  '/_mainLayout/admin/': typeof MainLayoutAdminIndexRoute
   '/_mainLayout/journal/': typeof MainLayoutJournalIndexRoute
   '/_mainLayout/settings/': typeof MainLayoutSettingsIndexRoute
   '/_mainLayout/journal/$view/$': typeof MainLayoutJournalViewSplatRoute
@@ -76,16 +85,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/settings/$section'
+    | '/admin'
     | '/journal'
     | '/settings'
     | '/journal/$view/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings/$section' | '/journal' | '/settings' | '/journal/$view/$'
+  to:
+    | '/'
+    | '/settings/$section'
+    | '/admin'
+    | '/journal'
+    | '/settings'
+    | '/journal/$view/$'
   id:
     | '__root__'
     | '/'
     | '/_mainLayout'
     | '/_mainLayout/settings/$section'
+    | '/_mainLayout/admin/'
     | '/_mainLayout/journal/'
     | '/_mainLayout/settings/'
     | '/_mainLayout/journal/$view/$'
@@ -126,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainLayoutJournalIndexRouteImport
       parentRoute: typeof MainLayoutRoute
     }
+    '/_mainLayout/admin/': {
+      id: '/_mainLayout/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof MainLayoutAdminIndexRouteImport
+      parentRoute: typeof MainLayoutRoute
+    }
     '/_mainLayout/settings/$section': {
       id: '/_mainLayout/settings/$section'
       path: '/settings/$section'
@@ -145,6 +169,7 @@ declare module '@tanstack/react-router' {
 
 interface MainLayoutRouteChildren {
   MainLayoutSettingsSectionRoute: typeof MainLayoutSettingsSectionRoute
+  MainLayoutAdminIndexRoute: typeof MainLayoutAdminIndexRoute
   MainLayoutJournalIndexRoute: typeof MainLayoutJournalIndexRoute
   MainLayoutSettingsIndexRoute: typeof MainLayoutSettingsIndexRoute
   MainLayoutJournalViewSplatRoute: typeof MainLayoutJournalViewSplatRoute
@@ -152,6 +177,7 @@ interface MainLayoutRouteChildren {
 
 const MainLayoutRouteChildren: MainLayoutRouteChildren = {
   MainLayoutSettingsSectionRoute: MainLayoutSettingsSectionRoute,
+  MainLayoutAdminIndexRoute: MainLayoutAdminIndexRoute,
   MainLayoutJournalIndexRoute: MainLayoutJournalIndexRoute,
   MainLayoutSettingsIndexRoute: MainLayoutSettingsIndexRoute,
   MainLayoutJournalViewSplatRoute: MainLayoutJournalViewSplatRoute,

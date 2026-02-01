@@ -1,4 +1,4 @@
-import { LoginFormSchema, LoginForm as LoginFormType } from "@/schema/form-schemas";
+import { UserCredentialsForm as LoginFormType, UserCredentialsFormSchema } from "@/schema/form-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, FormHelperText, Stack, TextField } from "@mui/material";
 import { useState } from "react";
@@ -13,7 +13,7 @@ export default function LoginForm(props: LoginFormProps) {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const form = useForm<LoginFormType>({
-    resolver: zodResolver(LoginFormSchema),
+    resolver: zodResolver(UserCredentialsFormSchema),
     defaultValues: {
       username: '',
       password: '',

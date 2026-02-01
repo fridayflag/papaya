@@ -26,8 +26,8 @@ export const JournalEntryFormSchema = z.object({
 // TODO add a .refine() that asserts that the childTransactions have a parentUrn that is not null
 export type JournalEntryForm = z.infer<typeof JournalEntryFormSchema>;
 
-export const LoginFormSchema = z.object({
+export const UserCredentialsFormSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
 });
-export type LoginForm = z.infer<typeof LoginFormSchema>;
+export type UserCredentialsForm = z.infer<typeof UserCredentialsFormSchema>;
