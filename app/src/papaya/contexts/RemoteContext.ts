@@ -39,14 +39,13 @@ export enum SyncErrorEnum {
 }
 
 export type RemoteContext = {
-  // authStatus: AuthStatusEnum,
-  // onlineStatus: OnlineStatusEnum
-  // syncStatus: SyncStatusEnum,
-  // // syncError: SyncErrorEnum,
-  // syncDisabled: boolean
-  // syncSupported: boolean
-  // syncIndication: SyncIndication
-  // sync: () => Promise<void>
+  authStatus: AuthStatusEnum,
+  onlineStatus: OnlineStatusEnum
+  syncStatus: SyncStatusEnum,
+  syncError: SyncErrorEnum,
+  syncDisabled: boolean
+  syncSupported: boolean
+  sync: () => Promise<void>
 }
 
 export const RemoteContext = createContext<RemoteContext>({} as RemoteContext)

@@ -2,6 +2,7 @@ import { PapayaConfig, PapayaConfigSchema, UserSettings, UserSettingsSchema } fr
 import { Entry, Journal } from '@/schema/journal/resource/documents'
 import { makeDefaultConfig, makeJournal } from '@/schema/support/factory'
 import { JournalUrn } from '@/schema/support/urn'
+import { getBasicAuthHeader } from '@/utils/database'
 import { getDatabaseClient } from './client'
 
 const db = getDatabaseClient()
@@ -106,3 +107,16 @@ export const getJournalEntries = async (journalId: JournalUrn | null): Promise<E
 export const putJournalEntry = async (entry: Entry): Promise<void> => {
   await db.put(entry);
 };
+
+export const login = async (username: string, password: string): Promise<void> => {
+  const basicAuthHeader = getBasicAuthHeader(username, password);
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Authorization': basicAuthHeader,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to login');
+  }
+}
