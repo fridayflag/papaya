@@ -1,7 +1,9 @@
 package api
 
 import (
+	"errors"
 	"net/http"
+	"time"
 
 	"github.com/fridayflag/papaya/internal/auth"
 	"github.com/fridayflag/papaya/internal/env"
@@ -9,7 +11,7 @@ import (
 )
 
 // Router returns a Gin engine with /api routes (login, refresh, logout).
-func Router(cfg *env.Config) (*gin.Engine, error) {
+func Router(cfg *env.Config, store *auth.TokenStore) (*gin.Engine, error) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery())
@@ -17,9 +19,9 @@ func Router(cfg *env.Config) (*gin.Engine, error) {
 	api := r.Group("/api")
 	{
 		api.GET("/health", healthHandler())
-		api.POST("/login", loginHandler(cfg))
-		api.POST("/refresh", refreshHandler(cfg))
-		api.POST("/logout", logoutHandler(cfg))
+		api.POST("/login", loginHandler(cfg, store))
+		api.POST("/refresh", refreshHandler(cfg, store))
+		api.POST("/logout", logoutHandler(cfg, store))
 	}
 	return r, nil
 }
@@ -35,7 +37,7 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-func loginHandler(cfg *env.Config) gin.HandlerFunc {
+func loginHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req loginRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -57,12 +59,18 @@ func loginHandler(cfg *env.Config) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint refresh token"})
 			return
 		}
+		hash := auth.TokenHash(refresh)
+		expiresAt := time.Now().Add(auth.RefreshTokenDuration)
+		if err := store.Store(hash, req.Username, expiresAt); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to store refresh token"})
+			return
+		}
 		setAuthCookies(c, access, refresh)
 		c.JSON(http.StatusOK, gin.H{"ok": true})
 	}
 }
 
-func refreshHandler(cfg *env.Config) gin.HandlerFunc {
+func refreshHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		refresh, err := c.Cookie(auth.CookieRefreshToken)
 		if err != nil || refresh == "" {
@@ -75,6 +83,21 @@ func refreshHandler(cfg *env.Config) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
 			return
 		}
+		hash := auth.TokenHash(refresh)
+		username, err = store.Consume(hash)
+		if err != nil {
+			clearAuthCookies(c)
+			if errors.Is(err, auth.ErrTokenUsed) || errors.Is(err, auth.ErrTokenRevoked) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "refresh token already used or revoked"})
+				return
+			}
+			if errors.Is(err, auth.ErrTokenNotFound) || errors.Is(err, auth.ErrTokenExpired) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to validate refresh token"})
+			return
+		}
 		access, err := auth.MintAccessToken(username, cfg.AuthTokenSecret, cfg.AuthTokenKid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint token"})
@@ -85,13 +108,24 @@ func refreshHandler(cfg *env.Config) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint refresh token"})
 			return
 		}
+		newHash := auth.TokenHash(newRefresh)
+		expiresAt := time.Now().Add(auth.RefreshTokenDuration)
+		if err := store.Store(newHash, username, expiresAt); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to store refresh token"})
+			return
+		}
 		setAuthCookies(c, access, newRefresh)
 		c.JSON(http.StatusOK, gin.H{"ok": true})
 	}
 }
 
-func logoutHandler(cfg *env.Config) gin.HandlerFunc {
+func logoutHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		refresh, _ := c.Cookie(auth.CookieRefreshToken)
+		if refresh != "" {
+			hash := auth.TokenHash(refresh)
+			_ = store.Revoke(hash)
+		}
 		clearAuthCookies(c)
 		c.JSON(http.StatusOK, gin.H{"ok": true})
 	}

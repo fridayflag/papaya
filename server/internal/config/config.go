@@ -5,7 +5,7 @@ package config
 // that the server will call at startup so that the integration point is clear.
 
 // Load reads the app configuration from disk (e.g. config.yaml in configDir).
-// configDir is set from env CONFIG_DIR at runtime.
+// configDir is set from env PAPAYA_CONFIG_DIR at runtime.
 // Returns (nil, nil) until implemented.
 func Load(configDir string) (*AppConfig, error) {
 	_ = configDir

@@ -12,7 +12,7 @@ go build -o bin/papaya ./cmd/papaya
 ./bin/papaya
 ```
 
-Copy `.env.example` to `.env` in the project root and set variables (see root `.env.example`). Paths like `STATIC_ASSETS_DIR` and `CONFIG_DIR` are runtime; set them for local dev (e.g. `STATIC_ASSETS_DIR=./app/dist`, `CONFIG_DIR=./`) or leave defaults for Docker.
+Copy `.env.example` to `.env` in the project root and set variables (see root `.env.example`). Paths like `PAPAYA_STATIC_ASSETS_DIR` and `PAPAYA_CONFIG_DIR` are runtime; set them for local dev (e.g. `PAPAYA_STATIC_ASSETS_DIR=./app/dist`, `PAPAYA_CONFIG_DIR=./`) or leave defaults for Docker.
 
 ## Layout
 

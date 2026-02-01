@@ -10,9 +10,9 @@ services:
       # Custom image uses papaya.couchdb.ini (disables Admin Party, couch_per_user, JWT)
       PAPAYA_COUCHDB_ADMIN_USER: ${PAPAYA_COUCHDB_ADMIN_USER:-papaya}
       PAPAYA_COUCHDB_ADMIN_PASS: ${PAPAYA_COUCHDB_ADMIN_PASS:-admin}
-      AUTH_TOKEN_SECRET: ${AUTH_TOKEN_SECRET}
+      PAPAYA_AUTH_TOKEN_SECRET: ${PAPAYA_AUTH_TOKEN_SECRET}
     ports:
-      - "${COUCHDB_PORT:-5984}:5984"
+      - "${PAPAYA_COUCHDB_PORT:-5984}:5984"
     volumes:
       - couchdb_data:/opt/couchdb/data
 
@@ -21,21 +21,24 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Must match STATIC_ASSETS_DIR in .env so runtime serves from the path we copied to
-        STATIC_ASSETS_DIR: ${STATIC_ASSETS_DIR:-/var/www/papaya}
+        # Must match PAPAYA_STATIC_ASSETS_DIR in .env so runtime serves from the path we copied to
+        PAPAYA_STATIC_ASSETS_DIR: ${PAPAYA_STATIC_ASSETS_DIR:-/var/www/papaya}
     env_file:
       - ./.env
     environment:
       # Reach CouchDB by service name when running in compose
-      COUCHDB_HOST: couchdb
-      COUCHDB_PORT: ${COUCHDB_PORT:-5984}
-      SERVER_PORT: ${SERVER_PORT:-9475}
-      AUTH_TOKEN_SECRET: ${AUTH_TOKEN_SECRET}
-      AUTH_REFRESH_SECRET: ${AUTH_REFRESH_SECRET}
+      PAPAYA_COUCHDB_HOST: couchdb
+      PAPAYA_COUCHDB_PORT: ${PAPAYA_COUCHDB_PORT:-5984}
+      PAPAYA_SERVER_PORT: ${PAPAYA_SERVER_PORT:-9475}
+      PAPAYA_AUTH_TOKEN_SECRET: ${PAPAYA_AUTH_TOKEN_SECRET}
+      PAPAYA_AUTH_REFRESH_SECRET: ${PAPAYA_AUTH_REFRESH_SECRET}
     ports:
-      - "${SERVER_PORT:-1234}:${SERVER_PORT:-1234}"
+      - "${PAPAYA_SERVER_PORT:-1234}:${PAPAYA_SERVER_PORT:-1234}"
+    volumes:
+      - server_data:${PAPAYA_CONFIG_DIR:-/etc/papaya}
     depends_on:
       - couchdb
 
 volumes:
   couchdb_data:
+  server_data:

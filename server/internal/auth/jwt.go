@@ -8,8 +8,13 @@ import (
 )
 
 const (
-	accessTokenDuration  = 15 * time.Minute
-	refreshTokenDuration = 7 * 24 * time.Hour
+	AccessTokenDuration  = 15 * time.Minute
+	RefreshTokenDuration = 7 * 24 * time.Hour
+)
+
+const (
+	accessTokenDuration  = AccessTokenDuration
+	refreshTokenDuration = RefreshTokenDuration
 )
 
 // AccessClaims holds JWT claims for the access token.

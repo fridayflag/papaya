@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/fridayflag/papaya/internal/api"
+	"github.com/fridayflag/papaya/internal/auth"
 	"github.com/fridayflag/papaya/internal/config"
 	"github.com/fridayflag/papaya/internal/env"
 	"github.com/fridayflag/papaya/internal/proxy"
@@ -25,7 +26,13 @@ func main() {
 		log.Fatalf("proxy: %v", err)
 	}
 
-	ginRouter, err := api.Router(cfg)
+	tokenStore, err := auth.Open(cfg.AuthDBPath)
+	if err != nil {
+		log.Fatalf("auth store: %v", err)
+	}
+	defer tokenStore.Close()
+
+	ginRouter, err := api.Router(cfg, tokenStore)
 	if err != nil {
 		log.Fatalf("api: %v", err)
 	}
