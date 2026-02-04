@@ -1,14 +1,9 @@
 import { AuthStatusEnum, OnlineStatusEnum, RemoteContext, SyncErrorEnum, SyncProgressEnum } from '@/contexts/RemoteContext';
 import { getDatabaseClient } from '@/database/client';
-import { useUserPreferences } from '@/hooks/state/useUserPreferences';
+import { UserContext } from '@/schema/application/remote-schemas';
 import { hasSessionOrRefreshCookie } from '@/utils/cookie';
 import { usernameToDbName } from '@/utils/database';
 import { PropsWithChildren, useEffect, useRef, useState } from 'react';
-
-interface UserContext {
-  // TODO 
-  username: string;
-}
 
 export default function RemoteContextProvider(props: PropsWithChildren) {
   const [userContext, setUserContext] = useState<UserContext | null>(null);
@@ -25,7 +20,7 @@ export default function RemoteContextProvider(props: PropsWithChildren) {
   const remoteDb = useRef<PouchDB.Database | null>(null)
   const remoteDbSyncHandler = useRef<PouchDB.Replication.Sync<object> | null>(null)
 
-  const userPreferences = useUserPreferences();
+  // const userPreferences = useUserPreferences();
 
   useEffect(() => {
     authenticate();
@@ -146,6 +141,7 @@ export default function RemoteContextProvider(props: PropsWithChildren) {
   }
 
   const remoteContext: RemoteContext = {
+    userContext,
     syncError,
     syncStatus,
     authStatus,

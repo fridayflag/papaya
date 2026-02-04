@@ -1,3 +1,4 @@
+import { UserContext } from '@/schema/application/remote-schemas'
 import { createContext } from 'react'
 
 export enum OnlineStatusEnum {
@@ -45,6 +46,7 @@ export enum SyncErrorEnum {
 }
 
 export type RemoteContext = {
+  userContext: UserContext | null,
   authStatus: AuthStatusEnum,
   onlineStatus: OnlineStatusEnum
   syncStatus: SyncProgressEnum,

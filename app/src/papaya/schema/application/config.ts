@@ -3,6 +3,12 @@ import { CurrencyIso4217Schema } from "../journal/money";
 import { createPapayaDocumentSchema, createPapayaEntitySchema } from "../support/template";
 import { JournalUrnSchema } from "../support/urn";
 
+/** Response shape from GET /api/config (server-side feature flags / config). */
+export const ServerConfigSchema = z.object({
+  syncEnabled: z.boolean(),
+});
+export type ServerConfig = z.infer<typeof ServerConfigSchema>;
+
 export const CurrencyPrefererencesSchema = z.object({
   display: CurrencyIso4217Schema,
   entry: CurrencyIso4217Schema,

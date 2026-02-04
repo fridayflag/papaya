@@ -1,6 +1,4 @@
 import { AuthStatusEnum, OnlineStatusEnum, SyncProgressEnum } from "@/contexts/RemoteContext"
-import { SyncStrategy } from "@/schema/application/syncing"
-import { Link } from "@mui/material"
 import { ReactNode } from "react"
 
 export enum SyncIndicatorEnum {
@@ -24,82 +22,4 @@ export interface SyncParams {
   authStatus: AuthStatusEnum,
   onlineStatus: OnlineStatusEnum,
   syncStatus: SyncProgressEnum,
-  syncStrategy: SyncStrategy,
-}
-
-export const getSyncInidication = (syncParams: SyncParams): SyncIndication => {
-  const { authStatus, onlineStatus, syncStatus, syncStrategy } = syncParams
-
-  const deafultIndication: SyncIndication = {
-    title: 'Working locally',
-    description: (
-      <>All changes will be maintained locally.<br />You can <Link href='/settings'>connect to a server</Link> to sync remotely</>
-    ),
-    indicator: SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC,
-  }
-
-  const isOffline = onlineStatus === OnlineStatusEnum.OFFLINE
-  const isLoading = [
-    authStatus === AuthStatusEnum.AUTHENTICATING,
-    syncStatus === SyncProgressEnum.SYNCING,
-  ].some(Boolean)
-
-  const isLocalStrategy = [
-    syncStrategy.syncType === 'LOCAL',
-    syncStrategy.syncType === 'NONE',
-  ].some(Boolean)
-
-  if (isLocalStrategy) {
-    return deafultIndication
-  }
-
-  if (isOffline) {
-    return {
-      title: 'Offline, working locally',
-      description: 'All changes will be saved locally until you are back online',
-      indicator: SyncIndicatorEnum.WORKING_LOCALLY_NO_SYNC,
-    }
-  }
-
-  if (authStatus === AuthStatusEnum.AUTHENTICATING) {
-    return {
-      title: 'Authenticating...',
-      description: 'Authenticating with remote server',
-      indicator: SyncIndicatorEnum.LOADING,
-    }
-  }
-
-  if (authStatus === AuthStatusEnum.UNAUTHENTICATED) {
-    return {
-      title: 'Login required',
-      description: 'You must re-authenticate to sync with the remote server',
-      indicator: SyncIndicatorEnum.ERROR_ACTION_REQUIRED,
-    }
-  }
-
-  if (syncStatus === SyncProgressEnum.SYNCING) {
-    return {
-      title: 'Syncing...',
-      description: 'Pulling and pushing changes to remote server',
-      indicator: SyncIndicatorEnum.LOADING,
-    }
-  }
-
-  if ([SyncProgressEnum.SAVED, SyncProgressEnum.PAUSED].includes(syncStatus)) {
-    return {
-      title: 'Saved',
-      description: 'Your changes have been saved to the remote server',
-      indicator: SyncIndicatorEnum.DONE_SUCCESS,
-    }
-  }
-
-  if (syncStatus === SyncProgressEnum.ERROR) {
-    return {
-      title: 'Sync error',
-      description: 'An error occurred while syncing',
-      indicator: SyncIndicatorEnum.SYNC_ERROR,
-    }
-  }
-
-  return deafultIndication
 }
