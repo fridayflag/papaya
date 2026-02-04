@@ -62,9 +62,6 @@ export const useActiveJournalView = (slice: JournalSlice) => {
         return null;
       }
 
-      console.log('aggregating index data:', indexQuery.data);
-
-
       const aggregate = aggregateJournalIndexBySlice(slice, indexQuery.data);
       return {
         journal: journalQuery.data,

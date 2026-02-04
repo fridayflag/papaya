@@ -3,6 +3,7 @@ import { getDatabaseClient } from '@/database/client';
 import { UserContext } from '@/schema/application/remote-schemas';
 import { hasSessionOrRefreshCookie } from '@/utils/cookie';
 import { usernameToDbName } from '@/utils/database';
+import PouchDB from 'pouchdb';
 import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 export default function RemoteContextProvider(props: PropsWithChildren) {
@@ -23,19 +24,19 @@ export default function RemoteContextProvider(props: PropsWithChildren) {
   // const userPreferences = useUserPreferences();
 
   useEffect(() => {
-    authenticate();
+    if (!userContext) {
+      authenticate();
+      return
+    }
     initRemoteConnection();
 
     return () => {
       closeRemoteConnection();
     }
-  }, []);
+  }, [userContext]);
 
   // Offline event listeners
   useEffect(() => {
-    // Perform initial auth
-    authenticate()
-
     const wentOnline = () => {
       setOnlineStatus(OnlineStatusEnum.ONLINE)
     }

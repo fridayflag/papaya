@@ -1,5 +1,4 @@
 import { useActiveJournalView } from '@/hooks/queries';
-import { useDebug } from '@/hooks/useDebug';
 import { DisplayableJournalEntry, JournalSlice } from '@/schema/aggregate-schemas';
 import { MonetaryEnumeration } from '@/schema/journal/money';
 import { EntryUrn } from '@/schema/support/urn';
@@ -32,8 +31,8 @@ const columns: GridColDef[] = [
 
 export default function DisplayableJournalTable(props: DisplayableJournalTableProps) {
 
-  const { allDbRecordsQuery } = useDebug();
-  console.log('allDbRecordsQuery:', allDbRecordsQuery.data);
+  // const { allDbRecordsQuery } = useDebug();
+  // console.log('allDbRecordsQuery:', allDbRecordsQuery.data);
 
   const viewQuery = useActiveJournalView(props.slice);
 

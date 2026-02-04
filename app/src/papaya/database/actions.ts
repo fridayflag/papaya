@@ -100,7 +100,6 @@ export const getJournalEntries = async (journalId: JournalUrn | null): Promise<E
     limit: ARBITRARY_MAX_FIND_LIMIT,
   });
 
-  console.log('search with journla id:', journalId, 'found docs:', entries.docs);
   return entries.docs as Entry[];
 };
 
