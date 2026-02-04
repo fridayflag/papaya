@@ -11,11 +11,15 @@ export enum AuthStatusEnum {
   AUTHENTICATED = 'AUTHENTICATED',
 }
 
-export enum SyncStatusEnum {
+export enum SyncProgressEnum {
   /**
    * Syncing has not started
    */
   IDLE = 'IDLE',
+  /**
+   * Connecting to remote database
+   */
+  CONNECTING_TO_REMOTE = 'CONNECTING_TO_REMOTE',
   /**
    * Currently syncing
    */
@@ -35,14 +39,16 @@ export enum SyncStatusEnum {
 }
 
 export enum SyncErrorEnum {
-  MISSING_DATABASE = 'MISSING_DATABASE',
+  USER_UNAUTHENTICATED = 'USER_UNAUTHENTICATED',
+  DATABASE_WAS_MISSING = 'DATABASE_WAS_MISSING',
+  USER_NOT_AUTHORIZED = 'USER_NOT_AUTHORIZED',
 }
 
 export type RemoteContext = {
   authStatus: AuthStatusEnum,
   onlineStatus: OnlineStatusEnum
-  syncStatus: SyncStatusEnum,
-  syncError: SyncErrorEnum,
+  syncStatus: SyncProgressEnum,
+  syncError: SyncErrorEnum | null,
   syncDisabled: boolean
   syncSupported: boolean
   sync: () => Promise<void>

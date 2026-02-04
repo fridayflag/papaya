@@ -1,169 +1,163 @@
-import { RemoteContext } from '@/contexts/RemoteContext';
-import { PropsWithChildren } from 'react';
+import { AuthStatusEnum, OnlineStatusEnum, RemoteContext, SyncErrorEnum, SyncProgressEnum } from '@/contexts/RemoteContext';
+import { getDatabaseClient } from '@/database/client';
+import { useUserPreferences } from '@/hooks/state/useUserPreferences';
+import { hasSessionOrRefreshCookie } from '@/utils/cookie';
+import { usernameToDbName } from '@/utils/database';
+import { PropsWithChildren, useEffect, useRef, useState } from 'react';
+
+interface UserContext {
+  // TODO 
+  username: string;
+}
 
 export default function RemoteContextProvider(props: PropsWithChildren) {
-  // const [syncError, setSyncError] = useState<SyncErrorEnum | null>(null)
-  // const [syncStatus, setSyncStatus] = useState<SyncStatusEnum>(SyncStatusEnum.IDLE)
-  // const [onlineStatus, setOnlineStatus] = useState<OnlineStatusEnum>(OnlineStatusEnum.ONLINE)
-  // const [authStatus, setAuthStatus] = useState<AuthStatusEnum>(AuthStatusEnum.AUTHENTICATING)
+  const [userContext, setUserContext] = useState<UserContext | null>(null);
+  const [syncError, setSyncError] = useState<SyncErrorEnum | null>(null);
+  const [syncStatus, setSyncStatus] = useState<SyncProgressEnum>(SyncProgressEnum.IDLE)
+  const [onlineStatus, setOnlineStatus] = useState<OnlineStatusEnum>(OnlineStatusEnum.ONLINE)
+  const [authStatus, setAuthStatus] = useState<AuthStatusEnum>(() => {
+    if (hasSessionOrRefreshCookie()) {
+      return AuthStatusEnum.AUTHENTICATING;
+    }
+    return AuthStatusEnum.UNAUTHENTICATED;
+  });
 
-  // const remoteDb = useRef<PouchDB.Database | null>(null)
-  // const remoteDbSyncHandler = useRef<PouchDB.Replication.Sync<{}> | null>(null)
+  const remoteDb = useRef<PouchDB.Database | null>(null)
+  const remoteDbSyncHandler = useRef<PouchDB.Replication.Sync<object> | null>(null)
 
-  // const getPapayaMetaQuery = usePapayaMeta()
+  const userPreferences = useUserPreferences();
 
-  // const settings: UserSettings | null = getPapayaMetaQuery.data?.userSettings ?? null
+  useEffect(() => {
+    authenticate();
+    initRemoteConnection();
 
-  // const syncStrategy = getSyncStrategy(settings);
-  // const { syncType } = syncStrategy
+    return () => {
+      closeRemoteConnection();
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   if (syncType === 'LOCAL' || syncType === 'NONE') {
-  //     // Set sync to idle
-  //     setSyncStatus(SyncStatusEnum.IDLE)
-  //     closeRemoteConnection()
-  //     return;
-  //   }
-  //   if (syncType === 'SERVER') {
-  //     authenticate()
-  //       .then(() => {
-  //         initRemoteConnectionFromServerStrategy(syncStrategy)
-  //       })
-  //       .catch() // Do nothing
-  //   }
+  // Offline event listeners
+  useEffect(() => {
+    // Perform initial auth
+    authenticate()
 
-  // }, [syncType])
+    const wentOnline = () => {
+      setOnlineStatus(OnlineStatusEnum.ONLINE)
+    }
+    const wentOffline = () => {
+      setOnlineStatus(OnlineStatusEnum.OFFLINE)
+    }
 
-  // // Event listeners
-  // useEffect(() => {
-  //   // Perform initial auth
-  //   authenticate()
+    window.addEventListener('online', wentOnline);
+    window.addEventListener('offline', wentOffline);
 
-  //   const wentOnline = () => {
-  //     setOnlineStatus(OnlineStatusEnum.ONLINE)
-  //   }
-  //   const wentOffline = () => {
-  //     setOnlineStatus(OnlineStatusEnum.OFFLINE)
-  //   }
+    return () => {
+      window.removeEventListener('online', wentOnline);
+      window.removeEventListener('offline', wentOffline);
+    }
+  }, []);
 
-  //   window.addEventListener('online', wentOnline);
-  //   window.addEventListener('offline', wentOffline);
+  /**
+   * Hits the _session endpoint to check authentication
+   * @returns true if the user is currently signed in
+   */
+  const authenticate = async (): Promise<boolean> => {
+    setAuthStatus(AuthStatusEnum.AUTHENTICATING)
 
-  //   return () => {
-  //     window.removeEventListener('online', wentOnline);
-  //     window.removeEventListener('offline', wentOffline);
-  //   }
-  // }, [])
+    const response = await fetch(`/api/session`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-  // /**
-  //  * Hits the _session endpoint to check authentication
-  //  * @returns true if the user is currently signed in
-  //  */
-  // const authenticate = async (): Promise<boolean> => {
-  //   let status: AuthStatusEnum = AuthStatusEnum.UNAUTHENTICATED
+    if (response.ok) {
+      const userContext: UserContext = await response.json();
+      setUserContext(userContext);
+      setAuthStatus(AuthStatusEnum.AUTHENTICATED)
+      return true
+    } else {
+      setAuthStatus(AuthStatusEnum.UNAUTHENTICATED);
+    }
 
-  //   if (syncType === 'SERVER') {
-  //     setAuthStatus(AuthStatusEnum.AUTHENTICATING)
-  //     const { connection } = syncStrategy
-  //     const response = await fetch(`${connection.couchDbUrl}/_session`, {
-  //       method: 'GET',
-  //       credentials: 'include',
-  //     })
+    return false;
+  }
 
-  //     if (response.ok) {
-  //       setAuthStatus(AuthStatusEnum.AUTHENTICATED)
-  //       return true
-  //     }
-  //   }
 
-  //   setAuthStatus(AuthStatusEnum.UNAUTHENTICATED)
-  //   return false
-  // }
+  const closeRemoteConnection = () => {
+    // Cancel existing sync handling and close existing database
+    if (remoteDbSyncHandler.current) {
+      remoteDbSyncHandler.current.cancel()
+    }
+    // Close connection
+    if (remoteDb.current) {
+      remoteDb.current.close()
+    }
+  }
 
-  // const closeRemoteConnection = () => {
-  //   // Cancel existing sync handling and close existing database
-  //   if (remoteDbSyncHandler.current) {
-  //     remoteDbSyncHandler.current.cancel()
-  //   }
-  //   // Close connection
-  //   if (remoteDb.current) {
-  //     remoteDb.current.close()
-  //   }
-  // }
+  const sync = async (): Promise<void> => {
+    if (!remoteDb.current) {
+      console.log('No remote database found, skipping sync')
+      return
+    }
+    const db = getDatabaseClient()
+    db.sync(remoteDb.current)
+  }
 
-  // const initRemoteConnectionFromServerStrategy = async (serverSyncStrategy: ServerSyncStrategy) => {
-  //   console.log('Initializing remote syncing connection from config')
-  //   setSyncStatus(SyncStatusEnum.IDLE)
+  const initRemoteConnection = async () => {
+    setSyncStatus(SyncProgressEnum.CONNECTING_TO_REMOTE);
 
-  //   const { connection } = serverSyncStrategy
-  //   const databaseUrl = `${connection.couchDbUrl}/${connection.databaseName}`
-  //   console.log('Creating connection to couch DB database:', databaseUrl)
-  //   remoteDb.current = new PouchDB(databaseUrl)
-  //   const db = getDatabaseClient()
-  //   remoteDbSyncHandler.current = db
-  //     .sync(remoteDb.current, {
-  //       live: true,
-  //       retry: false,
-  //     })
-  //     .on('change', function (_change) {
-  //       setSyncStatus(SyncStatusEnum.IDLE)
-  //     })
-  //     .on('paused', function () {
-  //       // replication was paused, usually because of a lost connection
-  //       setSyncStatus(SyncStatusEnum.PAUSED)
-  //     })
-  //     .on('active', function () {
-  //       // replication was resumed
-  //       setSyncStatus(SyncStatusEnum.SYNCING)
-  //     })
-  //     .on('error', function (err) {
-  //       console.error('Sync error:', err)
-  //       setSyncStatus(SyncStatusEnum.ERROR)
-  //     })
-  //     .on('complete', function () {
-  //       setSyncStatus(SyncStatusEnum.SAVED)
-  //     })
-  // }
+    if (!userContext) {
+      setSyncStatus(SyncProgressEnum.IDLE);
+      setSyncError(SyncErrorEnum.USER_UNAUTHENTICATED);
+      return;
+    }
 
-  // const sync = async (): Promise<void> => {
-  //   if (!remoteDb.current) {
-  //     console.log('No remote database found, skipping sync')
-  //     return
-  //   }
-  //   const db = getDatabaseClient()
-  //   db.sync(remoteDb.current)
-  // }
+    const databaseName = usernameToDbName(userContext.username);
+    const databaseUrl = `${window.location.origin}/db/${databaseName}`
+    console.log('Connecting to remote database:', databaseUrl);
 
-  // const syncIndication: SyncIndication = useMemo(() => {
-  //   return getSyncInidication({ authStatus, syncStatus, onlineStatus, syncStrategy })
-  // }, [authStatus, syncStatus, onlineStatus, syncStrategy])
+    remoteDb.current = new PouchDB(databaseUrl)
+    const db = getDatabaseClient()
+    remoteDbSyncHandler.current = db
+      .sync(remoteDb.current, {
+        live: true,
+        retry: false,
+      })
+      .on('change', function (_change) {
+        setSyncStatus(SyncProgressEnum.IDLE)
+      })
+      .on('paused', function () {
+        // replication was paused, usually because of a lost connection
+        setSyncStatus(SyncProgressEnum.PAUSED)
+      })
+      .on('active', function () {
+        // replication was resumed
+        setSyncStatus(SyncProgressEnum.SYNCING)
+      })
+      .on('error', function (err) {
+        console.error('Sync error:', err)
+        setSyncStatus(SyncProgressEnum.ERROR)
+      })
+      .on('complete', function () {
+        setSyncStatus(SyncProgressEnum.SAVED)
+      });
 
-  // const syncSupported: boolean = useMemo(() => {
-  //   return [
-  //     syncType === 'SERVER',
-  //   ].every(Boolean)
-  // }, [syncType])
+    // Perform initial sync
+    sync();
+  }
 
-  // const syncDisabled: boolean = useMemo(() => {
-  //   return [
-  //     !syncSupported,
-  //     authStatus !== AuthStatusEnum.AUTHENTICATED,
-  //     onlineStatus !== OnlineStatusEnum.ONLINE
-  //   ].some(Boolean)
-  // }, [authStatus, onlineStatus, syncSupported])
+  const remoteContext: RemoteContext = {
+    syncError,
+    syncStatus,
+    authStatus,
+    onlineStatus,
+    syncSupported: true,
+    syncDisabled: false,
+    sync,
+  }
 
-  // const remoteContext: RemoteContext = {
-  //   // syncError,
-  //   syncStatus,
-  //   authStatus,
-  //   onlineStatus,
-  //   syncSupported,
-  //   syncDisabled,
-  //   syncIndication,
-  //   sync,
-  // }
-
-  const remoteContext: RemoteContext = {} as RemoteContext;
-
-  return <RemoteContext.Provider value={remoteContext}>{props.children}</RemoteContext.Provider>
+  return (
+    <RemoteContext.Provider value={remoteContext}>
+      {props.children}
+    </RemoteContext.Provider>
+  );
 }

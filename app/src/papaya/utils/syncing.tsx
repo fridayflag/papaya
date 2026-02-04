@@ -1,4 +1,4 @@
-import { AuthStatusEnum, OnlineStatusEnum, SyncStatusEnum } from "@/contexts/RemoteContext"
+import { AuthStatusEnum, OnlineStatusEnum, SyncProgressEnum } from "@/contexts/RemoteContext"
 import { SyncStrategy } from "@/schema/application/syncing"
 import { Link } from "@mui/material"
 import { ReactNode } from "react"
@@ -23,7 +23,7 @@ export interface SyncIndication {
 export interface SyncParams {
   authStatus: AuthStatusEnum,
   onlineStatus: OnlineStatusEnum,
-  syncStatus: SyncStatusEnum,
+  syncStatus: SyncProgressEnum,
   syncStrategy: SyncStrategy,
 }
 
@@ -41,7 +41,7 @@ export const getSyncInidication = (syncParams: SyncParams): SyncIndication => {
   const isOffline = onlineStatus === OnlineStatusEnum.OFFLINE
   const isLoading = [
     authStatus === AuthStatusEnum.AUTHENTICATING,
-    syncStatus === SyncStatusEnum.SYNCING,
+    syncStatus === SyncProgressEnum.SYNCING,
   ].some(Boolean)
 
   const isLocalStrategy = [
@@ -77,7 +77,7 @@ export const getSyncInidication = (syncParams: SyncParams): SyncIndication => {
     }
   }
 
-  if (syncStatus === SyncStatusEnum.SYNCING) {
+  if (syncStatus === SyncProgressEnum.SYNCING) {
     return {
       title: 'Syncing...',
       description: 'Pulling and pushing changes to remote server',
@@ -85,7 +85,7 @@ export const getSyncInidication = (syncParams: SyncParams): SyncIndication => {
     }
   }
 
-  if ([SyncStatusEnum.SAVED, SyncStatusEnum.PAUSED].includes(syncStatus)) {
+  if ([SyncProgressEnum.SAVED, SyncProgressEnum.PAUSED].includes(syncStatus)) {
     return {
       title: 'Saved',
       description: 'Your changes have been saved to the remote server',
@@ -93,7 +93,7 @@ export const getSyncInidication = (syncParams: SyncParams): SyncIndication => {
     }
   }
 
-  if (syncStatus === SyncStatusEnum.ERROR) {
+  if (syncStatus === SyncProgressEnum.ERROR) {
     return {
       title: 'Sync error',
       description: 'An error occurred while syncing',
