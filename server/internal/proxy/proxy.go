@@ -4,10 +4,13 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/fridayflag/papaya/internal/auth"
 )
 
 // ReverseProxy proxies requests to the given target base URL.
 // Prefix is stripped from the request path before forwarding (e.g. prefix "/db", path "/db/foo" -> "/foo").
+// When proxying to /db, the papaya_token cookie value is passed as a Bearer token in the Authorization header.
 func ReverseProxy(prefix, targetBaseURL string) (http.Handler, error) {
 	base, err := url.Parse(targetBaseURL)
 	if err != nil {
@@ -33,6 +36,10 @@ func ReverseProxy(prefix, targetBaseURL string) (http.Handler, error) {
 		}
 		for k, v := range r.Header {
 			req.Header[k] = v
+		}
+		// Extract papaya_token cookie and add as Bearer token header
+		if cookie, err := r.Cookie(auth.CookieAccessToken); err == nil && cookie != nil && cookie.Value != "" {
+			req.Header.Set("Authorization", "Bearer "+cookie.Value)
 		}
 		req.Host = target.Host
 		resp, err := http.DefaultClient.Do(req)

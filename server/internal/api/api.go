@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/fridayflag/papaya/internal/auth"
@@ -19,6 +20,8 @@ func Router(cfg *env.Config, store *auth.TokenStore) (*gin.Engine, error) {
 	api := r.Group("/api")
 	{
 		api.GET("/health", healthHandler())
+		api.GET("/config", configHandler(cfg))
+		api.GET("/session", sessionHandler(cfg, store))
 		api.POST("/login", loginHandler(cfg, store))
 		api.POST("/refresh", refreshHandler(cfg, store))
 		api.POST("/logout", logoutHandler(cfg, store))
@@ -29,6 +32,21 @@ func Router(cfg *env.Config, store *auth.TokenStore) (*gin.Engine, error) {
 func healthHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	}
+}
+
+func configHandler(cfg *env.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Sync is enabled if CouchDBProxiedURL is set and is a valid URL
+		syncEnabled := false
+		if cfg.CouchDBProxiedURL != "" {
+			if _, err := url.Parse(cfg.CouchDBProxiedURL); err == nil {
+				syncEnabled = true
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"syncEnabled": syncEnabled,
+		})
 	}
 }
 
@@ -119,6 +137,94 @@ func refreshHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
 	}
 }
 
+func sessionHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Try to get access token first
+		access, err := c.Cookie(auth.CookieAccessToken)
+		if err == nil && access != "" {
+			username, err := auth.ValidateAccessToken(access, cfg.AuthTokenSecret)
+			if err == nil {
+				// Access token is valid, refresh it and return user context
+				newAccess, err := auth.MintAccessToken(username, cfg.AuthTokenSecret, cfg.AuthTokenKid)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint token"})
+					return
+				}
+				refresh, _ := c.Cookie(auth.CookieRefreshToken)
+				if refresh != "" {
+					// Also refresh the refresh token
+					newRefresh, err := auth.MintRefreshToken(username, cfg.AuthRefreshSecret, cfg.AuthTokenKid)
+					if err == nil {
+						newHash := auth.TokenHash(newRefresh)
+						expiresAt := time.Now().Add(auth.RefreshTokenDuration)
+						if err := store.Store(newHash, username, expiresAt); err == nil {
+							setAuthCookies(c, newAccess, newRefresh)
+						} else {
+							// If store fails, keep old refresh token
+							setAuthCookies(c, newAccess, refresh)
+						}
+					} else {
+						// If mint fails, keep old refresh token
+						setAuthCookies(c, newAccess, refresh)
+					}
+				} else {
+					// No refresh token, just set new access token
+					c.SetCookie(auth.CookieAccessToken, newAccess, 15*60, "/", "", false, true)
+				}
+				c.JSON(http.StatusOK, gin.H{"username": username})
+				return
+			}
+		}
+
+		// Access token invalid or missing, try refresh token
+		refresh, err := c.Cookie(auth.CookieRefreshToken)
+		if err != nil || refresh == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "missing or invalid token"})
+			return
+		}
+		username, err := auth.ValidateRefreshToken(refresh, cfg.AuthRefreshSecret)
+		if err != nil {
+			clearAuthCookies(c)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
+			return
+		}
+		hash := auth.TokenHash(refresh)
+		username, err = store.Consume(hash)
+		if err != nil {
+			clearAuthCookies(c)
+			if errors.Is(err, auth.ErrTokenUsed) || errors.Is(err, auth.ErrTokenRevoked) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "refresh token already used or revoked"})
+				return
+			}
+			if errors.Is(err, auth.ErrTokenNotFound) || errors.Is(err, auth.ErrTokenExpired) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired refresh token"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to validate refresh token"})
+			return
+		}
+		// Mint new tokens
+		newAccess, err := auth.MintAccessToken(username, cfg.AuthTokenSecret, cfg.AuthTokenKid)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint token"})
+			return
+		}
+		newRefresh, err := auth.MintRefreshToken(username, cfg.AuthRefreshSecret, cfg.AuthTokenKid)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to mint refresh token"})
+			return
+		}
+		newHash := auth.TokenHash(newRefresh)
+		expiresAt := time.Now().Add(auth.RefreshTokenDuration)
+		if err := store.Store(newHash, username, expiresAt); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to store refresh token"})
+			return
+		}
+		setAuthCookies(c, newAccess, newRefresh)
+		c.JSON(http.StatusOK, gin.H{"username": username})
+	}
+}
+
 func logoutHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		refresh, _ := c.Cookie(auth.CookieRefreshToken)
@@ -132,8 +238,8 @@ func logoutHandler(cfg *env.Config, store *auth.TokenStore) gin.HandlerFunc {
 }
 
 func setAuthCookies(c *gin.Context, access, refresh string) {
-	maxAge := 7 * 24 * 3600 // 7 days in seconds for refresh; access is short-lived
-	c.SetCookie(auth.CookieAccessToken, access, 15*60, "/", "", false, true)   // 15 min, httpOnly
+	maxAge := 7 * 24 * 3600                                                     // 7 days in seconds for refresh; access is short-lived
+	c.SetCookie(auth.CookieAccessToken, access, 15*60, "/", "", false, true)    // 15 min, httpOnly
 	c.SetCookie(auth.CookieRefreshToken, refresh, maxAge, "/", "", false, true) // 7 days, httpOnly
 }
 
