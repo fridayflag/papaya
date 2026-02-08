@@ -1,5 +1,5 @@
 # Stage 1: build the web app (node deps + compile)
-FROM node:20-alpine AS app-builder
+FROM node:23-alpine AS app-builder
 WORKDIR /app
 COPY app/package.json app/package-lock.json ./
 RUN npm ci

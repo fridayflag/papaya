@@ -1,12 +1,11 @@
+import { DatabaseManagementStatus } from "@/schema/application/remote-schemas";
 import { UserCredentialsForm } from "@/schema/form-schemas";
 import { createContext } from "react";
 
 export interface AdminDashboardContext {
-  adminCredentials: UserCredentialsForm | null;
-  setAdminCredentials: (credentials: UserCredentialsForm) => void;
+  authenticate: (adminCredentials: UserCredentialsForm) => Promise<DatabaseManagementStatus>;
 }
 
 export const AdminDashboardContext = createContext<AdminDashboardContext>({
-  adminCredentials: null,
-  setAdminCredentials: () => { },
+  authenticate: () => Promise.reject(),
 });
