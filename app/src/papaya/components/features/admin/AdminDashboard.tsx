@@ -1,9 +1,23 @@
+import AdminDashboardContextProvider from "@/components/providers/AdminDashboardContextProvider";
+import { Grid } from "@mui/material";
+import AdminDatabaseManagementStatus from "./AdminDatabaseManagementStatus";
+import AdminLoginDialog from "./AdminLoginDialog";
 
 
 export default function AdminDashboard() {
+
+
+
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-    </div>
+    <AdminDashboardContextProvider>
+      <>
+        <AdminLoginDialog />
+        <Grid container spacing={2}>
+          <Grid size={12}>
+            <AdminDatabaseManagementStatus />
+          </Grid>
+        </Grid>
+      </>
+    </AdminDashboardContextProvider>
   )
 }

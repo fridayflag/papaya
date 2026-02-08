@@ -15,11 +15,12 @@ type Config struct {
 	AuthRefreshSecret string
 	AuthTokenKid      string
 	AuthDBPath        string // SQLite DB path for refresh token store (PAPAYA_CONFIG_DIR)
-	CouchDBHost       string
-	CouchDBPort       int
-	CouchDBProxiedURL string // URL for /db/* proxy; from COUCH_DB_PROXIED_URL or built from host:port
-	StaticAssetsDir   string
-	ConfigDir         string
+	CouchDBHost        string
+	CouchDBPort        int
+	CouchDBProxiedURL  string // URL for /db/* proxy; from COUCH_DB_PROXIED_URL or built from host:port
+	DatabaseVendor     string // Expected vendor.name from CouchDB root (PAPAYA_DATABASE_VENDOR); used to detect managed instance
+	StaticAssetsDir    string
+	ConfigDir          string
 }
 
 // CouchDBBaseURL returns the CouchDB origin without credentials (e.g. for _session).
@@ -54,6 +55,7 @@ func Load() (*Config, error) {
 		CouchDBHost:       couchHost,
 		CouchDBPort:       couchPort,
 		CouchDBProxiedURL: proxiedURL,
+		DatabaseVendor:    getEnv("PAPAYA_DATABASE_VENDOR", ""),
 		StaticAssetsDir:   getEnv("PAPAYA_STATIC_ASSETS_DIR", "/var/www/papaya"),
 		ConfigDir:         configDir,
 	}, nil

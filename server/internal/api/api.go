@@ -1,14 +1,24 @@
 package api
 
 import (
+	"encoding/base64"
 	"errors"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/fridayflag/papaya/internal/auth"
 	"github.com/fridayflag/papaya/internal/env"
 	"github.com/gin-gonic/gin"
+)
+
+// Context keys for admin credentials (set by adminAuthMiddleware).
+type adminContextKey string
+
+const (
+	adminUsernameKey adminContextKey = "admin_username"
+	adminPasswordKey adminContextKey = "admin_password"
 )
 
 // Router returns a Gin engine with /api routes (login, refresh, logout).
@@ -25,6 +35,15 @@ func Router(cfg *env.Config, store *auth.TokenStore) (*gin.Engine, error) {
 		api.POST("/login", loginHandler(cfg, store))
 		api.POST("/refresh", refreshHandler(cfg, store))
 		api.POST("/logout", logoutHandler(cfg, store))
+
+		admin := api.Group("/admin")
+		admin.Use(adminAuthMiddleware(cfg))
+		{
+			admin.GET("/", adminStatusHandler(cfg))
+			admin.GET("/users", adminListUsersHandler(cfg))
+			admin.PUT("/users/:username", adminPutUserHandler(cfg))
+			admin.DELETE("/users/:username", adminDeleteUserHandler(cfg))
+		}
 	}
 	return r, nil
 }
@@ -246,4 +265,149 @@ func setAuthCookies(c *gin.Context, access, refresh string) {
 func clearAuthCookies(c *gin.Context) {
 	c.SetCookie(auth.CookieAccessToken, "", -1, "/", "", false, true)
 	c.SetCookie(auth.CookieRefreshToken, "", -1, "/", "", false, true)
+}
+
+// adminAuthMiddleware parses Basic auth and validates credentials against CouchDB; stores user/pass in context for downstream handlers.
+func adminAuthMiddleware(cfg *env.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		const prefix = "Basic "
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" || !strings.HasPrefix(authHeader, prefix) {
+			c.Header("WWW-Authenticate", `Basic realm="admin"`)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "missing or invalid Authorization header; use Basic auth"})
+			c.Abort()
+			return
+		}
+		encoded := strings.TrimSpace(authHeader[len(prefix):])
+		decoded, err := base64.StdEncoding.DecodeString(encoded)
+		if err != nil {
+			c.Header("WWW-Authenticate", `Basic realm="admin"`)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid Basic auth"})
+			c.Abort()
+			return
+		}
+		parts := strings.SplitN(string(decoded), ":", 2)
+		if len(parts) != 2 || parts[0] == "" {
+			c.Header("WWW-Authenticate", `Basic realm="admin"`)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid Basic auth"})
+			c.Abort()
+			return
+		}
+		username, password := parts[0], parts[1]
+		if err := validateCouchDBCredentials(cfg, username, password); err != nil {
+			c.Header("WWW-Authenticate", `Basic realm="admin"`)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid admin credentials"})
+			c.Abort()
+			return
+		}
+		c.Set(string(adminUsernameKey), username)
+		c.Set(string(adminPasswordKey), password)
+		c.Next()
+	}
+}
+
+func getAdminCreds(c *gin.Context) (username, password string) {
+	u, _ := c.Get(string(adminUsernameKey))
+	p, _ := c.Get(string(adminPasswordKey))
+	username, _ = u.(string)
+	password, _ = p.(string)
+	return username, password
+}
+
+// adminStatusHandler returns DB connection status: managed vs external, couch-per-user, etc.
+func adminStatusHandler(cfg *env.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		username, password := getAdminCreds(c)
+		managed, couchPerUser, err := adminDBStatus(cfg, username, password)
+		if err != nil {
+			if errors.Is(err, errUnauthorized) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		resp := gin.H{
+			"managed": managed,
+		}
+		if couchPerUser != nil {
+			resp["couchPerUserEnabled"] = *couchPerUser
+		}
+		c.JSON(http.StatusOK, resp)
+	}
+}
+
+// adminListUsersHandler lists users from _users.
+func adminListUsersHandler(cfg *env.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		username, password := getAdminCreds(c)
+		users, err := adminListUsers(cfg, username, password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		// Return safe view (no _rev, no password fields)
+		list := make([]gin.H, 0, len(users))
+		for _, u := range users {
+			list = append(list, gin.H{"username": u.Name, "roles": u.Roles})
+		}
+		c.JSON(http.StatusOK, gin.H{"users": list})
+	}
+}
+
+type putUserRequest struct {
+	Password string   `json:"password"`
+	Roles   []string `json:"roles"`
+}
+
+// adminPutUserHandler creates or updates a user.
+func adminPutUserHandler(cfg *env.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		adminUser, adminPass := getAdminCreds(c)
+		targetUsername := c.Param("username")
+		if targetUsername == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "username required"})
+			return
+		}
+		var req putUserRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+			return
+		}
+		rev, created, err := adminPutUser(cfg, adminUser, adminPass, targetUsername, req.Password, req.Roles)
+		if err != nil {
+			if errors.Is(err, errUnauthorized) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+				return
+			}
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if created {
+			c.JSON(http.StatusCreated, gin.H{"ok": true, "rev": rev, "created": true})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"ok": true, "rev": rev})
+		}
+	}
+}
+
+// adminDeleteUserHandler deletes a user.
+func adminDeleteUserHandler(cfg *env.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		adminUser, adminPass := getAdminCreds(c)
+		targetUsername := c.Param("username")
+		if targetUsername == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "username required"})
+			return
+		}
+		if err := adminDeleteUser(cfg, adminUser, adminPass, targetUsername); err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"ok": true})
+	}
 }
