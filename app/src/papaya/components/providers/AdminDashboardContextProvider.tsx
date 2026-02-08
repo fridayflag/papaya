@@ -1,12 +1,20 @@
 import { AdminDashboardContext } from "@/contexts/AdminDashboardContext";
 import { DatabaseManagementStatus } from "@/schema/application/remote-schemas";
 import { UserCredentialsForm } from "@/schema/form-schemas";
-import { PropsWithChildren, useState } from "react";
-
+import { PropsWithChildren, useMemo, useState } from "react";
 
 export default function AdminDashboardContextProvider(props: PropsWithChildren) {
   const [adminCredentials, setAdminCredentials] = useState<UserCredentialsForm | null>(null);
   const [databaseManagementStatus, setDatabaseManagementStatus] = useState<DatabaseManagementStatus | null>(null);
+
+  const authHeaders = useMemo(() => {
+    if (!adminCredentials) {
+      return undefined;
+    }
+    return {
+      'Authorization': `Basic ${btoa(`${adminCredentials.username}:${adminCredentials.password}`)}`,
+    };
+  }, [adminCredentials]);
 
   const authenticate = async (credentials: UserCredentialsForm): Promise<Response> => {
     // Credentials are passed via Basic auth
@@ -26,13 +34,39 @@ export default function AdminDashboardContextProvider(props: PropsWithChildren) 
     return response;
   }
 
-  const _addUser = async (_user: UserCredentialsForm): Promise<Response> => {
+  const listUsers = async (): Promise<unknown> => {
+    const response = await fetch('/api/admin/users', {
+      method: 'GET',
+      credentials: 'include',
+      headers: authHeaders,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to list users');
+    }
+    return response.json();
+  }
+
+  const addUser = async (_user: UserCredentialsForm): Promise<Response> => {
+    // TODO
+    return Promise.resolve(new Response());
+  }
+
+  const updateUser = async (_user: UserCredentialsForm): Promise<Response> => {
+    // TODO
+    return Promise.resolve(new Response());
+  }
+
+  const deleteUser = async (_user: UserCredentialsForm): Promise<Response> => {
     // TODO
     return Promise.resolve(new Response());
   }
 
   const context: AdminDashboardContext = {
     authenticate,
+    listUsers,
+    addUser,
+    updateUser,
+    deleteUser,
     databaseManagementStatus,
   }
 
