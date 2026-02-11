@@ -1,5 +1,5 @@
 import { AdminDashboardContext } from "@/contexts/AdminDashboardContext";
-import { DatabaseManagementStatus } from "@/schema/application/remote-schemas";
+import { DatabaseManagementStatus, UserDocument, UserIdentifier } from "@/schema/application/remote-schemas";
 import { UserCredentialsForm } from "@/schema/form-schemas";
 import { PropsWithChildren, useMemo, useState } from "react";
 
@@ -34,7 +34,7 @@ export default function AdminDashboardContextProvider(props: PropsWithChildren) 
     return response;
   }
 
-  const listUsers = async (): Promise<unknown> => {
+  const listUsers = async (): Promise<UserDocument[]> => {
     const response = await fetch('/api/admin/users', {
       method: 'GET',
       credentials: 'include',
@@ -43,29 +43,37 @@ export default function AdminDashboardContextProvider(props: PropsWithChildren) 
     if (!response.ok) {
       throw new Error('Failed to list users');
     }
-    return response.json();
+    const data: UserDocument[] = await response.json();
+    return data;
   }
 
-  const addUser = async (_user: UserCredentialsForm): Promise<Response> => {
-    // TODO
-    return Promise.resolve(new Response());
+  const saveUser = async (user: UserDocument): Promise<void> => {
+    const response = await fetch(`/api/admin/users`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: authHeaders,
+      body: JSON.stringify(user),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add or update user');
+    }
   }
 
-  const updateUser = async (_user: UserCredentialsForm): Promise<Response> => {
-    // TODO
-    return Promise.resolve(new Response());
-  }
-
-  const deleteUser = async (_user: UserCredentialsForm): Promise<Response> => {
-    // TODO
-    return Promise.resolve(new Response());
+  const deleteUser = async (userId: UserIdentifier): Promise<void> => {
+    const response = await fetch(`/api/admin/users/${userId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: authHeaders,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete user');
+    }
   }
 
   const context: AdminDashboardContext = {
     authenticate,
     listUsers,
-    addUser,
-    updateUser,
+    saveUser,
     deleteUser,
     databaseManagementStatus,
   }

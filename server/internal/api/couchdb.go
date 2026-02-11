@@ -173,37 +173,78 @@ func adminGetUser(cfg *env.Config, adminUser, adminPass, targetUsername string) 
 	return &doc, nil
 }
 
-// adminPutUser creates or updates a user in _users. For create, password is required. For update, password can be empty to leave unchanged.
-func adminPutUser(cfg *env.Config, adminUser, adminPass, targetUsername, password string, roles []string) (rev string, created bool, err error) {
-	docID := userDocPrefix + targetUsername
-	existing, err := adminGetUser(cfg, adminUser, adminPass, targetUsername)
+// adminPutUser creates or updates a user in _users. Accepts the full user document from the request.
+// For create, password is required. For update, password can be empty to leave unchanged.
+func adminPutUser(cfg *env.Config, adminUser, adminPass string, req *couchDBUserDoc) (rev string, created bool, err error) {
+	// Determine doc ID: use req.ID if provided (full _id), otherwise construct from req.Name
+	var docID string
+	if req.ID != "" {
+		docID = req.ID
+	} else {
+		docID = userDocPrefix + req.Name
+	}
+	
+	// Build the document to send
+	doc := couchDBUserDoc{
+		ID:   docID,
+		Name: req.Name,
+		Type: req.Type,
+	}
+	if doc.Type == "" {
+		doc.Type = "user"
+	}
+	if req.Roles != nil {
+		doc.Roles = req.Roles
+	}
+	
+	// Check if user exists by fetching current doc by _id
+	var existing *couchDBUserDoc
+	respGet, err := adminCouchDBRequest(cfg, adminUser, adminPass, http.MethodGet, "/_users/"+pathEscape(docID), nil)
 	if err != nil {
 		return "", false, err
 	}
-	doc := couchDBUserDoc{
-		Name:  targetUsername,
-		Type:  "user",
-		Roles: roles,
+	defer respGet.Body.Close()
+	if respGet.StatusCode == http.StatusOK {
+		var docExisting couchDBUserDoc
+		if json.NewDecoder(respGet.Body).Decode(&docExisting) == nil {
+			existing = &docExisting
+		}
+	} else if respGet.StatusCode != http.StatusNotFound {
+		// Some other error
+		return "", false, fmt.Errorf("couchdb: get user: %s", respGet.Status)
 	}
+	
 	if existing != nil {
-		doc.ID = existing.ID
-		doc.Rev = existing.Rev
-		if password != "" {
-			doc.Password = password
+		// Update: use existing _rev, or req.Rev if provided
+		if req.Rev != "" {
+			doc.Rev = req.Rev
+		} else {
+			doc.Rev = existing.Rev
+		}
+		// Only include password if provided (to change it)
+		if req.Password != "" {
+			doc.Password = req.Password
 		}
 	} else {
-		doc.ID = docID
-		if password == "" {
+		// Create: password is required
+		if req.Password == "" {
 			return "", false, errors.New("password required when creating user")
 		}
-		doc.Password = password
+		doc.Password = req.Password
 	}
+	
 	body, _ := json.Marshal(doc)
 	resp, err := adminCouchDBRequest(cfg, adminUser, adminPass, http.MethodPut, "/_users/"+pathEscape(docID), bytes.NewReader(body))
 	if err != nil {
 		return "", false, err
 	}
 	defer resp.Body.Close()
+	
+	// Check for 403 Forbidden - might indicate credential issue
+	if resp.StatusCode == http.StatusForbidden {
+		return "", false, fmt.Errorf("couchdb: forbidden - check admin credentials")
+	}
+	
 	var result struct {
 		OK  bool   `json:"ok"`
 		Rev string `json:"rev"`
@@ -215,23 +256,37 @@ func adminPutUser(cfg *env.Config, adminUser, adminPass, targetUsername, passwor
 	return result.Rev, existing == nil, nil
 }
 
-// adminDeleteUser removes a user from _users.
-func adminDeleteUser(cfg *env.Config, adminUser, adminPass, targetUsername string) error {
-	doc, err := adminGetUser(cfg, adminUser, adminPass, targetUsername)
-	if err != nil {
-		return err
-	}
-	if doc == nil {
-		return fmt.Errorf("user not found: %s", targetUsername)
-	}
-	path := "/_users/" + pathEscape(doc.ID) + "?rev=" + url.QueryEscape(doc.Rev)
-	resp, err := adminCouchDBRequest(cfg, adminUser, adminPass, http.MethodDelete, path, nil)
+// adminDeleteUser removes a user from _users by _id.
+func adminDeleteUser(cfg *env.Config, adminUser, adminPass, docID string) error {
+	// Fetch the document to get _rev
+	resp, err := adminCouchDBRequest(cfg, adminUser, adminPass, http.MethodGet, "/_users/"+pathEscape(docID), nil)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
-		return fmt.Errorf("couchdb: delete user: %s", resp.Status)
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("user not found: %s", docID)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("couchdb: get user: %s", resp.Status)
+	}
+	var doc couchDBUserDoc
+	if err := json.NewDecoder(resp.Body).Decode(&doc); err != nil {
+		return err
+	}
+	if doc.Rev == "" {
+		return fmt.Errorf("user document missing _rev")
+	}
+	
+	// Delete with _rev
+	path := "/_users/" + pathEscape(docID) + "?rev=" + url.QueryEscape(doc.Rev)
+	resp2, err := adminCouchDBRequest(cfg, adminUser, adminPass, http.MethodDelete, path, nil)
+	if err != nil {
+		return err
+	}
+	defer resp2.Body.Close()
+	if resp2.StatusCode != http.StatusOK && resp2.StatusCode != http.StatusAccepted {
+		return fmt.Errorf("couchdb: delete user: %s", resp2.Status)
 	}
 	return nil
 }

@@ -41,8 +41,8 @@ func Router(cfg *env.Config, store *auth.TokenStore) (*gin.Engine, error) {
 		{
 			admin.GET("/", adminStatusHandler(cfg))
 			admin.GET("/users", adminListUsersHandler(cfg))
-			admin.PUT("/users/:username", adminPutUserHandler(cfg))
-			admin.DELETE("/users/:username", adminDeleteUserHandler(cfg))
+			admin.PUT("/users", adminPutUserHandler(cfg))
+			admin.DELETE("/users/:id", adminDeleteUserHandler(cfg))
 		}
 	}
 	return r, nil
@@ -346,35 +346,43 @@ func adminListUsersHandler(cfg *env.Config) gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		// Return safe view (no _rev, no password fields)
-		list := make([]gin.H, 0, len(users))
-		for _, u := range users {
-			list = append(list, gin.H{"username": u.Name, "roles": u.Roles})
-		}
-		c.JSON(http.StatusOK, gin.H{"users": list})
+		c.JSON(http.StatusOK, users)
 	}
 }
 
+// putUserRequest is the same shape as the CouchDB _users document.
 type putUserRequest struct {
-	Password string   `json:"password"`
-	Roles   []string `json:"roles"`
+	ID       string   `json:"_id,omitempty"`
+	Rev      string   `json:"_rev,omitempty"`
+	Name     string   `json:"name"`
+	Type     string   `json:"type"`
+	Roles    []string `json:"roles,omitempty"`
+	Password string   `json:"password,omitempty"`
 }
 
 // adminPutUserHandler creates or updates a user.
 func adminPutUserHandler(cfg *env.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		adminUser, adminPass := getAdminCreds(c)
-		targetUsername := c.Param("username")
-		if targetUsername == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "username required"})
-			return
-		}
 		var req putUserRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 			return
 		}
-		rev, created, err := adminPutUser(cfg, adminUser, adminPass, targetUsername, req.Password, req.Roles)
+		if req.Name == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "name field required"})
+			return
+		}
+		// Convert putUserRequest to couchDBUserDoc (same shape)
+		doc := couchDBUserDoc{
+			ID:       req.ID,
+			Rev:      req.Rev,
+			Name:     req.Name,
+			Type:     req.Type,
+			Roles:    req.Roles,
+			Password: req.Password,
+		}
+		rev, created, err := adminPutUser(cfg, adminUser, adminPass, &doc)
 		if err != nil {
 			if errors.Is(err, errUnauthorized) {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
@@ -395,12 +403,12 @@ func adminPutUserHandler(cfg *env.Config) gin.HandlerFunc {
 func adminDeleteUserHandler(cfg *env.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		adminUser, adminPass := getAdminCreds(c)
-		targetUsername := c.Param("username")
-		if targetUsername == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "username required"})
+		docID := c.Param("id")
+		if docID == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user _id required"})
 			return
 		}
-		if err := adminDeleteUser(cfg, adminUser, adminPass, targetUsername); err != nil {
+		if err := adminDeleteUser(cfg, adminUser, adminPass, docID); err != nil {
 			if strings.Contains(err.Error(), "not found") {
 				c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 				return
