@@ -1,0 +1,25 @@
+# Stage 1: build the web app (node deps + compile)
+FROM node:23-alpine AS app-builder
+WORKDIR /app
+COPY app/package.json app/package-lock.json ./
+RUN npm ci
+COPY app/ .
+RUN npm run build
+
+# Stage 2: build the Go server
+FROM golang:1.24-alpine AS go-builder
+WORKDIR /src
+COPY server/go.mod server/go.sum ./
+RUN go mod download
+COPY server/ .
+RUN go build -o /papaya ./cmd/papaya
+
+# Stage 3: run server and serve static assets
+FROM alpine:3.19
+ARG PAPAYA_STATIC_ASSETS_DIR=/var/www/papaya
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+COPY --from=go-builder /papaya .
+COPY --from=app-builder /app/dist ${PAPAYA_STATIC_ASSETS_DIR}
+EXPOSE 1234
+CMD ["./papaya"]

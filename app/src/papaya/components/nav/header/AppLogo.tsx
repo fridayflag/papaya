@@ -1,0 +1,9 @@
+import { Link } from '@tanstack/react-router'
+
+export default function AppLogo() {
+  return (
+    <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <img src="/images/papaya/g3.png" height={28} style={{ display: 'block' }} />
+    </Link>
+  )
+}
