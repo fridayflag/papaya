@@ -1,6 +1,4 @@
-// import { montserrat } from '@/fonts/montserrat'
 import { createTheme } from '@mui/material'
-import { lightGreen } from '@mui/material/colors'
 
 /**
  * The MUI app theme, which is consumed by the MUI ThemeProvider component.
@@ -8,33 +6,7 @@ import { lightGreen } from '@mui/material/colors'
 const appTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: lightGreen,
-
-    // forestGreen: {
-    // 	main: green[700],  // Dark green
-    // 	light: green[500], // Lighter shade
-    // 	dark: green[900],  // Even darker shade
-    // 	contrastText: "#fff", // White text for contrast
-    // },
   },
-  // colorSchemes: {
-  //     light: {
-  //         palette: {
-  //             mode: 'light',
-  //             primary:{
-  //                 main: 'rgb(85, 42, 90)',
-  //             }
-  //         },
-  //     },
-  //     dark: {
-  //         palette: {
-  //             mode: 'dark',
-  //             primary:{
-  //                 main: 'rgb(208, 165, 213)',
-  //             }
-  //         },
-  //     }
-  // },
   typography: {
     fontFamily: `'Montserrat', sans-serif`,
   },
