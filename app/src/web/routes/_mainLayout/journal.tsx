@@ -1,4 +1,5 @@
 import DisplayableJournal from '@/components/features/journal/layout/DisplayableJournal'
+import { JournalEntryEditorContextProvider } from '@/contexts/JournalEntryEditorContext'
 import {
   journalSliceParamsToUrlSearch,
   JournalSliceProvider,
@@ -37,7 +38,9 @@ function JournalPage() {
 
   return (
     <JournalSliceProvider searchParams={searchParams} setSearchParams={setSearchParams}>
-      <DisplayableJournal />
+      <JournalEntryEditorContextProvider>
+        <DisplayableJournal />
+      </JournalEntryEditorContextProvider>
     </JournalSliceProvider>
   )
 }

@@ -1,4 +1,5 @@
 import { APP_MENU } from '@/constants/menu'
+import { JournalEntryEditorContext } from '@/contexts/JournalEntryEditorContext'
 import { Add, Create, Menu } from '@mui/icons-material'
 import {
   Box,
@@ -15,7 +16,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Link, useLocation } from '@tanstack/react-router'
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useContext, useEffect } from 'react'
 import AppLogo from '../header/AppLogo'
 
 interface AppMenuProps {
@@ -27,6 +28,7 @@ interface CreateEntryButtonProps extends AppMenuProps {
 }
 
 const CreateEntryButton = (props: CreateEntryButtonProps) => {
+  const { openEditor } = useContext(JournalEntryEditorContext)
 
   const handleCreateEntry = () => {
     // openEntryEditModalForCreate()
