@@ -1,8 +1,8 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings";
 import { JournalContext } from "@/contexts/JournalContext";
+import { useJournalSlice } from "@/contexts/JournalSliceContext";
 import { useActiveJournalEntries } from "@/hooks/queries";
 import { useUserPreferences } from "@/hooks/state/useUserPreferences";
-import { JournalSlice } from "@/schema/aggregate-schemas";
 import { Entry } from "@/schema/journal/resource/documents";
 import { makeJournalEntry } from "@/schema/support/factory";
 import { EntryUrn } from "@/schema/support/urn";
@@ -12,15 +12,12 @@ import JournalToolbar from "../display/JournalToolbar";
 import DisplayableJournalTable from "./DisplayableJournalTable";
 import JournalEntryEditor from "./JournalEntryEditor";
 
-interface DisplayableJournalProps {
-  slice: JournalSlice;
-}
-
 type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
-export default function DisplayableJournal(props: DisplayableJournalProps) {
+export default function DisplayableJournal() {
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
-  const journalContext = useContext(JournalContext)
+  const journalContext = useContext(JournalContext);
+  const { slice } = useJournalSlice();
   const activeJournalId = journalContext.activeJournalId;
 
   const settings = useUserPreferences();
@@ -98,7 +95,7 @@ export default function DisplayableJournal(props: DisplayableJournalProps) {
             <Grid size={showEditor ? 6 : 12}>
               {status === 'no-journal' && <Typography variant="body1">No journal selected</Typography>}
               {status === 'loading' && <Typography variant="body1">Loading...</Typography>}
-              {status === 'idle' && <DisplayableJournalTable slice={props.slice} onSelectForEdit={handleSelectForEdit} />}
+              {status === 'idle' && <DisplayableJournalTable slice={slice} onSelectForEdit={handleSelectForEdit} />}
             </Grid>
             {showEditor && activeJournalId && (
               <Grid size={6} sx={{ display: 'flex', p: 2, background: 'black' }}>

@@ -54,6 +54,21 @@ export const getAnnualDateViewFromDate = (date: dayjs.Dayjs): AnnualDateView => 
   }
 }
 
+/** Start date for the current date view (e.g. first day of month for monthly, start of week for weekly). */
+export const getStartDateFromDateView = (dateView: DateView, now: dayjs.Dayjs = dayjs()): dayjs.Dayjs => {
+  if (dateView.view === DateViewVariant.CUSTOM) {
+    return dayjs(dateView.after ?? now)
+  }
+  let year = dateView.year
+  let month = dateView.month
+  let day = dateView.day
+  if (!month) month = year ? 1 : now.month() + 1
+  if (!year) year = now.year()
+  const isSameMonthAndYear = year === now.year() && month === now.month() + 1
+  if (!day) day = isSameMonthAndYear ? now.date() : 1
+  return dayjs().year(year).month(month - 1).date(day)
+}
+
 export const getAbsoluteDateRangeFromDateView = (dateView: DateView) => {
   let startDate: dayjs.Dayjs | undefined = undefined
   let endDate: dayjs.Dayjs | undefined = undefined

@@ -15,8 +15,7 @@ export const APP_MENU: Record<string, NavMenuItem> = {
     icon: <ReceiptLong fontSize="small" />,
     label: 'Journal',
     description: 'Organize your expenses',
-    // Regex matches on /journal, /journal, /journal/abc, /journal/abc/123 /journal/abc/123/123, /journal/abc/123/123/123
-    pathPattern: /\/journal(\/.*)?$/,
+    pathPattern: /^\/journal(\?.*)?$/,
   },
   '/analyze': {
     icon: <Insights fontSize="small" />,

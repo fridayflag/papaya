@@ -1,6 +1,6 @@
 import KeyboardShortcut from '@/components/display/KeyboardShortcut'
+import { useJournalSlice } from '@/contexts/JournalSliceContext'
 import { KeyboardActionName } from '@/constants/keyboard'
-import useDateView from '@/hooks/facets/useDateView'
 import useKeyboardAction from '@/hooks/useKeyboardAction'
 import { DisplayableJournalEntry } from '@/schema/aggregate-schemas'
 import { DateViewVariant } from '@/schema/journal/facet'
@@ -50,7 +50,8 @@ export default function JournalDateActions() {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
   const [showDateViewPicker, setShowDateViewPicker] = useState<boolean>(false)
 
-  const { dateView, startDate, changeDateView, changeStartDate } = useDateView()
+  const { slice, startDate, changeDateView, changeStartDate } = useJournalSlice()
+  const dateView = slice.timeframe
 
   const datePickerButtonRef = useRef<HTMLButtonElement | null>(null)
   const dateViewPickerButtonRef = useRef<HTMLButtonElement | null>(null)
