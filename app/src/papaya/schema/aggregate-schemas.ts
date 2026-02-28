@@ -49,6 +49,7 @@ export const CalendarResolutionSchema = z.enum({
   WEEK: 'w',
   MONTH: 'm',
   YEAR: 'y',
+  CUSTOM: 'c',
 });
 export type CalendarResolution = z.infer<typeof CalendarResolutionSchema>;
 

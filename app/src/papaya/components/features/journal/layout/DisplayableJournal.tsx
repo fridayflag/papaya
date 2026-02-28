@@ -1,7 +1,7 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings";
 import { JournalContext } from "@/contexts/JournalContext";
 import { JournalEntryEditorContext } from "@/contexts/JournalEntryEditorContext";
-import { useJournalSlice } from "@/contexts/JournalSliceContext";
+import { JournalSliceContext } from "@/contexts/JournalSliceContext";
 import { useActiveJournalEntries } from "@/hooks/queries";
 import { useUserPreferences } from "@/hooks/state/useUserPreferences";
 import { EntryUrn } from "@/schema/support/urn";
@@ -15,7 +15,7 @@ type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
 export default function DisplayableJournal() {
   const journalContext = useContext(JournalContext);
-  const { slice } = useJournalSlice();
+  const { slice } = useContext(JournalSliceContext);
   const {
     beginEditing,
     beginCreating,

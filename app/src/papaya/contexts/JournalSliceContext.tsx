@@ -1,7 +1,7 @@
 import { CalendarRange, GroupBy, JournalSlice, Refinement, SortBy, SortOrder } from '@/schema/aggregate-schemas'
+import { useRouter } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from 'react'
-import { Route } from '../../web/routes/_mainLayout/journal.index'
 
 export type JournalSliceContext = {
   slice: JournalSlice
@@ -26,9 +26,9 @@ interface JournalSliceContextProviderProps extends PropsWithChildren {
 
 const journalSliceToSearchParams = (slice: JournalSlice): unknown => {
   return {
-    d: slice.calendar.fromDate.toISOString(),
+    d: slice.calendar.fromDate,
     r: slice.calendar.resolution ?? undefined,
-    to: slice.calendar.toDate?.toISOString() ?? undefined,
+    to: slice.calendar.toDate ?? undefined,
     ref: slice.refinements ?? undefined,
     s: slice.sortBy ?? undefined,
     o: slice.sortOrder ?? undefined,
@@ -47,6 +47,8 @@ export const JournalSliceContext = createContext<JournalSliceContext>({
 
 export function JournalSliceContextProvider(props: JournalSliceContextProviderProps) {
 
+  const router = useRouter();
+
   const [slice, setSlice] = useState<JournalSlice>(props.initialSearch);
 
   const handleChangeSlice = (slice: Partial<JournalSlice>) => {
@@ -55,7 +57,8 @@ export function JournalSliceContextProvider(props: JournalSliceContextProviderPr
         ...prev,
         ...slice,
       }
-      Route.navigate({
+      router.navigate({
+        to: '/journal',
         search: journalSliceToSearchParams(next),
       });
       return next;

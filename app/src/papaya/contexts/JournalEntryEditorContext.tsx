@@ -10,7 +10,6 @@ import { makeDisplayableJournalEntry } from '@/utils/aggregate-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createContext,
-  useCallback,
   useMemo,
   useState,
   type PropsWithChildren
@@ -71,13 +70,13 @@ export function JournalEntryEditorContextProvider(props: PropsWithChildren) {
     return makeDisplayableJournalEntry(marshalled) ?? null;
   }, [editingEntry, watchedValues]);
 
-  const beginEditing = useCallback((entry: Entry) => {
+  const beginEditing = (entry: Entry) => {
     setEditingEntry(entry);
     setIsEditorOpen(true);
     form.reset(JournalFormCodec.decode(entry))
-  }, []);
+  }
 
-  const beginCreating = useCallback(() => {
+  const beginCreating = () => {
     if (!activeJournalId) {
       return;
     }
@@ -85,15 +84,15 @@ export function JournalEntryEditorContextProvider(props: PropsWithChildren) {
     setEditingEntry(entry);
     setIsEditorOpen(true);
     form.reset(JournalFormCodec.decode(entry))
-  }, []);
+  }
 
-  const openEditor = useCallback(() => {
+  const openEditor = () => {
     setIsEditorOpen(true);
-  }, []);
+  }
 
-  const closeEditor = useCallback(() => {
+  const closeEditor = () => {
     setIsEditorOpen(false);
-  }, []);
+  }
 
   const value: JournalEntryEditorContext = {
     editingEntry,
