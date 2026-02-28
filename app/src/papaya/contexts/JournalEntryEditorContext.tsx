@@ -5,13 +5,12 @@ import { DisplayableJournalEntry } from '@/schema/aggregate-schemas';
 import { JournalFormCodec } from '@/schema/codec-schemas';
 import { JournalEntryForm, JournalEntryFormSchema } from '@/schema/form-schemas';
 import { Entry } from '@/schema/journal/resource/documents';
-import { makeJournalEntry } from '@/schema/support/factory';
+import { makeJournalEntry, makePapayaUrn } from '@/schema/support/factory';
 import { makeDisplayableJournalEntry } from '@/utils/aggregate-utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createContext,
   useCallback,
-  useEffect,
   useMemo,
   useState,
   type PropsWithChildren
@@ -40,35 +39,29 @@ export const JournalEntryEditorContext = createContext<JournalEntryEditorContext
   displayableEditingEntry: null,
 });
 
-export interface JournalEntryEditorProviderProps extends PropsWithChildren { }
-
-export function JournalEntryEditorContextProvider(props: JournalEntryEditorProviderProps) {
+export function JournalEntryEditorContextProvider(props: PropsWithChildren) {
   const { children } = props;
 
-  const activeJournal = useActiveJournal();
+  const activeJournalQuery = useActiveJournal();
+  const activeJournalId = activeJournalQuery.data?.journalId;
   const settings = useUserPreferences();
   const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
 
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
+
+  const initialFormValues: JournalEntryForm = useMemo(() => {
+    const entry = editingEntry ?? makeJournalEntry(
+      activeJournalId ?? makePapayaUrn('papaya:document:journal'),
+      currency
+    );
+    return JournalFormCodec.decode(entry);
+  }, []);
 
   const form = useForm<JournalEntryForm>({
     resolver: zodResolver(JournalEntryFormSchema),
-    defaultValues: {
-      // journalUrn: activeJournal?._id ?? null,
-      // entryUrn: null,
-      // rootTransaction: {
-      //   date: dayjs().format('YYYY-MM-DD'),
-      //   memo: '',
-      // },
-    },
+    defaultValues: initialFormValues,
   });
-
-  useEffect(() => {
-    if (editingEntry) {
-      form.reset(JournalFormCodec.decode(editingEntry));
-    }
-  }, [editingEntry, form]);
 
   const watchedValues = form.watch();
 
@@ -81,15 +74,17 @@ export function JournalEntryEditorContextProvider(props: JournalEntryEditorProvi
   const beginEditing = useCallback((entry: Entry) => {
     setEditingEntry(entry);
     setIsEditorOpen(true);
+    form.reset(JournalFormCodec.decode(entry))
   }, []);
 
   const beginCreating = useCallback(() => {
-    if (!activeJournal?.journalId) {
+    if (!activeJournalId) {
       return;
     }
-    const entry = makeJournalEntry(activeJournal.journalId, currency);
+    const entry = makeJournalEntry(activeJournalId, currency);
     setEditingEntry(entry);
     setIsEditorOpen(true);
+    form.reset(JournalFormCodec.decode(entry))
   }, []);
 
   const openEditor = useCallback(() => {
@@ -100,19 +95,16 @@ export function JournalEntryEditorContextProvider(props: JournalEntryEditorProvi
     setIsEditorOpen(false);
   }, []);
 
-  const value: JournalEntryEditorContext = useMemo(
-    () => ({
-      editingEntry,
-      isEditorOpen,
-      beginEditing,
-      beginCreating,
-      openEditor,
-      closeEditor,
-      form,
-      displayableEditingEntry,
-    }),
-    [editingEntry, isEditorOpen, openEditor, closeEditor, form, displayableEditingEntry],
-  );
+  const value: JournalEntryEditorContext = {
+    editingEntry,
+    isEditorOpen,
+    beginEditing,
+    beginCreating,
+    openEditor,
+    closeEditor,
+    form,
+    displayableEditingEntry,
+  };
 
   return (
     <JournalEntryEditorContext.Provider value={value}>

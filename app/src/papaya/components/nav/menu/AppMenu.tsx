@@ -28,10 +28,10 @@ interface CreateEntryButtonProps extends AppMenuProps {
 }
 
 const CreateEntryButton = (props: CreateEntryButtonProps) => {
-  const { openEditor } = useContext(JournalEntryEditorContext)
+  const { beginCreating } = useContext(JournalEntryEditorContext)
 
   const handleCreateEntry = () => {
-    // openEntryEditModalForCreate()
+    beginCreating();
   }
 
   if (props.view === 'mobile') {

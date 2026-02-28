@@ -4,6 +4,7 @@ export const Route = createFileRoute('/')({
   loader: () => {
     throw redirect({
       to: '/journal',
+      search: {}
     })
   },
 })

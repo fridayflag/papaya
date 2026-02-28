@@ -51,13 +51,6 @@ export default function DisplayableJournal() {
     return 'idle';
   }, [activeJournalId, journalContext.queries.journal]);
 
-  const handleNewEntry = () => {
-    if (!activeJournalId) {
-      return;
-    }
-    beginCreating();
-  };
-
   return (
     <>
       <Stack
@@ -89,7 +82,7 @@ export default function DisplayableJournal() {
               flexDirection: 'column',
               minHeight: 0, // Allow flex item to shrink
             })}>
-            <JournalToolbar onNewEntry={handleNewEntry} />
+            <JournalToolbar />
             <Divider />
             <Grid
               container
