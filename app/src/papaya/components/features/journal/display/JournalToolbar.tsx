@@ -1,17 +1,14 @@
 import { Badge, Button, Stack, Typography } from '@mui/material';
 
+import { JournalEntryEditorContext } from '@/contexts/JournalEntryEditorContext';
 import { Add } from '@mui/icons-material';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import LedgerDateNavigation from '../navigation/LedgerDateNavigation';
 
-interface JournalToolbarProps {
-  onNewEntry: () => void;
-}
-
-export default function JournalToolbar(props: JournalToolbarProps) {
+export default function JournalToolbar() {
   const [showFiltersMenu, setShowFiltersMenu] = useState<boolean>(false)
   const filtersMenuButtonRef = useRef<HTMLButtonElement | null>(null)
-
+  const { beginCreating } = useContext(JournalEntryEditorContext)
 
   const activeFilterSlots: Set<unknown> = new Set()
 
@@ -53,7 +50,7 @@ export default function JournalToolbar(props: JournalToolbarProps) {
                     <Typography>Filter</Typography>
                   </Button>
                 </Badge>
-                <Button variant="contained" onClick={() => props.onNewEntry()}>
+                <Button variant="contained" onClick={() => beginCreating()}>
                   <Add />
                   New Entry
                 </Button>

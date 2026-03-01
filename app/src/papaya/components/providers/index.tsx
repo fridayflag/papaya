@@ -6,6 +6,7 @@ import NotificationsProvider from '@/components/providers/NotificationsProvider'
 import PapayaConfigContextProvider from '@/components/providers/PapayaConfigContextProvider'
 import RemoteContextProvider from '@/components/providers/RemoteContextProvider'
 import appTheme from '@/components/theme/theme'
+import { JournalEntryEditorContextProvider } from '@/contexts/JournalEntryEditorContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 interface PapayaProviders extends PropsWithChildren {
@@ -22,7 +23,9 @@ export default function PapayaProviders(props: PapayaProviders) {
             <NotificationsProvider>
               <JournalContextProvider>
                 <RemoteContextProvider>
-                  {props.children}
+                  <JournalEntryEditorContextProvider>
+                    {props.children}
+                  </JournalEntryEditorContextProvider>
                 </RemoteContextProvider>
               </JournalContextProvider>
             </NotificationsProvider>

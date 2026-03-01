@@ -17,7 +17,7 @@ export default function DetailsDrawer(props: DetailsDrawerProps) {
       onClose={props.onClose}
       PaperProps={{
         sx: (theme) => ({
-          width: '100%',
+          width: '50%',
           maxWidth: theme.breakpoints.values.lg,
         }),
       }}>

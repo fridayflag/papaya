@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MainLayoutRouteImport } from './routes/_mainLayout'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MainLayoutJournalRouteImport } from './routes/_mainLayout/journal'
 import { Route as MainLayoutSettingsIndexRouteImport } from './routes/_mainLayout/settings.index'
+import { Route as MainLayoutJournalIndexRouteImport } from './routes/_mainLayout/journal.index'
 import { Route as MainLayoutAdminIndexRouteImport } from './routes/_mainLayout/admin/index'
 import { Route as MainLayoutSettingsSectionRouteImport } from './routes/_mainLayout/settings.$section'
 
@@ -25,14 +25,14 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MainLayoutJournalRoute = MainLayoutJournalRouteImport.update({
-  id: '/journal',
-  path: '/journal',
-  getParentRoute: () => MainLayoutRoute,
-} as any)
 const MainLayoutSettingsIndexRoute = MainLayoutSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
+  getParentRoute: () => MainLayoutRoute,
+} as any)
+const MainLayoutJournalIndexRoute = MainLayoutJournalIndexRouteImport.update({
+  id: '/journal/',
+  path: '/journal/',
   getParentRoute: () => MainLayoutRoute,
 } as any)
 const MainLayoutAdminIndexRoute = MainLayoutAdminIndexRouteImport.update({
@@ -49,39 +49,39 @@ const MainLayoutSettingsSectionRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/journal': typeof MainLayoutJournalRoute
   '/settings/$section': typeof MainLayoutSettingsSectionRoute
   '/admin': typeof MainLayoutAdminIndexRoute
+  '/journal': typeof MainLayoutJournalIndexRoute
   '/settings': typeof MainLayoutSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/journal': typeof MainLayoutJournalRoute
   '/settings/$section': typeof MainLayoutSettingsSectionRoute
   '/admin': typeof MainLayoutAdminIndexRoute
+  '/journal': typeof MainLayoutJournalIndexRoute
   '/settings': typeof MainLayoutSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_mainLayout': typeof MainLayoutRouteWithChildren
-  '/_mainLayout/journal': typeof MainLayoutJournalRoute
   '/_mainLayout/settings/$section': typeof MainLayoutSettingsSectionRoute
   '/_mainLayout/admin/': typeof MainLayoutAdminIndexRoute
+  '/_mainLayout/journal/': typeof MainLayoutJournalIndexRoute
   '/_mainLayout/settings/': typeof MainLayoutSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/journal' | '/settings/$section' | '/admin' | '/settings'
+  fullPaths: '/' | '/settings/$section' | '/admin' | '/journal' | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/journal' | '/settings/$section' | '/admin' | '/settings'
+  to: '/' | '/settings/$section' | '/admin' | '/journal' | '/settings'
   id:
     | '__root__'
     | '/'
     | '/_mainLayout'
-    | '/_mainLayout/journal'
     | '/_mainLayout/settings/$section'
     | '/_mainLayout/admin/'
+    | '/_mainLayout/journal/'
     | '/_mainLayout/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -106,18 +106,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_mainLayout/journal': {
-      id: '/_mainLayout/journal'
-      path: '/journal'
-      fullPath: '/journal'
-      preLoaderRoute: typeof MainLayoutJournalRouteImport
-      parentRoute: typeof MainLayoutRoute
-    }
     '/_mainLayout/settings/': {
       id: '/_mainLayout/settings/'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof MainLayoutSettingsIndexRouteImport
+      parentRoute: typeof MainLayoutRoute
+    }
+    '/_mainLayout/journal/': {
+      id: '/_mainLayout/journal/'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof MainLayoutJournalIndexRouteImport
       parentRoute: typeof MainLayoutRoute
     }
     '/_mainLayout/admin/': {
@@ -138,16 +138,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface MainLayoutRouteChildren {
-  MainLayoutJournalRoute: typeof MainLayoutJournalRoute
   MainLayoutSettingsSectionRoute: typeof MainLayoutSettingsSectionRoute
   MainLayoutAdminIndexRoute: typeof MainLayoutAdminIndexRoute
+  MainLayoutJournalIndexRoute: typeof MainLayoutJournalIndexRoute
   MainLayoutSettingsIndexRoute: typeof MainLayoutSettingsIndexRoute
 }
 
 const MainLayoutRouteChildren: MainLayoutRouteChildren = {
-  MainLayoutJournalRoute: MainLayoutJournalRoute,
   MainLayoutSettingsSectionRoute: MainLayoutSettingsSectionRoute,
   MainLayoutAdminIndexRoute: MainLayoutAdminIndexRoute,
+  MainLayoutJournalIndexRoute: MainLayoutJournalIndexRoute,
   MainLayoutSettingsIndexRoute: MainLayoutSettingsIndexRoute,
 }
 

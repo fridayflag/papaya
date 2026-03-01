@@ -1,11 +1,5 @@
-import { DisplayableJournalEntry } from '@/schema/aggregate-schemas'
-import {
-  AnnualDateView,
-  DateView,
-  DateViewVariant,
-  MonthlyDateView,
-  WeeklyDateView,
-} from '@/schema/journal/facet'
+
+import { CalendarRange, CalendarResolutionSchema } from '@/schema/aggregate-schemas'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
@@ -13,9 +7,6 @@ import utc from 'dayjs/plugin/utc'
 dayjs.extend(relativeTime)
 dayjs.extend(utc)
 
-export const getRelativeTime = (timestamp: string | null): string => {
-  return dayjs.utc(timestamp).fromNow()
-}
 
 export const formatJournalEntryDate = (date: string | undefined): string => {
   const day = dayjs(date)
@@ -30,67 +21,28 @@ export const sortDatesChronologically = (...dates: string[]) => {
   return dates.sort((a, b) => (dayjs(a).isBefore(b) ? -1 : 1))
 }
 
-export const getWeeklyDateViewFromDate = (date: dayjs.Dayjs): WeeklyDateView => {
-  return {
-    view: DateViewVariant.WEEKLY,
-    year: date.year(),
-    month: date.month() + 1, // Zero-indexed
-    day: date.date(),
-  }
-}
-
-export const getMonthlyDateViewFromDate = (date: dayjs.Dayjs): MonthlyDateView => {
-  return {
-    view: DateViewVariant.MONTHLY,
-    year: date.year(),
-    month: date.month() + 1, // Zero-indexed
-  }
-}
-
-export const getAnnualDateViewFromDate = (date: dayjs.Dayjs): AnnualDateView => {
-  return {
-    view: DateViewVariant.ANNUAL,
-    year: date.year(),
-  }
-}
-
-export const getAbsoluteDateRangeFromDateView = (dateView: DateView) => {
-  let startDate: dayjs.Dayjs | undefined = undefined
-  let endDate: dayjs.Dayjs | undefined = undefined
-
-  if (dateView.view === DateViewVariant.CUSTOM) {
-    endDate = dateView.before ? dayjs(dateView.before).subtract(1, 'day') : undefined
-    startDate = dateView.after ? dayjs(dateView.after).add(1, 'day') : undefined
-  } else if (dateView.view === DateViewVariant.WEEKLY) {
-    startDate = dayjs()
-      .year(dateView.year)
-      .month(dateView.month - 1)
-      .date(dateView.day)
-
-    endDate = startDate.endOf('week')
-  } else if (dateView.view === DateViewVariant.MONTHLY) {
-    startDate = dayjs()
-      .year(dateView.year)
-      .month(dateView.month - 1)
-      .date(1)
-
-    endDate = startDate.endOf('month')
-  } else if (dateView.view === DateViewVariant.ANNUAL) {
-    startDate = dayjs(`${dateView.year}-01-01`)
-    endDate = dayjs(`${dateView.year}-12-31`)
+export const getAbsoluteDatesFromCalendarRange = (range: CalendarRange): [dayjs.Dayjs, dayjs.Dayjs] => {
+  if (range.resolution === CalendarResolutionSchema.enum.WEEK) {
+    const startOfWeek = dayjs(range.fromDate).startOf('week');
+    const endOfWeek = dayjs(range.fromDate).endOf('week');
+    return [startOfWeek, endOfWeek];
   }
 
-  return { startDate, endDate }
-}
-
-export const getEmpiracleDateRangeFromJournalEntries = (entries: DisplayableJournalEntry[]) => {
-  const dates = entries.map((entry) => entry.aggregate.date)
-    .filter((date): date is string => Boolean(date));
-
-  const sortedDates = sortDatesChronologically(...dates);
-  if (sortedDates.length <= 0) {
-    return { startDate: undefined, endDate: undefined }
+  if (range.resolution === CalendarResolutionSchema.enum.MONTH) {
+    const startOfMonth = dayjs(range.fromDate).startOf('month');
+    const endOfMonth = dayjs(range.fromDate).endOf('month');
+    return [startOfMonth, endOfMonth];
   }
 
-  return { startDate: dayjs(sortedDates[0]), endDate: dayjs(sortedDates[sortedDates.length - 1]) }
+  if (range.resolution === CalendarResolutionSchema.enum.YEAR) {
+    const startOfYear = dayjs(range.fromDate).startOf('year');
+    const endOfYear = dayjs(range.fromDate).endOf('year');
+    return [startOfYear, endOfYear];
+  }
+
+  const now = dayjs();
+  const fromDate = range.fromDate ? dayjs(range.fromDate) : now;
+  const toDate = range.toDate ? dayjs(range.toDate) : now;
+
+  return fromDate.isBefore(toDate) ? [fromDate, toDate] : [toDate, fromDate];
 }
