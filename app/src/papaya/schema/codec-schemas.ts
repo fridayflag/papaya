@@ -1,155 +1,59 @@
-import { SCHEMA_VERSION } from "@/database/SchemaMigration";
-import { parseJournalEntryAmountString, serializeJournalEntryAmount } from "@/utils/journal";
+import { serializeJournalEntryAmount } from "@/utils/money-utils";
 import z from "zod";
-import { JournalEntryFormSchema, TransactionFormSchema, type JournalEntryForm, type TransactionForm } from "./form-schemas";
-import { EntrySchema, type Entry } from "./journal/resource/documents";
-import { TransactionSchema, type Transaction } from "./journal/resource/transaction";
-import { TopicSlugSchema } from "./string-schemas";
-import { makeFigure } from "./support/factory";
-import { type EntryUrn } from "./support/urn";
+import { JournalEntryForm, JournalEntryFormSchema, TransactionForm, TransactionFormSchema } from "./form-schemas";
+import { JournalEntry, JournalEntrySchema, Transaction, TransactionSchema } from "./resource-schemas";
 
-// Codec for converting between Transaction and TransactionForm
-// Note: When encoding, entryUrn is required but not in the form, so we use a helper function
-export const TransactionFormCodec = z.codec(
+export const TransactionToFormCodec = z.codec(
   TransactionSchema,
   TransactionFormSchema,
   {
     decode: (transaction: Transaction): TransactionForm => {
-      const amountString = serializeJournalEntryAmount(transaction.figure.amount);
-      const topicsString = transaction.topics?.join(', ') ?? '';
-
       return {
-        urn: transaction.urn,
-        parentUrn: transaction.parentUrn!,
-        entryUrn: transaction.entryUrn,
-        memo: transaction.memo,
-        currency: transaction.figure.currency,
-        amountString,
+        '@source': transaction,
+        amountString: serializeJournalEntryAmount(transaction.amount),
+        topics: transaction.topics ?? [],
+        convertedFrom: transaction.convertedFrom,
         date: transaction.date,
-        topicsString: topicsString,
-        sourceAccount: transaction.sourceAccount ?? null,
-        destinationAccount: transaction.destinationAccount ?? null,
+        time: transaction.time,
       };
     },
     encode: (form: TransactionForm): Transaction => {
-      const figure = parseJournalEntryAmountString(form.amountString, form.currency) ?? makeFigure(0, form.currency);
-      const topics: z.infer<typeof TopicSlugSchema>[] = form.topicsString
-        ? form.topicsString
-          .split(',')
-          .map(t => t.trim())
-          .filter(Boolean)
-          .map(topic => {
-            const topicSlug = topic.startsWith('#') ? topic : `#${topic}`;
-            return TopicSlugSchema.parse(topicSlug);
-          })
-        : [];
-
       return {
-        urn: form.urn,
-        kind: 'papaya:resource:transaction',
-        '@version': SCHEMA_VERSION,
-        entryUrn: form.entryUrn,
-        parentUrn: form.parentUrn,
-        memo: form.memo,
-        figure,
+        ...form['@source'],
+        amount: Number(form.amountString),
+        topics: form.topics,
+        convertedFrom: form.convertedFrom,
         date: form.date,
-        stems: {},
-        time: null,
-        sourceAccount: form.sourceAccount ?? null,
-        destinationAccount: form.destinationAccount ?? null,
-        topics: topics.length > 0 ? topics : null,
+        time: form.time,
+        sourceAccount: form.sourceAccount,
+        destinationAccount: form.destinationAccount,
       };
     },
   }
 );
 
-// Helper function to encode TransactionForm to Transaction with entryUrn
-const encodeTransactionForm = (form: Omit<TransactionForm, 'parentUrn'> & { parentUrn: TransactionForm['parentUrn'] | null }, entryUrn: EntryUrn): Transaction => {
-  const figure = parseJournalEntryAmountString(form.amountString, form.currency) ?? makeFigure(0, form.currency);
-
-  // Parse and validate topics as TopicSlug
-  const topics: z.infer<typeof TopicSlugSchema>[] = form.topicsString
-    ? form.topicsString
-      .split(',')
-      .map(t => t.trim())
-      .filter(Boolean)
-      .map(topic => {
-        // Ensure topic starts with #, add it if missing
-        const topicSlug = topic.startsWith('#') ? topic : `#${topic}`;
-        // Validate it matches TopicSlugSchema
-        const parsed = TopicSlugSchema.safeParse(topicSlug);
-        return parsed.success ? parsed.data : null;
-      })
-      .filter((topic): topic is z.infer<typeof TopicSlugSchema> => topic !== null)
-    : [];
-
-  return {
-    urn: form.urn,
-    kind: 'papaya:resource:transaction',
-    '@version': SCHEMA_VERSION,
-    entryUrn,
-    parentUrn: form.parentUrn,
-    memo: form.memo,
-    figure,
-    date: form.date,
-    stems: {},
-    time: null,
-    sourceAccount: form.sourceAccount ?? null,
-    destinationAccount: form.destinationAccount ?? null,
-    topics: topics.length > 0 ? topics : null,
-  };
-};
-
-export const JournalFormCodec = z.codec(
-  EntrySchema,
+export const JournalEntryToFormCodec = z.codec(
+  JournalEntrySchema,
   JournalEntryFormSchema,
   {
-    decode: (entry: Entry): JournalEntryForm => {
-      const transactions = Object.values(entry.transactions);
-      const rootTransaction = transactions.find((t) => t.parentUrn === null);
-      if (!rootTransaction) {
-        throw new Error('JournalFormCodec.decode: Entry must have a root transaction (parentUrn === null)');
-      }
-
-      // Convert root transaction to form (with parentUrn: null)
-      const rootTransactionForm: TransactionForm = TransactionFormCodec.decode(rootTransaction);
+    decode: (journalEntry: JournalEntry): JournalEntryForm => {
       return {
-        entryUrn: entry.urn,
-        journalUrn: entry.journalId,
-        rootTransaction: {
-          ...rootTransactionForm,
-          parentUrn: null,
-        },
-        childTransactions: transactions
-          .filter((t) => t.parentUrn !== null)
-          .reduce((acc: Record<string, TransactionForm>, transaction) => {
-            acc[transaction.urn] = TransactionFormCodec.decode(transaction);
-            return acc;
-          }, {}),
+        '@source': journalEntry,
+        date: journalEntry.date,
+        time: journalEntry.time,
+        memo: journalEntry.memo,
+        transactions: Object.fromEntries(
+          Object.entries(journalEntry.transactions).map(([transactionRid, transaction]) => [transactionRid, TransactionToFormCodec.decode(transaction)])),
       };
     },
-    encode: (form: JournalEntryForm): Entry => {
-      const { entryUrn } = form;
-      // Create root transaction (using helper since it has parentUrn: null)
-      const rootTransaction = encodeTransactionForm(form.rootTransaction, entryUrn);
-
-      // Create child transactions using TransactionFormCodec via helper
-      const childTransactions = Object.values(form.childTransactions).reduce((acc, formTransaction) => {
-        const transaction = encodeTransactionForm(formTransaction, entryUrn);
-        acc[transaction.urn] = transaction;
-        return acc;
-      }, {} as Record<string, Transaction>);
-
+    encode: (form: JournalEntryForm): JournalEntry => {
       return {
-        _id: entryUrn,
-        journalId: form.journalUrn,
-        urn: entryUrn,
-        kind: 'papaya:document:entry',
-        '@version': SCHEMA_VERSION,
-        transactions: {
-          [rootTransaction.urn]: rootTransaction,
-          ...childTransactions,
-        },
+        ...form['@source'],
+        date: form.date,
+        time: form.time,
+        memo: form.memo,
+        transactions: Object.fromEntries(
+          Object.entries(form.transactions).map(([transactionRid, transaction]) => [transactionRid, TransactionToFormCodec.encode(transaction)])),
       };
     },
   }

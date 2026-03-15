@@ -6,12 +6,13 @@ export const PriceConversionSchema = z.object({
   currency: CurrencyIso4217Schema,
   amount: z.number(),
   reference: z.object({
-    conversionRate: z.number(),
+    empiricalConversionRate: z.number(),
+    quotedConversionRate: z.number().nullish(),
     convertedAt: z.iso.datetime(),
     memo: z.string(),
-  }),
+  }).nullish(),
   get convertedFrom() {
-    return PriceConversionSchema;
+    return PriceConversionSchema.nullish();
   }
 });
 

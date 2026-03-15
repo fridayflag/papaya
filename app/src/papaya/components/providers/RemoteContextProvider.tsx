@@ -1,5 +1,5 @@
 import { AuthStatusEnum, OnlineStatusEnum, RemoteContext, SyncErrorEnum, SyncProgressEnum } from '@/contexts/RemoteContext';
-import { getDatabaseClient } from '@/orm/database-client';
+import { getDatabaseClient } from '@/database/database-client';
 import { UserContext } from '@/schema/application/remote-schemas';
 import { hasSessionOrRefreshCookie } from '@/utils/cookie';
 import { usernameToDbName } from '@/utils/database';

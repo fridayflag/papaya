@@ -3,12 +3,10 @@ import {
   createResourceSchema
 } from "@/schema/template-schemas";
 import z from "zod";
-import { CurrencyIso4217Schema, PictogramSchema, PriceSchema } from "./etc-schemas";
+import { CurrencyIso4217Schema, PictogramSchema, PriceConversionSchema } from "./etc-schemas";
 import { JournalEntryRidSchema, JournalRidSchema, TransactionRidSchema } from "./namespace-schemas";
 import {
-  AccountSlugSchema,
-  PersonSlugSchema,
-  TopicSlugSchema,
+  PersonSlugSchema
 } from "./string-schemas";
 
 /**
@@ -66,18 +64,21 @@ export const TaskSchema = createResourceSchema("Task", {
 export const TransactionSchema = createResourceSchema("Transaction", {
   parent: JournalEntryRidSchema.nullable(),
   memo: z.string(),
-  price: PriceSchema,
-  date: z.iso.date(),
+  amount: z.number(),
+  convertedFrom: PriceConversionSchema.nullish(),
+  date: z.iso.date().nullish(),
   time: z.iso.time().nullish(),
-  sourceAccount: AccountSlugSchema.nullish(),
-  destinationAccount: AccountSlugSchema.nullish(),
-  topics: z.array(TopicSlugSchema).nullish(),
+  sourceAccount: z.string().nullish(),
+  destinationAccount: z.string().nullish(),
+  topics: z.array(z.string()).nullish(),
 });
 
 export const JournalEntrySchema = createResourceSchema("JournalEntry", {
   journalRid: JournalRidSchema,
   transactions: z.record(TransactionRidSchema, TransactionSchema),
-  // TODO
+  memo: z.string().nullish(),
+  date: z.iso.date().nullish(),
+  time: z.iso.time().nullish(),
 });
 
 export type Journal = z.infer<typeof JournalSchema>;

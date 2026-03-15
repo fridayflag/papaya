@@ -8,7 +8,7 @@ import {
   type PapayaResourceNamespace,
 } from "./namespace-schemas";
 
-export type ResourceBaseSchema<N extends PapayaResourceNamespace> = {
+export type ResourceBaseShape<N extends PapayaResourceNamespace> = {
   rid: z.ZodTemplateLiteral<PapayaResourceRid<N>>;
   kind: z.ZodLiteral<PapayaResourceKind<N>>;
   updatedAt: z.ZodString;
@@ -18,7 +18,7 @@ export type ResourceBaseSchema<N extends PapayaResourceNamespace> = {
 export type ResourceSchema<
   N extends PapayaResourceNamespace,
   S extends z.ZodRawShape = z.ZodRawShape
-> = z.ZodObject<ResourceBaseSchema<N> & S>;
+> = z.ZodObject<ResourceBaseShape<N> & S>;
 
 export const createResourceSchema = <
   N extends PapayaResourceNamespace,
@@ -34,3 +34,24 @@ export const createResourceSchema = <
     "@version": z.number(),
   }).extend(shape) satisfies ResourceSchema<N, S>;
 };
+
+export const createResourceFormSchema = <
+  S extends z.ZodRawShape,
+  F extends z.ZodRawShape
+>(
+  sourceSchema: z.ZodObject<S & ResourceBaseShape<PapayaResourceNamespace>>,
+  sourceMask: Partial<Record<keyof S, boolean>>,
+  form: F,
+) => {
+  const mask = {
+    rid: true,
+    kind: true,
+    updatedAt: true,
+    '@version': true,
+    ...sourceMask,
+  };
+  return z.object({
+    ...form,
+    '@source': sourceSchema.pick(mask),
+  });
+}

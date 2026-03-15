@@ -1,4 +1,4 @@
-import { getDatabaseClient } from "@/orm/database-client";
+import { getDatabaseClient } from "@/database/database-client";
 import { ResourceSchemaRegistry } from "@/orm/ResourceSchemaRegistry";
 import { PapayaResourceNamespace, PapayaResourceRid } from "@/schema/namespace-schemas";
 import { OrmDocument } from "@/types/orm-types";
