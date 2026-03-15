@@ -3,7 +3,7 @@ import { StampVariantSchema } from "./journal/display";
 import { FigureSchema } from "./journal/entity/figure";
 import { MonetaryEnumerationSchema } from "./journal/money";
 import { JournalSchema } from "./journal/resource/documents";
-import { AccountSlugSchema, TopicSlugSchema } from "./journal/string";
+import { AccountSlugSchema, TopicSlugSchema } from "./string-schemas";
 import { EntryUrnSchema, TransactionUrnSchema } from "./support/urn";
 
 export const DisplayableJournalEntryActionSchema = z.object({

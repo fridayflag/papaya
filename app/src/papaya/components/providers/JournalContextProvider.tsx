@@ -1,8 +1,8 @@
 import { JournalContext } from "@/contexts/JournalContext";
 import { PapayaConfigContext } from "@/contexts/PapayaConfigContext";
 import { getLastOpenedJournal } from "@/database/actions";
-import SessionCache from "@/database/SessionCache";
 import { useJournal } from "@/hooks/queries";
+import SessionCache from "@/orm/SessionCache";
 import { JournalUrn } from "@/schema/support/urn";
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 

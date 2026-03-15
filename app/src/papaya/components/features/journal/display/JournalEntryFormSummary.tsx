@@ -4,7 +4,7 @@ import { DisplayableJournalEntry } from "@/schema/aggregate-schemas";
 import { JournalFormCodec } from "@/schema/codec-schemas";
 import { JournalEntryForm } from "@/schema/form-schemas";
 import { Entry } from "@/schema/journal/resource/documents";
-import { AccountSlug, TopicSlug } from "@/schema/journal/string";
+import { AccountSlug, TopicSlug } from "@/schema/string-schemas";
 import { makeFigure } from "@/schema/support/factory";
 import { makeDisplayableJournalEntry } from "@/utils/aggregate-utils";
 import { getMonetaryEnumerationString } from "@/utils/string";

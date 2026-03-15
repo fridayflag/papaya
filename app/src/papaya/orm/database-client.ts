@@ -1,7 +1,7 @@
 import PouchDB from 'pouchdb'
 import PouchDBFind from 'pouchdb-find'
 
-const POUCH_DB_NAME = '__papaya__db'
+const POUCH_DB_NAME = 'papaya'
 
 PouchDB.plugin(PouchDBFind)
 
@@ -13,10 +13,10 @@ export const initializeDatabaseClient = () => {
   db.createIndex({
     index: {
       fields: [
-        'urn',
-        'date',
-        'children',
-        'journalId',
+        'rid',
+        'kind',
+        'updatedAt',
+        '@version',
       ],
     },
   })

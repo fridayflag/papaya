@@ -1,4 +1,4 @@
-import { getDatabaseClient } from "@/database/client";
+import { getDatabaseClient } from "@/orm/database-client";
 import { useQuery } from "@tanstack/react-query";
 
 export function useDebug() {

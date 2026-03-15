@@ -4,7 +4,7 @@ import z from "zod";
 import { JournalEntryFormSchema, TransactionFormSchema, type JournalEntryForm, type TransactionForm } from "./form-schemas";
 import { EntrySchema, type Entry } from "./journal/resource/documents";
 import { TransactionSchema, type Transaction } from "./journal/resource/transaction";
-import { TopicSlugSchema } from "./journal/string";
+import { TopicSlugSchema } from "./string-schemas";
 import { makeFigure } from "./support/factory";
 import { type EntryUrn } from "./support/urn";
 
