@@ -1,6 +1,6 @@
 import z from "zod";
 import { CurrencyIso4217Schema } from "./journal/money";
-import { AccountSlugSchema } from "./journal/string";
+import { AccountSlugSchema } from "./string-schemas";
 import { EntryUrnSchema, JournalUrnSchema, TransactionUrnSchema } from "./support/urn";
 
 export const TransactionFormSchema = z.object({

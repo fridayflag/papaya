@@ -1,38 +1,42 @@
-import { getDatabaseClient } from "@/database/client";
-import { ResourceRegistry } from "@/orm/ResourceRegistry";
+import { getDatabaseClient } from "@/orm/database-client";
+import { ResourceSchemaRegistry } from "@/orm/ResourceSchemaRegistry";
+import { PapayaResourceNamespace, PapayaResourceRid } from "@/schema/namespace-schemas";
 import { OrmDocument } from "@/types/orm-types";
 import dayjs from "dayjs";
-import { v6 as uuidv6 } from 'uuid';
+import { v6 as uuidv6 } from "uuid";
 import z from "zod";
 
-type ResourceRegistryKey = keyof typeof ResourceRegistry.shape;
-
+// TODO determine programmatically
 type ResourceBaseShapeKeys = 'rid' | 'kind' | 'updatedAt' | '@version'
 
-type Resource<N extends ResourceRegistryKey> = z.infer<typeof ResourceRegistry.shape[N]>;
-type IntrinsicResource<N extends ResourceRegistryKey> =
+type Resource<N extends PapayaResourceNamespace> = z.infer<typeof ResourceSchemaRegistry[N]>;
+
+export type ResourceIntrinsic<N extends PapayaResourceNamespace> =
   & Omit<Resource<N>, ResourceBaseShapeKeys>
   & Partial<Pick<Resource<N>, ResourceBaseShapeKeys>>;
 
-export abstract class Repository<N extends ResourceRegistryKey> {
-  private db: PouchDB.Database = getDatabaseClient();
+export abstract class Repository<N extends PapayaResourceNamespace> {
+  protected readonly db: PouchDB.Database = getDatabaseClient();
 
-  private readonly schema: (typeof ResourceRegistry.shape)[N];
+  protected readonly schema: (typeof ResourceSchemaRegistry)[N];
 
-  constructor(key: N) {
-    this.schema = ResourceRegistry.shape[key]
+  constructor(ns: N) {
+    this.schema = ResourceSchemaRegistry[ns];
   }
-
-  public validate(data: Resource<N>) {
-    return this.schema.safeParse(data)
-  }
-
 
   /**
    * Abstract factory method that describes how to make a new resource,
    * excluding the resource base.
    */
-  abstract factory(data: Partial<Resource<N>>): IntrinsicResource<N>;
+  protected abstract factory(data: Partial<Resource<N>>): ResourceIntrinsic<N>;
+
+  public validate(data: Resource<N>) {
+    return this.schema.safeParse(data)
+  }
+
+  public makeRid() {
+    return `${this.schema.shape.kind.value}:${uuidv6()}` as PapayaResourceRid<N>;
+  }
 
   /**
    * Static object that contains the methods for the model.
@@ -41,11 +45,11 @@ export abstract class Repository<N extends ResourceRegistryKey> {
     /**
      * Returns a new resource without persisting.
      */
-    make: (data: Partial<Resource<N>>): Resource<N> => {
-      const resource: IntrinsicResource<N> = this.factory(data);
+    make: (data: Partial<Resource<N>> = {}): Resource<N> => {
+      const resource: ResourceIntrinsic<N> = this.factory(data);
       const kind = this.schema.shape.kind.value;
       return {
-        rid: `${kind}:${uuidv6()}`,
+        rid: this.makeRid(),
         kind,
         updatedAt: dayjs().toISOString(),
         '@version': 0,
@@ -56,7 +60,7 @@ export abstract class Repository<N extends ResourceRegistryKey> {
     /**
      * Creates a new resource and persists it to the database.
      */
-    create: async (data: Partial<Resource<N>>): Promise<OrmDocument<Resource<N>>> => {
+    create: async (data: Partial<Resource<N>> = {}): Promise<OrmDocument<Resource<N>>> => {
       const resource = this.Model.make(data);
       return this.Model.save(resource as Resource<N> & Partial<OrmDocument<Resource<N>>>);
     },

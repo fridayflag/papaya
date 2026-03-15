@@ -1,19 +1,34 @@
-import { Repository } from "../Repository";
+import type { JournalEntryRid } from "@/schema/namespace-schemas";
+import { JournalEntry, Transaction } from "@/schema/resource-schemas";
+import { Repository, ResourceIntrinsic } from "../Repository";
+import { TransactionRepository } from "./TransactionRepository";
 
-class JournalEntryRepository extends Repository<'JournalEntrySchema'> {
+export class JournalEntryRepository extends Repository<"JournalEntry"> {
+  private transactionRepository: TransactionRepository;
 
   constructor() {
-    super('JournalEntrySchema');
+    super("JournalEntry");
+    this.transactionRepository = new TransactionRepository();
   }
 
-  factory = (data: Partial<JournalEntry>) => {
-    const name = data.name ?? '';
-    const email = data.email ?? `${name}@example.com`;
-    return {
-      name,
-      email,
-    }
+  private makeTransaction(entryRid: JournalEntryRid): Transaction {
+    return this.transactionRepository.Model.make({
+      parent: entryRid,
+    });
   }
+
+  factory = (data: Partial<JournalEntry>): ResourceIntrinsic<"JournalEntry"> => {
+    const rid: JournalEntryRid = data.rid ?? this.makeRid();
+
+    return {
+      journalRid: data.journalRid!,
+      rid,
+      transactions: data.transactions ?? Object.fromEntries(
+        [this.makeTransaction(rid)]
+          .map((transaction) => [transaction.rid, transaction])
+      ),
+    };
+  };
 }
 
 export const journalEntryRepository = new JournalEntryRepository();

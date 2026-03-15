@@ -2,7 +2,7 @@ import { DisplayableJournalEntry, DisplayableJournalEntryAggregate, DisplayableT
 import { MonetaryEnumeration } from "@/schema/journal/money";
 import { Entry } from "@/schema/journal/resource/documents";
 import { Transaction } from "@/schema/journal/resource/transaction";
-import { AccountSlug, TopicSlug } from "@/schema/journal/string";
+import { AccountSlug, TopicSlug } from "@/schema/string-schemas";
 import { EntryUrn } from "@/schema/support/urn";
 import dayjs from "dayjs";
 import { sortDatesChronologically } from "./date";

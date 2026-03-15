@@ -1,30 +1,36 @@
+
 import z from "zod";
+import {
+  kindSchemaFromNamespace,
+  PapayaResourceKind,
+  PapayaResourceRid,
+  ridSchemaFromNamespace,
+  type PapayaResourceNamespace,
+} from "./namespace-schemas";
 
-export type ResourceKindTemplate = `papaya:${string}`;
-export type RidTemplate<K extends ResourceKindTemplate> = `${K}:${string}`;
-
-export type ResourceSchema<K extends ResourceKindTemplate, S extends z.ZodRawShape> = z.ZodObject<{
-  rid: z.ZodTemplateLiteral<RidTemplate<K>>;
-  kind: z.ZodLiteral<K>;
+export type ResourceBaseSchema<N extends PapayaResourceNamespace> = {
+  rid: z.ZodTemplateLiteral<PapayaResourceRid<N>>;
+  kind: z.ZodLiteral<PapayaResourceKind<N>>;
   updatedAt: z.ZodString;
   "@version": z.ZodNumber;
-} & S>;
+};
 
-export type ResourceSchemaTemplate = z.ZodObject<{
-  rid: z.ZodTemplateLiteral<RidTemplate<ResourceKindTemplate>>;
-  kind: z.ZodLiteral<ResourceKindTemplate>;
-  updatedAt: z.ZodString;
-  "@version": z.ZodNumber;
-}>
+export type ResourceSchema<
+  N extends PapayaResourceNamespace,
+  S extends z.ZodRawShape = z.ZodRawShape
+> = z.ZodObject<ResourceBaseSchema<N> & S>;
 
-export const createResourceSchema = <K extends ResourceKindTemplate, S extends z.ZodRawShape>(
-  kind: K,
+export const createResourceSchema = <
+  N extends PapayaResourceNamespace,
+  S extends z.ZodRawShape
+>(
+  namespace: N,
   shape: S
 ) => {
   return z.object({
-    rid: z.templateLiteral([kind, ":", z.uuid()]) satisfies z.ZodTemplateLiteral<RidTemplate<K>>,
-    kind: z.literal(kind) satisfies z.ZodLiteral<K>,
+    rid: ridSchemaFromNamespace(namespace),
+    kind: kindSchemaFromNamespace(namespace),
     updatedAt: z.string(),
-    '@version': z.number(),
-  }).extend(shape) satisfies ResourceSchema<K, S>;
-}
+    "@version": z.number(),
+  }).extend(shape) satisfies ResourceSchema<N, S>;
+};
