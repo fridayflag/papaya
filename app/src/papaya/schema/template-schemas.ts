@@ -36,22 +36,14 @@ export const createResourceSchema = <
 };
 
 export const createResourceFormSchema = <
-  S extends z.ZodRawShape,
+  S extends z.ZodObject,
   F extends z.ZodRawShape
 >(
-  sourceSchema: z.ZodObject<S & ResourceBaseShape<PapayaResourceNamespace>>,
-  sourceMask: Partial<Record<keyof S, boolean>>,
+  sourceSchema: S,
   form: F,
 ) => {
-  const mask = {
-    rid: true,
-    kind: true,
-    updatedAt: true,
-    '@version': true,
-    ...sourceMask,
-  };
   return z.object({
     ...form,
-    '@source': sourceSchema.pick(mask),
+    '@source': sourceSchema,
   });
 }

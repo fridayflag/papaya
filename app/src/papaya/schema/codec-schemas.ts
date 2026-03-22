@@ -10,6 +10,7 @@ export const TransactionToFormCodec = z.codec(
     decode: (transaction: Transaction): TransactionForm => {
       return {
         '@source': transaction,
+        memo: transaction.memo,
         amountString: serializeJournalEntryAmount(transaction.amount),
         topics: transaction.topics ?? [],
         convertedFrom: transaction.convertedFrom,
@@ -23,6 +24,7 @@ export const TransactionToFormCodec = z.codec(
         amount: Number(form.amountString),
         topics: form.topics,
         convertedFrom: form.convertedFrom,
+        memo: form.memo,
         date: form.date,
         time: form.time,
         sourceAccount: form.sourceAccount,
