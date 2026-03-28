@@ -1,5 +1,5 @@
-import { DatabaseManagementStatus, UserDocument, UserIdentifier } from "@/schema/application/remote-schemas";
-import { UserCredentialsForm } from "@/schema/form-schemas";
+import { DatabaseManagementStatus, UserDocument, UserIdentifier } from "@/model/schema/application/remote-schemas";
+import { UserCredentialsForm } from "@/model/schema/form-schemas";
 import { createContext } from "react";
 
 export interface AdminDashboardContext {

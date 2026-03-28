@@ -1,7 +1,8 @@
 
+import { PREFERENCES_ID } from "@/constants/namespace-constants";
 import {
   createResourceSchema
-} from "@/schema/template-schemas";
+} from "@/model/schema/template-schemas";
 import z from "zod";
 import { CurrencyIso4217Schema, PictogramSchema, PriceConversionSchema } from "./etc-schemas";
 import { JournalEntryRidSchema, JournalRidSchema, TransactionRidSchema } from "./namespace-schemas";
@@ -36,18 +37,14 @@ export const JournalSchema = createResourceSchema("Journal", {
   createdAt: z.iso.datetime(),
 });
 
-
-export const UserSettingsSchema = createResourceSchema("UserSettings", {
+export const PreferencesSchema = createResourceSchema("Preferences", {
+  _id: z.literal(PREFERENCES_ID),
   journal: z.object({
     selection: z.enum(["ALWAYS_PROMPT", "DEFAULT_JOURNAL_ELSE_PROMPT", "LAST_OPENED"]).default("LAST_OPENED"),
     defaults: z.object({
       defaultJournalRid: JournalRidSchema.nullish(),
     }),
   }),
-});
-
-export const AppConfigSchema = createResourceSchema("AppConfig", {
-  userSettings: UserSettingsSchema,
 });
 
 export const PersonSchema = createResourceSchema("Person", {
@@ -82,8 +79,7 @@ export const JournalEntrySchema = createResourceSchema("JournalEntry", {
 });
 
 export type Journal = z.infer<typeof JournalSchema>;
-export type UserSettings = z.infer<typeof UserSettingsSchema>;
-export type PapayaAppConfig = z.infer<typeof AppConfigSchema>;
+export type Preferences = z.infer<typeof PreferencesSchema>;
 export type Person = z.infer<typeof PersonSchema>;
 export type Task = z.infer<typeof TaskSchema>;
 export type Transaction = z.infer<typeof TransactionSchema>;

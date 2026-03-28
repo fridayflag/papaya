@@ -1,6 +1,6 @@
-import { DisplayableJournalEntry } from '@/schema/aggregate-schemas';
-import { JournalEntryForm } from '@/schema/form-schemas';
-import { Entry } from '@/schema/journal/resource/documents';
+import { DisplayableJournalEntry } from '@/model/schema/aggregate-schemas';
+import { JournalEntryForm } from '@/model/schema/form-schemas';
+import { Entry } from '@/model/schema/journal/resource/documents';
 import {
   createContext
 } from 'react';

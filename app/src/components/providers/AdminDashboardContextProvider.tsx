@@ -1,6 +1,6 @@
-import { AdminDashboardContext } from "@/contexts/AdminDashboardContext";
-import { DatabaseManagementStatus, UserDocument, UserIdentifier } from "@/schema/application/remote-schemas";
-import { UserCredentialsForm } from "@/schema/form-schemas";
+import { AdminDashboardContext } from "@/model/contexts/AdminDashboardContext";
+import { DatabaseManagementStatus, UserDocument, UserIdentifier } from "@/model/schema/application/remote-schemas";
+import { UserCredentialsForm } from "@/model/schema/form-schemas";
 import { PropsWithChildren, useMemo, useState } from "react";
 
 export default function AdminDashboardContextProvider(props: PropsWithChildren) {

@@ -1,6 +1,8 @@
-import { JournalSlice } from '@/schema/aggregate-schemas'
-import dayjs from 'dayjs'
-import { createContext, PropsWithChildren } from 'react'
+'use client';
+
+import { JournalSlice } from '@/model/schema/aggregate-schemas';
+import dayjs from 'dayjs';
+import { createContext, PropsWithChildren } from 'react';
 
 export type JournalSliceContext = {
   slice: JournalSlice

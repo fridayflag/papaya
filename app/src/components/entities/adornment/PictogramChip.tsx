@@ -1,4 +1,4 @@
-import { Pictogram } from '@/schema/journal/entity/pictogram'
+import { Pictogram } from '@/model/schema/journal/entity/pictogram'
 import { alpha, Chip, Icon, useTheme } from '@mui/material'
 import { ReactElement } from 'react'
 import PictogramIcon from './PictogramIcon'

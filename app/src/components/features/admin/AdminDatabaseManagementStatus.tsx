@@ -1,4 +1,4 @@
-import { AdminDashboardContext } from "@/contexts/AdminDashboardContext";
+import { AdminDashboardContext } from "@/model/contexts/AdminDashboardContext";
 import { Paper } from "@mui/material";
 import { useContext } from "react";
 

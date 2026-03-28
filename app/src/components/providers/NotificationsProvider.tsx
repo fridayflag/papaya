@@ -1,11 +1,13 @@
+'use client';
+
 import {
   Alert,
   DialogNotification,
   NotificationsContext,
   SnackbarAction,
   SnackbarNotification,
-} from '@/contexts/NotificationsContext'
-import { Close } from '@mui/icons-material'
+} from '@/model/contexts/NotificationsContext';
+import { Close } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -15,8 +17,8 @@ import {
   DialogTitle,
   IconButton,
   Snackbar,
-} from '@mui/material'
-import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react'
+} from '@mui/material';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 
 const renderAction = (action: SnackbarAction) => {
   return <Button onClick={() => action.onClick()}>{action.label}</Button>

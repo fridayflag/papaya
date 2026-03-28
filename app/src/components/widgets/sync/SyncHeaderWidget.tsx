@@ -1,6 +1,6 @@
 import SyncIcon from '@/components/display/SyncIcon'
 import SyncWidget from '@/components/widget/SyncWidget'
-import { RemoteContext } from '@/contexts/RemoteContext'
+import { RemoteContext } from '@/model/contexts/RemoteContext'
 import { SyncIndicatorEnum } from '@/utils/syncing'
 import { Grow, IconButton, Popover, Stack, SvgIconOwnProps, Tooltip, Typography } from '@mui/material'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'

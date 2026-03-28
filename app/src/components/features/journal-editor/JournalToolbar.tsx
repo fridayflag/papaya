@@ -1,6 +1,6 @@
 import { Badge, Button, Stack, Typography } from '@mui/material';
 
-import { JournalEntryEditorContext } from '@/contexts/JournalEntryEditorContext';
+import { JournalEntryEditorContext } from '@/model/contexts/JournalEntryEditorContext';
 import { Add } from '@mui/icons-material';
 import { useContext, useRef, useState } from 'react';
 import LedgerDateNavigation from '../navigation/LedgerDateNavigation';

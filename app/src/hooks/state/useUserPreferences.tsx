@@ -1,5 +1,5 @@
-import { PapayaConfigContext } from "@/contexts/PapayaConfigContext";
-import { UserSettings } from "@/schema/application/config";
+import { PapayaConfigContext } from "@/model/contexts/PapayaConfigContext";
+import { UserSettings } from "@/model/schema/application/config";
 import { useContext } from "react";
 
 

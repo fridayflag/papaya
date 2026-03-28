@@ -1,4 +1,4 @@
-import { Person } from "@/schema/resource-schemas";
+import { Person } from "@/model/schema/resource-schemas";
 import { Repository, ResourceIntrinsic } from "../Repository";
 
 export class PersonRepository extends Repository<"Person"> {

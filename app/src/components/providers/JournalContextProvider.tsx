@@ -1,60 +1,50 @@
-import { JournalContext } from "@/contexts/JournalContext";
-import { PapayaConfigContext } from "@/contexts/PapayaConfigContext";
-import { getLastOpenedJournal } from "@/database/actions";
-import { useJournal } from "@/hooks/queries";
-import SessionCache from "@/orm/SessionCache";
-import { JournalUrn } from "@/schema/support/urn";
-import { PropsWithChildren, useContext, useEffect, useState } from "react";
+'use client';
+
+import { JournalContext } from "@/model/contexts/JournalContext";
+import { PapayaContext } from "@/model/contexts/PapayaContext";
+import { journalRepository } from "@/model/orm/repositories";
+import SessionCache from "@/model/orm/SessionCache";
+import { JournalRid } from "@/model/schema/namespace-schemas";
+import { Journal } from "@/model/schema/resource-schemas";
+import { useQuery } from "@tanstack/react-query";
+import { PropsWithChildren, use, useEffect, useState } from "react";
 
 export function JournalContextProvider(props: PropsWithChildren) {
-  const [initialized, setInitialized] = useState(false)
-  const [activeJournalId, setActiveJournalId] = useState<JournalUrn | undefined | null>(() => {
-    return SessionCache.get('ACTIVE_JOURNAL_ID');
+  const [activeJournalRid, setActiveJournalRid] = useState<JournalRid | undefined>(() => {
+    return SessionCache.get().activeJournalRid ?? undefined;
   })
 
-  const { papayaConfig } = useContext(PapayaConfigContext)
+  const { preferences } = use(PapayaContext)
 
   useEffect(() => {
-    if (initialized || !papayaConfig) {
-      return
+    if (activeJournalRid) {
+      return;
     }
 
-    const decideActiveJournalId = async () => {
-      let journalId: JournalUrn | undefined;
-      if (papayaConfig.userSettings.journal.journalSelection === 'DEFAULT_JOURNAL') {
-        journalId = papayaConfig.userSettings.journal.defaultJournal ?? undefined
-      } else if (papayaConfig.userSettings.journal.journalSelection === 'LAST_OPENED') {
-        const lastOpenedJournal = await getLastOpenedJournal()
-        journalId = lastOpenedJournal?._id
+    const { defaultJournalRid } = preferences.journal.defaults;
+
+    if (defaultJournalRid) {
+      setActiveJournalRid(defaultJournalRid);
+    }
+  }, []);
+
+  const activeJournalQuery = useQuery<Journal | undefined>({
+    queryKey: ['journal', activeJournalRid],
+    queryFn: async () => {
+      if (!activeJournalRid) {
+        return undefined;
       }
-      return journalId
-    }
-
-    // No active journal for this session
-    decideActiveJournalId()
-      .then((journalId) => {
-        if (journalId) {
-          handleSetActiveJournalId(journalId)
-        }
-      })
-      .finally(() => {
-        setInitialized(true)
-      })
-  }, [initialized, papayaConfig]);
-
-  const handleSetActiveJournalId = (journalId: JournalUrn | null) => {
-    setActiveJournalId(journalId)
-    SessionCache.set('ACTIVE_JOURNAL_ID', journalId)
-  }
+      return journalRepository.getJournalByRid(activeJournalRid);
+    },
+    initialData: undefined,
+    enabled: !!activeJournalRid,
+  });
 
   return (
     <JournalContext.Provider
       value={{
-        activeJournalId: activeJournalId ?? null,
-        queries: {
-          journal: useJournal(activeJournalId ?? null),
-        },
-        setActiveJournalId: handleSetActiveJournalId,
+        activeJournal: activeJournalQuery.data,
+        setActiveJournalRid,
       }}
     >
       {props.children}

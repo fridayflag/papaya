@@ -1,4 +1,4 @@
-import { Task } from "@/schema/resource-schemas";
+import { Task } from "@/model/schema/resource-schemas";
 import { Repository, ResourceIntrinsic } from "../Repository";
 
 export class TaskRepository extends Repository<"Task"> {

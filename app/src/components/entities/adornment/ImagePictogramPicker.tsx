@@ -1,4 +1,4 @@
-import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
+import { Pictogram, PictogramVariantSchema } from '@/model/schema/journal/entity/pictogram'
 import { createImagePictogram, getPaletteColors } from '@/utils/image'
 import { AddPhotoAlternate, RemoveCircle } from '@mui/icons-material'
 import { Avatar, AvatarProps, Box, Button, FormHelperText, Stack } from '@mui/material'

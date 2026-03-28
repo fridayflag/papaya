@@ -1,7 +1,7 @@
-import { getDatabaseClient } from "@/database/database-client";
-import { ResourceSchemaRegistry } from "@/orm/ResourceSchemaRegistry";
-import { PapayaResourceNamespace, PapayaResourceRid } from "@/schema/namespace-schemas";
-import { OrmDocument } from "@/types/orm-types";
+import { getDatabaseClient } from "@/model/database/database-client";
+import { ResourceSchemaRegistry } from "@/model/orm/ResourceSchemaRegistry";
+import { PapayaResourceNamespace, PapayaResourceRid } from "@/model/schema/namespace-schemas";
+import { OrmDocument } from "@/model/types/orm-types";
 import dayjs from "dayjs";
 import { v6 as uuidv6 } from "uuid";
 import z from "zod";
@@ -16,7 +16,7 @@ export type ResourceIntrinsic<N extends PapayaResourceNamespace> =
   & Partial<Pick<Resource<N>, ResourceBaseShapeKeys>>;
 
 export abstract class Repository<N extends PapayaResourceNamespace> {
-  protected readonly db: PouchDB.Database = getDatabaseClient();
+  protected readonly db = getDatabaseClient();
 
   protected readonly schema: (typeof ResourceSchemaRegistry)[N];
 

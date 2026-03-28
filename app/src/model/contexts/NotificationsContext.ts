@@ -1,5 +1,7 @@
-import { AlertProps } from '@mui/material'
-import { createContext, ReactNode } from 'react'
+'use client';
+
+import { AlertProps } from '@mui/material';
+import { createContext, ReactNode } from 'react';
 
 interface Notification {
   message: string

@@ -1,14 +1,15 @@
-import { Journal } from '@/schema/journal/resource/documents'
-import { JournalUrn } from '@/schema/support/urn'
-import { UseQueryResult } from '@tanstack/react-query'
-import { createContext } from 'react'
+'use client';
+
+import { JournalRid } from '@/model/schema/namespace-schemas';
+import { Journal } from '@/model/schema/resource-schemas';
+import { createContext } from 'react';
 
 export interface JournalContext {
-  activeJournalId: JournalUrn | null
-  queries: {
-    journal: UseQueryResult<Journal | null>
-  }
-  setActiveJournalId: (journalId: JournalUrn | null) => void
+  activeJournal: Journal | undefined;
+  setActiveJournalRid: (journalRid: JournalRid) => void;
 }
 
-export const JournalContext = createContext<JournalContext>({} as JournalContext)
+export const JournalContext = createContext<JournalContext>({
+  activeJournal: null,
+  setActiveJournalRid: () => { },
+});

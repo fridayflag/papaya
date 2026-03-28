@@ -1,11 +1,11 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings";
 import { useUserPreferences } from "@/hooks/state/useUserPreferences";
-import { DisplayableJournalEntry } from "@/schema/aggregate-schemas";
-import { JournalFormCodec } from "@/schema/codec-schemas";
-import { JournalEntryForm } from "@/schema/form-schemas";
-import { Entry } from "@/schema/journal/resource/documents";
-import { AccountSlug, TopicSlug } from "@/schema/string-schemas";
-import { makeFigure } from "@/schema/support/factory";
+import { DisplayableJournalEntry } from "@/model/schema/aggregate-schemas";
+import { JournalFormCodec } from "@/model/schema/codec-schemas";
+import { JournalEntryForm } from "@/model/schema/form-schemas";
+import { Entry } from "@/model/schema/journal/resource/documents";
+import { AccountSlug, TopicSlug } from "@/model/schema/string-schemas";
+import { makeFigure } from "@/model/schema/support/factory";
 import { makeDisplayableJournalEntry } from "@/utils/aggregate-utils";
 import { getMonetaryEnumerationString } from "@/utils/string";
 import { Stack, Typography } from "@mui/material";

@@ -1,4 +1,4 @@
-import { UserContext } from '@/schema/application/remote-schemas'
+import { UserContext } from '@/model/schema/application/remote-schemas'
 import { createContext } from 'react'
 
 export enum OnlineStatusEnum {

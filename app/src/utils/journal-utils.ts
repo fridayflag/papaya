@@ -1,6 +1,6 @@
 
 import { DEFAULT_PICTOGRAM } from '@/components/input/picker/PictogramPicker'
-import { Pictogram } from '@/schema/etc-schemas'
+import { Pictogram } from '@/model/schema/etc-schemas'
 
 
 export const generateRandomPictogram = (): Pictogram => {

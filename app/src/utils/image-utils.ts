@@ -1,5 +1,5 @@
-import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
-import { makePictogram } from '@/schema/support/factory'
+import { Pictogram, PictogramVariantSchema } from '@/model/schema/journal/entity/pictogram'
+import { makePictogram } from '@/model/schema/support/factory'
 import { Vibrant } from 'node-vibrant/browser'
 
 export async function createImagePictogram(file: File): Promise<Pictogram> {

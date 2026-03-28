@@ -1,5 +1,5 @@
-import { AdminDashboardContext } from "@/contexts/AdminDashboardContext";
-import { UserCredentialsForm, UserCredentialsFormSchema } from "@/schema/form-schemas";
+import { AdminDashboardContext } from "@/model/contexts/AdminDashboardContext";
+import { UserCredentialsForm, UserCredentialsFormSchema } from "@/model/schema/form-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Dialog, DialogContent, DialogTitle, FormHelperText, Stack, TextField } from "@mui/material";
 import { useContext, useState } from "react";

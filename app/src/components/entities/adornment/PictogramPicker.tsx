@@ -1,5 +1,5 @@
 import { SCHEMA_VERSION } from '@/database/SchemaMigration'
-import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
+import { Pictogram, PictogramVariantSchema } from '@/model/schema/journal/entity/pictogram'
 import { Box, colors, Fade, Icon, Popover, Select, Tab, Tabs } from '@mui/material'
 import { useState } from 'react'
 import IconPicker from './IconPicker'

@@ -1,4 +1,4 @@
-import { UserCredentialsForm, UserCredentialsFormSchema } from "@/schema/form-schemas";
+import { UserCredentialsForm, UserCredentialsFormSchema } from "@/model/schema/form-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, FormHelperText, Stack, TextField } from "@mui/material";
 import { useState } from "react";

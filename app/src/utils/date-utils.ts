@@ -1,5 +1,5 @@
 
-import { CalendarRange, CalendarResolutionSchema } from '@/schema/aggregate-schemas'
+import { CalendarRange, CalendarResolutionSchema } from '@/model/schema/aggregate-schemas'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'

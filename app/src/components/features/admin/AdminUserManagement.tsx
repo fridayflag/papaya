@@ -1,7 +1,7 @@
 import CopyField from "@/components/display/CopyField";
-import { AdminDashboardContext } from "@/contexts/AdminDashboardContext";
-import { UserDocument } from "@/schema/application/remote-schemas";
-import { UserCredentialsForm, UserCredentialsFormSchema } from "@/schema/form-schemas";
+import { AdminDashboardContext } from "@/model/contexts/AdminDashboardContext";
+import { UserDocument } from "@/model/schema/application/remote-schemas";
+import { UserCredentialsForm, UserCredentialsFormSchema } from "@/model/schema/form-schemas";
 import { usernameToDbName } from "@/utils/database";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Delete, Edit, Visibility, VisibilityOff } from "@mui/icons-material";

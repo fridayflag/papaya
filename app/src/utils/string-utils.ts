@@ -1,7 +1,7 @@
 import { DEFAULT_CURRENCY } from "@/constants/settings"
-import { Figure } from "@/schema/journal/entity/figure"
-import { CurrencyIso4217, MonetaryEnumeration } from "@/schema/journal/money"
-import { makeFigure } from "@/schema/support/factory"
+import { Figure } from "@/model/schema/journal/entity/figure"
+import { CurrencyIso4217, MonetaryEnumeration } from "@/model/schema/journal/money"
+import { makeFigure } from "@/model/schema/support/factory"
 
 export interface FormatCurrencyAmountOptions {
   minimumFractionDigits: number

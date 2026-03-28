@@ -1,5 +1,5 @@
 import { APP_MENU } from '@/constants/menu'
-import { JournalEntryEditorContext } from '@/contexts/JournalEntryEditorContext'
+import { JournalEntryEditorContext } from '@/model/contexts/JournalEntryEditorContext'
 import { Add, Create, Menu } from '@mui/icons-material'
 import {
   Box,

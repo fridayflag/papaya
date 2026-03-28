@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-
-export default function IndexPage() {
-  redirect('/journal');
+export default async function IndexPage() {
+  return redirect('/journal');
 }

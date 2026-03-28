@@ -1,5 +1,7 @@
-import PouchDB from 'pouchdb'
-import PouchDBFind from 'pouchdb-find'
+'use client';
+
+import PouchDB from 'pouchdb';
+import PouchDBFind from 'pouchdb-find';
 
 const POUCH_DB_NAME = 'papaya'
 

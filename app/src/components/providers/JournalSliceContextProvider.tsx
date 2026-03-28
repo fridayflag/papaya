@@ -1,4 +1,4 @@
-import { CalendarRange, GroupBy, JournalSlice, Refinement, SortBy, SortOrder } from '@/schema/aggregate-schemas';
+import { CalendarRange, GroupBy, JournalSlice, Refinement, SortBy, SortOrder } from '@/model/schema/aggregate-schemas';
 import { useRouter } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 

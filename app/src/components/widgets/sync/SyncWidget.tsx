@@ -1,4 +1,4 @@
-import { RemoteContext } from '@/contexts/RemoteContext'
+import { RemoteContext } from '@/model/contexts/RemoteContext'
 import { SyncIndicatorEnum } from '@/utils/syncing'
 import { Box, Button, CardActions, CardHeader, Divider, LinearProgress } from '@mui/material'
 import { useContext } from 'react'

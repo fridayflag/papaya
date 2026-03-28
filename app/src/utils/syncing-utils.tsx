@@ -1,4 +1,4 @@
-import { AuthStatusEnum, OnlineStatusEnum, SyncProgressEnum } from "@/contexts/RemoteContext"
+import { AuthStatusEnum, OnlineStatusEnum, SyncProgressEnum } from "@/model/contexts/RemoteContext"
 import { ReactNode } from "react"
 
 export enum SyncIndicatorEnum {

@@ -3,7 +3,7 @@ import { FixedSizeGrid } from 'react-window'
 
 import icons from '@/constants/icons'
 import { useScrollbarWidth } from '@/hooks/useScrollbarWidth'
-import { Pictogram, PictogramVariantSchema } from '@/schema/journal/entity/pictogram'
+import { Pictogram, PictogramVariantSchema } from '@/model/schema/journal/entity/pictogram'
 import { Search, Shuffle } from '@mui/icons-material'
 import Fuse from 'fuse.js'
 import { useMemo, useState } from 'react'

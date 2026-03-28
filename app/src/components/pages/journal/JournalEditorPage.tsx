@@ -1,9 +1,10 @@
+import JournalEntryEditor from "@/components/features/journal-editor/JournalEntryEditor";
 
+
+type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
 export function JournalEditorPage() {
   return (
-    <div>
-      <h1>Journal Editor</h1>
-    </div>
+    <JournalEntryEditor />
   )
 }

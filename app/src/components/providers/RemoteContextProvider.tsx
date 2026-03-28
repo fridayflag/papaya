@@ -1,6 +1,6 @@
-import { AuthStatusEnum, OnlineStatusEnum, RemoteContext, SyncErrorEnum, SyncProgressEnum } from '@/contexts/RemoteContext';
-import { getDatabaseClient } from '@/database/database-client';
-import { UserContext } from '@/schema/application/remote-schemas';
+import { AuthStatusEnum, OnlineStatusEnum, RemoteContext, SyncErrorEnum, SyncProgressEnum } from '@/model/contexts/RemoteContext';
+import { getDatabaseClient } from '@/model/database/database-client';
+import { UserContext } from '@/model/schema/application/remote-schemas';
 import { hasSessionOrRefreshCookie } from '@/utils/cookie';
 import { usernameToDbName } from '@/utils/database';
 import PouchDB from 'pouchdb';

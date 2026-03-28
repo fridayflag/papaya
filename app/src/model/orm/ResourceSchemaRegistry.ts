@@ -1,20 +1,18 @@
-import { PapayaResourceNamespace } from "@/schema/namespace-schemas";
+import { PapayaResourceNamespace } from "@/model/schema/namespace-schemas";
 import {
-  AppConfigSchema,
   JournalEntrySchema,
   JournalSchema,
   PersonSchema,
+  PreferencesSchema,
   TaskSchema,
   TransactionSchema,
-  UserSettingsSchema,
-} from "@/schema/resource-schemas";
-import { ResourceSchema } from "@/schema/template-schemas";
+} from "@/model/schema/resource-schemas";
+import { ResourceSchema } from "@/model/schema/template-schemas";
 
 export const ResourceSchemaRegistry = {
-  AppConfig: AppConfigSchema,
   Journal: JournalSchema,
   JournalEntry: JournalEntrySchema,
-  UserSettings: UserSettingsSchema,
+  Preferences: PreferencesSchema,
   Person: PersonSchema,
   Task: TaskSchema,
   Transaction: TransactionSchema,

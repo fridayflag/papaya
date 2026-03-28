@@ -1,9 +1,9 @@
-import { JournalRidSchema } from "@/schema/namespace-schemas";
+import { JournalRidSchema } from "@/model/schema/namespace-schemas";
 import z from "zod";
 
 const SessionDataSchmea = z.object({
-  activeJournalId: JournalRidSchema.nullable()
-})
+  activeJournalRid: JournalRidSchema.nullable()
+});
 
 const SessionCacheKey = 'PAPAYA_SESSION_CACHE' as const;
 
@@ -25,10 +25,12 @@ export default class SessionCache {
   /**
    * Validates, then writes session cache data to browser session storage.
    */
-  static set(data: SessionData): SessionData {
-    const validated = SessionDataSchmea.parse(data);
-    sessionStorage.setItem(SessionCacheKey, JSON.stringify(validated));
-    return validated;
+  static set(data: Partial<SessionData>): SessionData {
+    const prev = SessionCache.get();
+    return SessionCache.write({
+      ...prev,
+      ...data,
+    });
   }
 
   /**
@@ -36,8 +38,15 @@ export default class SessionCache {
    */
   static generate(): SessionData {
     const data: SessionData = {
-      activeJournalId: null,
+      activeJournalRid: null,
     };
-    return SessionCache.set(data);
+    SessionCache.write(data);
+    return data;
+  }
+
+  private static write(data: SessionData): SessionData {
+    const validated = SessionDataSchmea.parse(data);
+    sessionStorage.setItem(SessionCacheKey, JSON.stringify(validated));
+    return validated;
   }
 }

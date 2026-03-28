@@ -1,8 +1,8 @@
-import { JournalEntryEditorContext } from '@/contexts/JournalEntryEditorContext';
 import { useActiveJournalView } from '@/hooks/queries';
-import { DisplayableJournalEntry, JournalSlice } from '@/schema/aggregate-schemas';
-import { MonetaryEnumeration } from '@/schema/journal/money';
-import { EntryUrn } from '@/schema/support/urn';
+import { JournalEntryEditorContext } from '@/model/contexts/JournalEntryEditorContext';
+import { DisplayableJournalEntry, JournalSlice } from '@/model/schema/aggregate-schemas';
+import { MonetaryEnumeration } from '@/model/schema/journal/money';
+import { EntryUrn } from '@/model/schema/support/urn';
 import { getMonetaryEnumerationString } from '@/utils/string';
 import { Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';

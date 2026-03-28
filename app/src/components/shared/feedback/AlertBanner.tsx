@@ -1,4 +1,4 @@
-import { Alert, NotificationsContext } from '@/contexts/NotificationsContext'
+import { Alert, NotificationsContext } from '@/model/contexts/NotificationsContext'
 import { Close, Warning } from '@mui/icons-material'
 import { AlertTitle, Grow, IconButton, Alert as MuiAlert, Stack } from '@mui/material'
 import { useContext } from 'react'

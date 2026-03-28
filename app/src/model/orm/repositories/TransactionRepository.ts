@@ -1,6 +1,4 @@
-import { DEFAULT_CURRENCY } from "@/constants/settings";
-import { Transaction } from "@/schema/resource-schemas";
-import dayjs from "dayjs";
+import { Transaction } from "@/model/schema/resource-schemas";
 import { Repository, ResourceIntrinsic } from "../Repository";
 
 export class TransactionRepository extends Repository<"Transaction"> {
@@ -9,19 +7,10 @@ export class TransactionRepository extends Repository<"Transaction"> {
   }
 
   factory = (data: Partial<Transaction>): ResourceIntrinsic<"Transaction"> => {
-    const currency = data.price?.currency ?? DEFAULT_CURRENCY;
     return {
-      parent: data.parent ?? null,
+      parent: data.parent!,
       memo: data.memo ?? "",
-      price: data.price ?? {
-        currency,
-        amount: 0,
-      },
-      date: data.date ?? dayjs().format("YYYY-MM-DD"),
-      time: data.time ?? null,
-      sourceAccount: data.sourceAccount ?? null,
-      destinationAccount: data.destinationAccount ?? null,
-      topics: data.topics ?? null,
+      amount: data.amount ?? 0,
     };
   };
 }

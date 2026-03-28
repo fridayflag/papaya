@@ -1,5 +1,5 @@
-import type { JournalEntryRid } from "@/schema/namespace-schemas";
-import { JournalEntry, Transaction } from "@/schema/resource-schemas";
+import type { JournalEntryRid } from "@/model/schema/namespace-schemas";
+import { JournalEntry, Transaction } from "@/model/schema/resource-schemas";
 import { Repository, ResourceIntrinsic } from "../Repository";
 import { TransactionRepository } from "./TransactionRepository";
 

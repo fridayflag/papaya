@@ -1,5 +1,5 @@
-import { AuthStatusEnum, RemoteContext } from '@/contexts/RemoteContext';
 import LoginModal from '@/features/login/LoginModal';
+import { AuthStatusEnum, RemoteContext } from '@/model/contexts/RemoteContext';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Avatar, Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import { useContext, useState } from 'react';

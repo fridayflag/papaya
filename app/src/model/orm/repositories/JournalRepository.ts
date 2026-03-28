@@ -1,6 +1,7 @@
-import { DEFAULT_CURRENCY } from "@/constants/settings";
-import type { PapayaResourceRid } from "@/schema/namespace-schemas";
-import { Journal } from "@/schema/resource-schemas";
+import { DEFAULT_CURRENCY } from "@/constants/config-constants";
+import type { JournalRid } from "@/model/schema/namespace-schemas";
+import { Journal } from "@/model/schema/resource-schemas";
+import { OrmDocument } from "@/model/types/orm-types";
 import { Repository, ResourceIntrinsic } from "../Repository";
 
 export class JournalRepository extends Repository<"Journal"> {
@@ -10,6 +11,7 @@ export class JournalRepository extends Repository<"Journal"> {
 
   factory = (data: Partial<Journal>): ResourceIntrinsic<"Journal"> => {
     const defaultCurrency = DEFAULT_CURRENCY;
+
     return {
       name: data.name ?? "",
       notes: data.notes ?? "",
@@ -19,29 +21,27 @@ export class JournalRepository extends Repository<"Journal"> {
     };
   };
 
-  async get(rid: PapayaResourceRid<"Journal">): Promise<(Journal & { _id: string; _rev?: string }) | null> {
+  async getJournalByRid(rid: JournalRid): Promise<OrmDocument<Journal> | undefined> {
     try {
-      return (await this.db.get(rid)) as Journal & { _id: string; _rev?: string };
+      const journal = await this.db.get<Journal>(rid);
+      if (!journal) {
+        return undefined;
+      }
+      return journal;
     } catch {
-      return null;
+      return undefined;
     }
   }
 
-  async getAll(): Promise<(Journal & { _id: string; _rev?: string })[]> {
+  async listAllJournals(): Promise<OrmDocument<Journal>[]> {
     const result = await this.db.find({
       selector: { kind: this.schema.shape.kind.value },
     });
-    return result.docs as (Journal & { _id: string; _rev?: string })[];
+    return result.docs as OrmDocument<Journal>[];
   }
 
-  async getLastOpened(): Promise<(Journal & { _id: string; _rev?: string }) | null> {
-    const journals = await this.getAll();
-    const sorted = journals.sort((a, b) => {
-      const ta = a.lastOpenedAt ? new Date(a.lastOpenedAt).getTime() : 0;
-      const tb = b.lastOpenedAt ? new Date(b.lastOpenedAt).getTime() : 0;
-      return tb - ta;
-    });
-    return sorted[0] ?? null;
+  async getLastOpened() {
+    throw new Error("Not implemented");
   }
 }
 
