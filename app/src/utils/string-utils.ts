@@ -1,7 +1,5 @@
-import { DEFAULT_CURRENCY } from "@/constants/settings"
-import { Figure } from "@/model/schema/journal/entity/figure"
-import { CurrencyIso4217, MonetaryEnumeration } from "@/model/schema/journal/money"
-import { makeFigure } from "@/model/schema/support/factory"
+import { DEFAULT_CURRENCY } from "@/constants/config-constants"
+import { CurrencyIso4217, Price } from "@/model/schema/etc-schemas"
 
 export interface FormatCurrencyAmountOptions {
   minimumFractionDigits: number
@@ -49,13 +47,11 @@ export interface PriceStringOptions {
   fullyQualifyZero: boolean
 }
 
-export const getMonetaryEnumerationString = (monetaryEnumeration: MonetaryEnumeration, options: Partial<PriceStringOptions> = {}): string => {
-  return Object.entries(monetaryEnumeration).map(([currency, amount]) => {
-    return getFigureString(makeFigure(Number(amount), currency as CurrencyIso4217), options);
-  }).join(' + ');
-}
+export const getPriceString = (price: number | Price | undefined, options: Partial<PriceStringOptions> = {}): string => {
+  if (price === undefined || price === null) {
+    return ''
+  }
 
-export const getFigureString = (figure: Figure | undefined, options: Partial<PriceStringOptions> = {}): string => {
   const combinedOptions: PriceStringOptions = {
     sign: 'whenPositive',
     symbol: 'full',
@@ -64,7 +60,7 @@ export const getFigureString = (figure: Figure | undefined, options: Partial<Pri
     fullyQualifyZero: false,
     ...options,
   }
-  const price = figure?.amount ?? 0
+  const amount = typeof price === 'number' ? price : price?.amount ?? 0
   const formatOptions: Partial<FormatCurrencyAmountOptions> = combinedOptions.round
     ? {
       maximumFractionDigits: 0,
@@ -77,22 +73,22 @@ export const getFigureString = (figure: Figure | undefined, options: Partial<Pri
     priceStringParts.push('~')
   }
 
-  if (price !== 0 && combinedOptions.sign !== 'never') {
-    if (combinedOptions.sign === 'whenPositive' && price > 0) {
+  if (amount !== 0 && combinedOptions.sign !== 'never') {
+    if (combinedOptions.sign === 'whenPositive' && amount > 0) {
       priceStringParts.push('+')
-    } else if (combinedOptions.sign === 'always' && price < 0) {
+    } else if (combinedOptions.sign === 'always' && amount < 0) {
       priceStringParts.push('-')
     }
   }
 
-  if (figure?.currency) {
-    priceStringParts.push(getSymbolFromCurrency(figure.currency, combinedOptions.symbol))
+  if (typeof price === 'object' && 'currency' in price && price.currency) {
+    priceStringParts.push(getSymbolFromCurrency(price.currency, combinedOptions.symbol))
   }
 
-  if (price === 0) {
+  if (amount === 0) {
     priceStringParts.push(combinedOptions.fullyQualifyZero ? '0.00' : '0')
   } else {
-    priceStringParts.push(formatCurrencyAmount(Math.abs(price), formatOptions))
+    priceStringParts.push(formatCurrencyAmount(Math.abs(amount), formatOptions))
   }
   return priceStringParts.join('');
 }

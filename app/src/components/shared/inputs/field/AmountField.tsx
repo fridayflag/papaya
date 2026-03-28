@@ -1,6 +1,5 @@
 import { SwapHoriz } from '@mui/icons-material'
-import { TextField, InputAdornment, TextFieldProps, Stack } from '@mui/material'
-import { IconButton } from '@mui/material'
+import { IconButton, InputAdornment, Stack, TextField, TextFieldProps } from '@mui/material'
 // import { ToggleButtonGroup, ToggleButton } from "@mui/material"
 
 type AmountFieldProps = TextFieldProps & {
@@ -51,7 +50,7 @@ export default function AmountField(props: AmountFieldProps) {
     props.onChange?.({ ...event, target: { ...event.target, value: newValue } })
   }
 
-  const { disableSignChange, slotProps, sx, ...rest } = props
+  const { disableSignChange, slotProps, sx, approximate, ...rest } = props
 
   return (
     <Stack direction="row" gap={1}>
@@ -67,8 +66,8 @@ export default function AmountField(props: AmountFieldProps) {
             startAdornment: (
               <InputAdornment
                 position="start"
-                sx={(theme) => ({ color: props.approximate ? theme.palette.warning.main : undefined })}>
-                {props.approximate ? '~' : ''}$
+                sx={(theme) => ({ color: approximate ? theme.palette.warning.main : undefined })}>
+                {approximate ? '~' : ''}$
               </InputAdornment>
             ),
             endAdornment: disableSignChange ? undefined : (

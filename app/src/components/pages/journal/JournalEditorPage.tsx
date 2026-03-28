@@ -3,7 +3,7 @@ import JournalEntryEditor from "@/components/features/journal-editor/JournalEntr
 
 type DisplayableJournalStatus = 'loading' | 'idle' | 'no-journal';
 
-export function JournalEditorPage() {
+export default function JournalEditorPage() {
   return (
     <JournalEntryEditor />
   )

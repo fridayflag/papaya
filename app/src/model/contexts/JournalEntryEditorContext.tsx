@@ -1,20 +1,18 @@
-import { DisplayableJournalEntry } from '@/model/schema/aggregate-schemas';
+'use client';
+
 import { JournalEntryForm } from '@/model/schema/form-schemas';
-import { Entry } from '@/model/schema/journal/resource/documents';
-import {
-  createContext
-} from 'react';
+import { JournalEntry } from '@/model/schema/resource-schemas';
+import { createContext } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 export interface JournalEntryEditorContext {
-  editingEntry: Entry | null;
+  editingEntry: JournalEntry | null;
   isEditorOpen: boolean;
   form: UseFormReturn<JournalEntryForm>;
-  beginEditing: (entry: Entry) => void;
+  beginEditing: (entry: JournalEntry) => void;
   beginCreating: () => void;
   openEditor: () => void;
   closeEditor: () => void;
-  displayableEditingEntry: DisplayableJournalEntry | null;
 }
 
 export const JournalEntryEditorContext = createContext<JournalEntryEditorContext>({
@@ -25,5 +23,4 @@ export const JournalEntryEditorContext = createContext<JournalEntryEditorContext
   beginCreating: () => { },
   openEditor: () => { },
   closeEditor: () => { },
-  displayableEditingEntry: null,
 });

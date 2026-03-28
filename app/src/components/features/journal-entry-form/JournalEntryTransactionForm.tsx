@@ -1,9 +1,18 @@
+import AmountField from "@/components/shared/inputs/field/AmountField";
+import DateField from "@/components/shared/inputs/field/DateField";
+import TopicField from "@/components/shared/inputs/field/TopicField";
+import { JournalEntryForm } from "@/model/schema/form-schemas";
+import { TransactionRid } from "@/model/schema/namespace-schemas";
+import { DeleteOutline, LocalOffer } from "@mui/icons-material";
+import { Card, Grid, IconButton, Stack, TextField } from "@mui/material";
+import dayjs from "dayjs";
+import { Controller, useFormContext } from "react-hook-form";
 
 interface TransactionFormProps {
-  prefix: 'rootTransaction' | `childTransactions.${TransactionUrn}`;
+  transactionRid: TransactionRid;
 }
 
-export function TransactionForm(props: TransactionFormProps) {
+export function JournalEntryTransactionForm(props: TransactionFormProps) {
   const { control, register } = useFormContext<JournalEntryForm>()
 
   return (
@@ -15,13 +24,13 @@ export function TransactionForm(props: TransactionFormProps) {
               size="small"
               label="Memo"
               fullWidth
-              {...register(`${props.prefix}.memo`)}
+              {...register(`transactions.${props.transactionRid}.memo`)}
             />
           </Grid>
           <Grid size={4}>
             <Controller<JournalEntryForm>
               control={control}
-              name={`${props.prefix}.date`}
+              name={`transactions.${props.transactionRid}.date`}
               render={({ field }) => (
                 <DateField
                   slotProps={{
@@ -44,7 +53,7 @@ export function TransactionForm(props: TransactionFormProps) {
           <Grid size={4}>
             <Controller
               control={control}
-              name={`${props.prefix}.amountString`}
+              name={`transactions.${props.transactionRid}.amountString`}
               render={({ field }) => (
                 <AmountField
                   size="small"
@@ -62,7 +71,7 @@ export function TransactionForm(props: TransactionFormProps) {
               size="small"
               label="Topics"
               fullWidth
-              {...register(`${props.prefix}.topicsString`)}
+              {...register(`transactions.${props.transactionRid}.topics`)}
             />
           </Grid>
           <Grid size="auto">

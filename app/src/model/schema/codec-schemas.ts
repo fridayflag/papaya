@@ -1,3 +1,4 @@
+import { JOURNAL_ENTRY_DEFAULT_MEMO } from "@/constants/journal-editor-constants";
 import { serializeJournalEntryAmount } from "@/utils/money-utils";
 import z from "zod";
 import { JournalEntryForm, JournalEntryFormSchema, TransactionForm, TransactionFormSchema } from "./form-schemas";
@@ -10,7 +11,7 @@ export const TransactionToFormCodec = z.codec(
     decode: (transaction: Transaction): TransactionForm => {
       return {
         '@source': transaction,
-        memo: transaction.memo,
+        memo: transaction.memo ?? JOURNAL_ENTRY_DEFAULT_MEMO,
         amountString: serializeJournalEntryAmount(transaction.amount),
         topics: transaction.topics ?? [],
         convertedFrom: transaction.convertedFrom,

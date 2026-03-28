@@ -1,4 +1,4 @@
-export const parseJournalEntryAmountString = (amountString: string | undefined | null): number | undefined => {
+export const parseMonetaryAmountString = (amountString: string | undefined | null): number | undefined => {
   if (!amountString) {
     return undefined
   }

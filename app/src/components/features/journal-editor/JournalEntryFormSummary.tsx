@@ -1,81 +1,52 @@
-import { DEFAULT_CURRENCY } from "@/constants/settings";
-import { useUserPreferences } from "@/hooks/state/useUserPreferences";
-import { DisplayableJournalEntry } from "@/model/schema/aggregate-schemas";
-import { JournalFormCodec } from "@/model/schema/codec-schemas";
+'use client';
+
+import { JOURNAL_ENTRY_DEFAULT_MEMO } from "@/constants/journal-editor-constants";
+import { JournalEntryToFormCodec } from "@/model/schema/codec-schemas";
 import { JournalEntryForm } from "@/model/schema/form-schemas";
-import { Entry } from "@/model/schema/journal/resource/documents";
-import { AccountSlug, TopicSlug } from "@/model/schema/string-schemas";
-import { makeFigure } from "@/model/schema/support/factory";
-import { makeDisplayableJournalEntry } from "@/utils/aggregate-utils";
-import { getMonetaryEnumerationString } from "@/utils/string";
+import { JournalEntry, Transaction } from "@/model/schema/resource-schemas";
+import { getPriceString } from "@/utils/string-utils";
 import { Stack, Typography } from "@mui/material";
-import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useDeferredValue } from "react";
 import { useFormContext } from "react-hook-form";
 
 export default function JournalEntryFormSummary() {
-  const { watch } = useFormContext<JournalEntryForm>()
-  const entryUrn = watch('entryUrn');
-  const journalUrn = watch('journalUrn');
+  const { getValues } = useFormContext<JournalEntryForm>();
 
-  const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DD'), []);
+  const formValues = useDeferredValue<JournalEntryForm>(getValues());
 
-  const settings = useUserPreferences();
-  const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
+  const optimisticJournalEntry: JournalEntry = useDeferredValue(
+    formValues ? JournalEntryToFormCodec.encode(formValues) : null
+  );
 
+  const transactions: Transaction[] = Object.values(optimisticJournalEntry.transactions);
 
-  const defaultDisplayableEntry: DisplayableJournalEntry = useMemo(() => {
-    return {
-      entryUrn,
-      journalUrn,
-      aggregate: {
-        memo: '',
-        date: defaultDate,
-        topics: new Set<TopicSlug>(),
-        accounts: new Set<AccountSlug>(),
-        sum: {},
-      },
-      primaryAction: null,
-      secondaryAction: null,
-      stamps: [],
-      rootTransaction: {
-        date: defaultDate,
-        memo: '',
-        transactionUrn: null,
-        figure: makeFigure(0, currency),
-        sourceAccount: null,
-        destinationAccount: null,
-        topics: [],
-        children: [],
-      },
-    };
-  }, [entryUrn, journalUrn, defaultDate, currency]);
+  const netAmount: number = transactions.reduce((acc: number, transaction: Transaction) => {
+    return acc + transaction.amount;
+  }, 0);
 
-  const baseEntryMemo = watch('rootTransaction.memo');
-  const formValues = watch();
+  const uniqueTopics: Set<string> = new Set(transactions.flatMap((transaction) => transaction.topics ?? []))
 
-  const marshalledEntry: Entry = useMemo(() => {
-    // TODO use debouncing
-    return JournalFormCodec.encode(formValues);
-  }, [formValues]);
-
-  const displayableEntry: DisplayableJournalEntry = useMemo(() => {
-    return makeDisplayableJournalEntry(marshalledEntry) ?? defaultDisplayableEntry;
-  }, [marshalledEntry, defaultDisplayableEntry]);
-
-  const netAmountString = getMonetaryEnumerationString(displayableEntry.aggregate.sum, {
+  const netAmountString = getPriceString(netAmount, {
     sign: 'whenPositive',
-    symbol: 'simplified',
+    symbol: 'none',
     fullyQualifyZero: false,
-  })
+  });
+
+  let memo: string | undefined = optimisticJournalEntry.memo?.trim()
+  if (!memo) {
+    const transactionMemo = transactions.find((transaction) => !!transaction.memo?.trim())?.memo?.trim();
+    if (transactionMemo) {
+      memo = transactionMemo;
+    }
+  }
 
   return (
     <Stack>
-      <Typography>{baseEntryMemo.trim() || 'Journal entry'}</Typography>
+      <Typography>{memo || JOURNAL_ENTRY_DEFAULT_MEMO}</Typography>
 
       <Stack direction="row" gap={2}>
         <Typography>{netAmountString}</Typography>
-        <Typography>{Array.from(displayableEntry.aggregate.topics).join(', ')}</Typography>
+        <Typography>{Array.from(uniqueTopics).join(', ')}</Typography>
       </Stack>
     </Stack>
   )

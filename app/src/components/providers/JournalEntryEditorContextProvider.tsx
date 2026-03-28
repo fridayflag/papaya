@@ -1,67 +1,51 @@
-import { DEFAULT_CURRENCY } from '@/constants/settings';
-import { useActiveJournal } from '@/hooks/queries';
-import { useUserPreferences } from '@/hooks/state/useUserPreferences';
+'use client';
+
+import { JournalContext } from '@/model/contexts/JournalContext';
 import { JournalEntryEditorContext } from '@/model/contexts/JournalEntryEditorContext';
-import { DisplayableJournalEntry } from '@/model/schema/aggregate-schemas';
-import { JournalFormCodec } from '@/model/schema/codec-schemas';
+import { journalEntryRepository } from '@/model/orm/repositories';
+import { JournalEntryToFormCodec } from '@/model/schema/codec-schemas';
 import { JournalEntryForm, JournalEntryFormSchema } from '@/model/schema/form-schemas';
-import { Entry } from '@/model/schema/journal/resource/documents';
-import { makeJournalEntry, makePapayaUrn } from '@/model/schema/support/factory';
-import { makeDisplayableJournalEntry } from '@/utils/aggregate-utils';
+import { JournalEntry } from '@/model/schema/resource-schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  useMemo,
+  useContext,
   useState,
   type PropsWithChildren
 } from 'react';
 import { useForm } from 'react-hook-form';
 
 export function JournalEntryEditorContextProvider(props: PropsWithChildren) {
-  const { children } = props;
+  const { activeJournal } = useContext(JournalContext);
 
-  const activeJournalQuery = useActiveJournal();
-  const activeJournalId = activeJournalQuery.data?.journalId;
-  const settings = useUserPreferences();
-  const currency = settings?.journal.currency.entry ?? DEFAULT_CURRENCY;
+  const [editingEntry, setEditingEntry] = useState<JournalEntry>(() => {
+    return journalEntryRepository.Model.make({
+      journalRid: activeJournal.rid,
+    });
+  });
 
-  const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
-
-  const initialFormValues: JournalEntryForm = useMemo(() => {
-    const entry = editingEntry ?? makeJournalEntry(
-      activeJournalId ?? makePapayaUrn('papaya:document:journal'),
-      currency
-    );
-    return JournalFormCodec.decode(entry);
-  }, []);
+  const [initialFormValues, setInitialFormValues] = useState<JournalEntryForm | null>(() => {
+    return JournalEntryToFormCodec.decode(editingEntry);
+  });
 
   const form = useForm<JournalEntryForm>({
-    resolver: zodResolver(JournalEntryFormSchema),
+    resolver: zodResolver(JournalEntryFormSchema.nullable()),
     defaultValues: initialFormValues,
   });
 
-  const watchedValues = form.watch();
-
-  const displayableEditingEntry: DisplayableJournalEntry | null = useMemo(() => {
-    if (!editingEntry) return null;
-    const marshalled = JournalFormCodec.encode(watchedValues);
-    return makeDisplayableJournalEntry(marshalled) ?? null;
-  }, [editingEntry, watchedValues]);
-
-  const beginEditing = (entry: Entry) => {
+  const beginEditing = (entry: JournalEntry) => {
     setEditingEntry(entry);
     setIsEditorOpen(true);
-    form.reset(JournalFormCodec.decode(entry))
+    const formValues: JournalEntryForm = JournalEntryToFormCodec.decode(entry);
+    setInitialFormValues(formValues);
+    form.reset(formValues);
   }
 
   const beginCreating = () => {
-    if (!activeJournalId) {
-      return;
-    }
-    const entry = makeJournalEntry(activeJournalId, currency);
-    setEditingEntry(entry);
-    setIsEditorOpen(true);
-    form.reset(JournalFormCodec.decode(entry))
+    const newEntry = journalEntryRepository.Model.make({
+      journalRid: activeJournal.rid,
+    });
+    beginEditing(newEntry);
   }
 
   const openEditor = () => {
@@ -80,12 +64,11 @@ export function JournalEntryEditorContextProvider(props: PropsWithChildren) {
     openEditor,
     closeEditor,
     form,
-    displayableEditingEntry,
   };
 
   return (
     <JournalEntryEditorContext.Provider value={value}>
-      {children}
+      {props.children}
     </JournalEntryEditorContext.Provider>
   );
 }
