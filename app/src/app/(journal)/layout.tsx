@@ -1,11 +1,16 @@
-import { JournalContextProvider } from "@/components/providers/JournalContextProvider";
+'use client';
+
+import dynamic from "next/dynamic";
 import { PropsWithChildren } from "react";
 
+const JournalRouteGroupLayout = dynamic(() => import("@/components/layouts/JournalRouteGroupLayout"), {
+  ssr: false,
+})
 
-export default function JournalRouteGroupLayout(props: PropsWithChildren) {
+export default function JournalRouteGroupNextLayout(props: PropsWithChildren) {
   return (
-    <JournalContextProvider>
+    <JournalRouteGroupLayout>
       {props.children}
-    </JournalContextProvider>
+    </JournalRouteGroupLayout>
   )
 }

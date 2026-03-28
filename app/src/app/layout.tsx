@@ -1,30 +1,24 @@
 'use client';
 
-import { CssBaseline, ThemeProvider } from '@mui/material';
 // import { montserrat } from '@/fonts/montserrat'
-import NotificationsProvider from '@/components/providers/NotificationsProvider';
-import { PapayaContextProvider } from '@/components/providers/PapayaContextProvider';
-import appTheme from '@/theme/theme';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AppThemeLayout from '@/components/layouts/AppThemeLayout';
+import dynamic from 'next/dynamic';
 
-const queryClient = new QueryClient()
+const AppDataLayout = dynamic(() => import('@/components/layouts/AppDataLayout'), {
+  ssr: false,
+})
 
 export default function RootLayout(props: LayoutProps<'/'>) {
   return (
     <html>
       <body>
-        <ThemeProvider theme={appTheme}>
-          <CssBaseline />
+        <AppThemeLayout>
           <main>
-            <QueryClientProvider client={queryClient}>
-              <PapayaContextProvider>
-                <NotificationsProvider>
-                  {props.children}
-                </NotificationsProvider>
-              </PapayaContextProvider>
-            </QueryClientProvider>
+            <AppDataLayout>
+              {props.children}
+            </AppDataLayout>
           </main>
-        </ThemeProvider>
+        </AppThemeLayout>
       </body>
     </html>
   )
