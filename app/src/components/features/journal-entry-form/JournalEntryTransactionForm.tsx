@@ -3,10 +3,9 @@ import DateField from "@/components/shared/inputs/field/DateField";
 import TopicField from "@/components/shared/inputs/field/TopicField";
 import { JournalEntryForm } from "@/model/schema/form-schemas";
 import { TransactionRid } from "@/model/schema/namespace-schemas";
-import { DeleteOutline, LocalOffer } from "@mui/icons-material";
-import { Card, Grid, IconButton, Stack, TextField } from "@mui/material";
+import { Card, Grid, Stack, TextField } from "@mui/material";
 import dayjs from "dayjs";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, type FieldPath } from "react-hook-form";
 
 interface TransactionFormProps {
   transactionRid: TransactionRid;
@@ -67,22 +66,23 @@ export function JournalEntryTransactionForm(props: TransactionFormProps) {
             />
           </Grid>
           <Grid size={'grow'}>
-            <TopicField
-              size="small"
-              label="Topics"
-              fullWidth
-              {...register(`transactions.${props.transactionRid}.topics`)}
+            <Controller<JournalEntryForm>
+              control={control}
+              name={
+                `transactions.${props.transactionRid}.topics` as FieldPath<JournalEntryForm>
+              }
+              render={({ field }) => (
+                <TopicField
+                  knownTopics={[]}
+                  size="small"
+                  label="Topics"
+                  fullWidth
+                  value={(field.value as string[] | undefined) ?? []}
+                  onChange={(_event, newValue) => field.onChange(newValue)}
+                  onBlur={field.onBlur}
+                />
+              )}
             />
-          </Grid>
-          <Grid size="auto">
-            <Stack direction="row" spacing={-1} ml={-1}>
-              <IconButton>
-                <LocalOffer />
-              </IconButton>
-              <IconButton onClick={() => { }}>
-                <DeleteOutline />
-              </IconButton>
-            </Stack>
           </Grid>
         </Grid>
       </Card>
