@@ -23,7 +23,8 @@ export class JournalRepository extends Repository<"Journal"> {
 
   async getJournalByRid(rid: JournalRid): Promise<OrmDocument<Journal> | undefined> {
     try {
-      const journal = await this.db.get<Journal>(rid);
+      const db = await this.getDb();
+      const journal = await db.get<Journal>(rid);
       if (!journal) {
         return undefined;
       }
@@ -34,7 +35,8 @@ export class JournalRepository extends Repository<"Journal"> {
   }
 
   async listAllJournals(): Promise<OrmDocument<Journal>[]> {
-    const result = await this.db.find({
+    const db = await this.getDb();
+    const result = await db.find({
       selector: { kind: this.schema.shape.kind.value },
     });
     return result.docs as OrmDocument<Journal>[];

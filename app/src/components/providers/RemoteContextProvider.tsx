@@ -94,7 +94,7 @@ export default function RemoteContextProvider(props: PropsWithChildren) {
       console.log('No remote database found, skipping sync')
       return
     }
-    const db = getDatabaseClient()
+    const db = await getDatabaseClient()
     db.sync(remoteDb.current)
   }
 
@@ -112,7 +112,7 @@ export default function RemoteContextProvider(props: PropsWithChildren) {
     console.log('Connecting to remote database:', databaseUrl);
 
     remoteDb.current = new PouchDB(databaseUrl)
-    const db = getDatabaseClient()
+    const db = await getDatabaseClient()
     remoteDbSyncHandler.current = db
       .sync(remoteDb.current, {
         live: true,

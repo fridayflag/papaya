@@ -23,7 +23,8 @@ export class PreferencesRepository extends Repository<"Preferences"> {
   };
 
   async getPreferences(): Promise<OrmDocument<Preferences> | undefined> {
-    const result = await this.db.find({
+    const db = await this.getDb();
+    const result = await db.find({
       selector: {
         _id: PREFERENCES_ID,
       },

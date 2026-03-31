@@ -11,12 +11,14 @@ type ResourceBaseShapeKeys = 'rid' | 'kind' | 'updatedAt' | '@version'
 
 type Resource<N extends PapayaResourceNamespace> = z.infer<typeof ResourceSchemaRegistry[N]>;
 
+export type PapayaResource = Resource<PapayaResourceNamespace>
+
 export type ResourceIntrinsic<N extends PapayaResourceNamespace> =
   & Omit<Resource<N>, ResourceBaseShapeKeys>
   & Partial<Pick<Resource<N>, ResourceBaseShapeKeys>>;
 
 export abstract class Repository<N extends PapayaResourceNamespace> {
-  protected readonly db = getDatabaseClient();
+  protected readonly getDb = getDatabaseClient;
 
   protected readonly schema: (typeof ResourceSchemaRegistry)[N];
 
@@ -76,7 +78,9 @@ export abstract class Repository<N extends PapayaResourceNamespace> {
         _rev: data._rev ?? undefined,
       };
 
-      const response = await this.db.put(doc as PouchDB.Core.PutDocument<Resource<N>>) as PouchDB.Core.Response;
+      const db = await this.getDb();
+
+      const response = await db.put(doc as PouchDB.Core.PutDocument<Resource<N>>) as PouchDB.Core.Response;
 
       return {
         ...doc,
