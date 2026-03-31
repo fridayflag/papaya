@@ -1,6 +1,1 @@
 .env
-papaya-web/dist/
-papaya-web/node_modules/
-papaya-server/node_modules/
-papaya-web/bun.lockb
-papaya-server/bun.lockb
